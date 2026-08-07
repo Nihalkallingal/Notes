@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nihal's AI/ML Learning Notes</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d;
+    --text: #c9d1d9; --muted: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --yellow: #d29922; --code-bg: #1e242c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6; font-size: 16px;
+  }
+  .layout { display: flex; }
+  nav {
+    position: sticky; top: 0; align-self: flex-start;
+    width: 280px; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--border);
+    padding: 24px 16px;
+  }
+  nav h2 { font-size: 14px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; margin: 20px 0 8px; }
+  nav h2:first-child { margin-top: 0; }
+  nav a { display: block; color: var(--text); text-decoration: none; padding: 5px 10px; border-radius: 6px; font-size: 14px; }
+  nav a:hover { background: var(--code-bg); color: var(--accent); }
+  main { flex: 1; padding: 40px 56px; max-width: 900px; }
+  header.hero { border-bottom: 1px solid var(--border); padding-bottom: 24px; margin-bottom: 32px; }
+  header.hero h1 { margin: 0 0 8px; font-size: 32px; }
+  header.hero p { color: var(--muted); margin: 0; }
+  section { margin-bottom: 48px; scroll-margin-top: 20px; }
+  section > h2 {
+    font-size: 26px; border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px; display: inline-block; margin-bottom: 4px;
+  }
+  .phase-tag { display:inline-block; font-size:12px; background:var(--code-bg); color:var(--green); padding:3px 10px; border-radius:20px; margin-left:10px; vertical-align:middle; }
+  h3 { font-size: 19px; color: var(--accent); margin-top: 28px; }
+  .concept {
+    background: var(--panel); border-left: 3px solid var(--yellow);
+    padding: 12px 18px; border-radius: 6px; margin: 12px 0;
+  }
+  .concept strong { color: var(--yellow); }
+  .analogy { background: var(--panel); border-left: 3px solid var(--green); padding: 12px 18px; border-radius: 6px; margin: 12px 0; }
+  .analogy strong { color: var(--green); }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; overflow-x: auto; font-size: 14px;
+  }
+  code { font-family: "Cascadia Code", "Fira Code", Consolas, monospace; }
+  pre code { color: #e6edf3; }
+  p code, li code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 14px; color: #79c0ff; }
+  .cmt { color: #6a9955; }
+  .kw { color: #ff7b72; }
+  .str { color: #a5d6ff; }
+  .fn { color: #d2a8ff; }
+  .num { color: #79c0ff; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 14px; }
+  th { background: var(--code-bg); color: var(--accent); }
+  .quiz { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; margin-top: 16px; }
+  .quiz summary { cursor: pointer; color: var(--yellow); font-weight: bold; }
+  .quiz p { margin: 8px 0 0; }
+  footer { border-top: 1px solid var(--border); padding-top: 20px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <h2>Foundations</h2>
+  <a href="#python">1. Python</a>
+  <a href="#numpy">2. NumPy</a>
+  <a href="#pandas">3. Pandas</a>
+  <a href="#viz">4. Matplotlib / Seaborn</a>
+  <h2>Classical ML</h2>
+  <a href="#logreg">5. First Model (LogReg)</a>
+  <a href="#trees">6. Trees & Ensembles</a>
+  <a href="#features">7. Feature Engineering</a>
+  <a href="#tuning">8. Hyperparameter Tuning</a>
+  <h2>Deep Learning</h2>
+  <a href="#pytorch">9. Neural Nets (PyTorch)</a>
+  <h2>GenAI / LLMs</h2>
+  <a href="#llm-basics">10. LLM API Basics</a>
+  <a href="#tokens">11. Tokenization</a>
+  <a href="#embeddings">12. Embeddings</a>
+  <a href="#chat">13. Multi-turn Chat</a>
+  <a href="#rag">14. RAG</a>
+  <h2>Theory</h2>
+  <a href="#attention">15. Attention / Transformers</a>
+  <a href="#architecture">16. Encoder vs Decoder</a>
+  <a href="#training">17. Training Stages</a>
+  <a href="#knobs">18. Runtime Knobs</a>
+  <a href="#prompting">19. Prompt Patterns</a>
+  <a href="#agents">20. RAG vs Agents</a>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>🧠 My AI / ML Learning Notes</h1>
+  <p>From Python to GenAI — every topic with a plain-English concept, an analogy, and simple code. Built as a personal reference.</p>
+</header>
+
+<!-- ============ FOUNDATIONS ============ -->
+<section id="python">
+  <h2>1. Python Refresher</h2>
+  <div class="concept"><strong>Concept:</strong> The language everything else is written in. Functions with type hints + docstrings, comprehensions, and classes are the building blocks you reuse everywhere.</div>
+<pre><code><span class="kw">def</span> <span class="fn">greet</span>(name: str) -> str:
+    <span class="str">"""Return a greeting for the given name."""</span>
+    <span class="kw">return</span> <span class="str">f"Hello, {name}!"</span>
+
+<span class="cmt"># List comprehension with a filter</span>
+evens = [n <span class="kw">for</span> n <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> n % <span class="num">2</span> == <span class="num">0</span>]
+
+<span class="kw">class</span> <span class="fn">Dog</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name: str):
+        self.name = name
+    <span class="kw">def</span> <span class="fn">bark</span>(self) -> str:
+        <span class="kw">return</span> <span class="str">f"{self.name} says woof"</span>
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Nihal"</span>))</code></pre>
+</section>
+
+<section id="numpy">
+  <h2>2. NumPy</h2>
+  <div class="concept"><strong>Concept:</strong> Fast numeric arrays. Instead of looping, you operate on whole arrays at once (<strong>vectorization</strong>). <strong>Broadcasting</strong> stretches smaller arrays to match shapes automatically.</div>
+  <div class="analogy"><strong>Analogy:</strong> A spreadsheet where "multiply this whole column by 2" happens instantly, not cell-by-cell.</div>
+<pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+a = np.array([[<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>], [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>]])
+<span class="fn">print</span>(a.shape)          <span class="cmt"># (2, 3)</span>
+<span class="fn">print</span>(a * <span class="num">2</span>)            <span class="cmt"># vectorized — every element doubled</span>
+<span class="fn">print</span>(a.mean(axis=<span class="num">0</span>))    <span class="cmt"># reduction — column means</span>
+
+<span class="cmt"># Boolean masking: keep only values > 3</span>
+<span class="fn">print</span>(a[a > <span class="num">3</span>])          <span class="cmt"># [4 5 6]</span>
+
+<span class="cmt"># Broadcasting: add a row vector to every row</span>
+<span class="fn">print</span>(a + np.array([<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>]))</code></pre>
+</section>
+
+<section id="pandas">
+  <h2>3. Pandas</h2>
+  <div class="concept"><strong>Concept:</strong> Spreadsheets in code. A <code>DataFrame</code> is a table you can filter, clean (handle missing data), group, and merge. The workhorse of data prep.</div>
+<pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.read_csv(<span class="str">"https://.../titanic.csv"</span>)
+df.head(); df.info(); df.describe()      <span class="cmt"># explore</span>
+
+df[df[<span class="str">"Age"</span>] > <span class="num">30</span>]                       <span class="cmt"># filter with boolean mask</span>
+df.isnull().sum()                        <span class="cmt"># audit missing data</span>
+df[<span class="str">"Age"</span>].fillna(df[<span class="str">"Age"</span>].median())    <span class="cmt"># fill gaps</span>
+
+df.groupby(<span class="str">"Sex"</span>)[<span class="str">"Survived"</span>].mean()      <span class="cmt"># split-apply-combine</span></code></pre>
+</section>
+
+<section id="viz">
+  <h2>4. Matplotlib &amp; Seaborn</h2>
+  <div class="concept"><strong>Concept:</strong> See your data. Seaborn makes pretty statistical charts in one line; Matplotlib gives fine control. Pattern: <em>figure → plot → label → show/save.</em></div>
+<pre><code><span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+sns.countplot(data=df, x=<span class="str">"Pclass"</span>, hue=<span class="str">"Survived"</span>)
+plt.title(<span class="str">"Survival by Class"</span>)
+plt.show()
+
+<span class="cmt"># Correlation heatmap — spot relationships between numeric columns</span>
+sns.heatmap(df.corr(numeric_only=<span class="kw">True</span>), annot=<span class="kw">True</span>)
+plt.show()</code></pre>
+</section>
+
+<!-- ============ CLASSICAL ML ============ -->
+<section id="logreg">
+  <h2>5. First Model — Logistic Regression <span class="phase-tag">supervised learning</span></h2>
+  <div class="concept"><strong>Concept:</strong> Supervised learning = learn from labeled examples. Split <strong>features (X)</strong> from the <strong>label (y)</strong>, split data into <strong>train/test</strong> (learn on one, judge on the other), fit, predict, evaluate.</div>
+  <div class="analogy"><strong>Analogy:</strong> Study past exams (train), then take a fresh exam (test) to prove you learned the pattern, not memorized answers.</div>
+<pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score, confusion_matrix
+
+X = df[[<span class="str">"Pclass"</span>, <span class="str">"Sex"</span>, <span class="str">"Age"</span>]]   <span class="cmt"># Sex encoded 0/1 via .map</span>
+y = df[<span class="str">"Survived"</span>]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="num">0.2</span>)
+model = <span class="fn">LogisticRegression</span>().fit(X_train, y_train)
+preds = model.predict(X_test)
+
+<span class="fn">print</span>(accuracy_score(y_test, preds))   <span class="cmt"># ~80% vs ~62% baseline</span>
+<span class="fn">print</span>(model.coef_)                    <span class="cmt"># Sex = biggest driver</span></code></pre>
+  <div class="quiz"><details><summary>Quiz: why split into train/test?</summary>
+  <p>To measure whether the model <em>generalizes</em> to unseen data instead of just memorizing the training set. High train + low test score = overfitting.</p></details></div>
+</section>
+
+<section id="trees">
+  <h2>6. Trees &amp; Ensembles</h2>
+  <div class="concept"><strong>Concept:</strong> A decision tree asks yes/no questions to split data. Alone it <strong>overfits</strong> (memorizes) — fix with <code>max_depth</code>. A <strong>Random Forest</strong> averages many trees (ensemble voting) for a more robust model. <strong>Cross-validation</strong> gives a trustworthy score by testing on 5 different splits.</div>
+  <div class="analogy"><strong>Analogy:</strong> One doctor can be wrong; a panel of 100 doctors voting (forest) is more reliable.</div>
+<pre><code><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+
+rf = <span class="fn">RandomForestClassifier</span>(n_estimators=<span class="num">100</span>, max_depth=<span class="num">5</span>)
+scores = cross_val_score(rf, X, y, cv=<span class="num">5</span>)      <span class="cmt"># 5-fold CV</span>
+<span class="fn">print</span>(scores.mean(), scores.std())         <span class="cmt"># mean ± spread</span>
+
+rf.fit(X, y)
+<span class="fn">print</span>(rf.feature_importances_)             <span class="cmt"># which features mattered</span></code></pre>
+</section>
+
+<section id="features">
+  <h2>7. Feature Engineering &amp; Encoding</h2>
+  <div class="concept"><strong>Concept:</strong> Better inputs beat fancier models. Create new signal (e.g. <code>FamilySize</code>, <code>IsAlone</code>), extract info from text (<code>Title</code> from a name), and encode categories. Use <strong>one-hot</strong> for unordered categories so the model doesn't invent a fake order.</div>
+<pre><code><span class="cmt"># New engineered features</span>
+df[<span class="str">"FamilySize"</span>] = df[<span class="str">"SibSp"</span>] + df[<span class="str">"Parch"</span>] + <span class="num">1</span>
+df[<span class="str">"IsAlone"</span>] = (df[<span class="str">"FamilySize"</span>] == <span class="num">1</span>).astype(<span class="fn">int</span>)
+
+<span class="cmt"># Extract title from name via regex</span>
+df[<span class="str">"Title"</span>] = df[<span class="str">"Name"</span>].str.extract(<span class="str">r" ([A-Za-z]+)\."</span>)
+
+<span class="cmt"># One-hot encode unordered categories</span>
+df = pd.get_dummies(df, columns=[<span class="str">"Embarked"</span>, <span class="str">"Title"</span>])</code></pre>
+</section>
+
+<section id="tuning">
+  <h2>8. Hyperparameter Tuning <span class="phase-tag">classical ML complete</span></h2>
+  <div class="concept"><strong>Concept:</strong> Models have dials (hyperparameters) you set before training. <strong>GridSearchCV</strong> tries every combination with cross-validation and reports the best. Tune on <em>train only</em>, then confirm on the held-out test set.</div>
+<pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+
+param_grid = {<span class="str">"n_estimators"</span>: [<span class="num">100</span>, <span class="num">200</span>], <span class="str">"max_depth"</span>: [<span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>]}
+grid = <span class="fn">GridSearchCV</span>(RandomForestClassifier(), param_grid, cv=<span class="num">5</span>, n_jobs=-<span class="num">1</span>)
+grid.fit(X_train, y_train)
+
+<span class="fn">print</span>(grid.best_params_)      <span class="cmt"># winning combo</span>
+<span class="fn">print</span>(grid.best_score_)       <span class="cmt"># CV score — should ≈ test score</span></code></pre>
+</section>
+
+<!-- ============ DEEP LEARNING ============ -->
+<section id="pytorch">
+  <h2>9. Neural Networks with PyTorch <span class="phase-tag">deep learning</span></h2>
+  <div class="concept"><strong>Concept:</strong> A neural net stacks layers of neurons that learn patterns. You <strong>scale features</strong> first (NNs are scale-sensitive), define the network, then hand-write the <strong>training loop</strong>: forward → loss → zero_grad → backward → step, repeated over epochs.</div>
+  <div class="analogy"><strong>Analogy:</strong> Learning to shoot a basketball — shoot (forward), see how far you missed (loss), adjust your muscles (backward + step), repeat thousands of times.</div>
+<pre><code><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="kw">class</span> <span class="fn">TitanicNet</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, n_features):
+        <span class="fn">super</span>().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_features, <span class="num">16</span>), nn.ReLU(),
+            nn.Linear(<span class="num">16</span>, <span class="num">1</span>), nn.Sigmoid())
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.net(x)
+
+model = <span class="fn">TitanicNet</span>(X_train.shape[<span class="num">1</span>])
+loss_fn = nn.BCELoss()
+opt = torch.optim.Adam(model.parameters(), lr=<span class="num">0.01</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):          <span class="cmt"># the training loop</span>
+    preds = model(X_train)          <span class="cmt"># forward</span>
+    loss = loss_fn(preds, y_train)  <span class="cmt"># how wrong?</span>
+    opt.zero_grad()                 <span class="cmt"># reset gradients</span>
+    loss.backward()                 <span class="cmt"># compute gradients</span>
+    opt.step()                      <span class="cmt"># update weights</span></code></pre>
+  <div class="analogy"><strong>Takeaway:</strong> On tiny tabular data a NN ≈ Random Forest. Deep learning shines on <em>big, unstructured</em> data (text, images).</div>
+</section>
+
+<!-- ============ GENAI ============ -->
+<section id="llm-basics">
+  <h2>10. LLM API Basics <span class="phase-tag">GenAI</span></h2>
+  <div class="concept"><strong>Concept:</strong> Call a hosted LLM over an API. A <strong>system instruction</strong> sets its persona/rules; <code>max_output_tokens</code> caps length. The API key is read from an environment variable.</div>
+<pre><code><span class="kw">from</span> google <span class="kw">import</span> genai
+<span class="kw">from</span> google.genai <span class="kw">import</span> types
+
+client = genai.Client()   <span class="cmt"># reads GEMINI_API_KEY env var</span>
+
+response = client.models.generate_content(
+    model=<span class="str">"gemini-2.5-flash"</span>,
+    contents=<span class="str">"What is machine learning?"</span>,
+    config=types.GenerateContentConfig(
+        system_instruction=<span class="str">"You are a pirate. Answer briefly in pirate slang."</span>,
+        max_output_tokens=<span class="num">150</span>,
+    ),
+)
+<span class="fn">print</span>(response.text)</code></pre>
+</section>
+
+<section id="tokens">
+  <h2>11. Tokenization</h2>
+  <div class="concept"><strong>Concept:</strong> LLMs don't read words — they read <strong>tokens</strong> (subword pieces). Common words = 1 token; rare words get split. This keeps the vocabulary small (~50k) while covering any text.</div>
+  <div class="analogy"><strong>Analogy:</strong> Lego bricks — you don't need a unique brick for every object, you combine standard pieces.</div>
+<pre><code><span class="kw">import</span> tiktoken
+enc = tiktoken.get_encoding(<span class="str">"cl100k_base"</span>)
+
+tokens = enc.encode(<span class="str">"ChatGPT is a LLM"</span>)
+<span class="fn">print</span>(<span class="str">"Count:"</span>, <span class="fn">len</span>(tokens))
+<span class="kw">for</span> tid <span class="kw">in</span> tokens:
+    <span class="fn">print</span>(tid, <span class="str">"->"</span>, <span class="fn">repr</span>(enc.decode([tid])))
+<span class="cmt"># "ChatGPT" splits into multiple tokens; "is" is one.</span></code></pre>
+</section>
+
+<section id="embeddings">
+  <h2>12. Embeddings</h2>
+  <div class="concept"><strong>Concept:</strong> Turn text into a vector of numbers where <strong>similar meaning = nearby vectors</strong>. Measure closeness with <strong>cosine similarity</strong> (1.0 = same meaning, 0.0 = unrelated).</div>
+  <div class="analogy"><strong>Analogy:</strong> Map coordinates for meaning — two coffee shops sit close together; a coffee shop and an airport sit far apart.</div>
+<pre><code><span class="kw">from</span> sentence_transformers <span class="kw">import</span> SentenceTransformer
+<span class="kw">from</span> sklearn.metrics.pairwise <span class="kw">import</span> cosine_similarity
+
+model = <span class="fn">SentenceTransformer</span>(<span class="str">"all-MiniLM-L6-v2"</span>)
+emb = model.encode([
+    <span class="str">"The cat sat on the mat"</span>,
+    <span class="str">"A dog rested on the rug"</span>,
+    <span class="str">"Machine learning is fascinating"</span>,
+])
+<span class="fn">print</span>(cosine_similarity(emb).round(<span class="num">2</span>))
+<span class="cmt"># cat/dog sentences score high; ML sentence scores low.</span></code></pre>
+</section>
+
+<section id="chat">
+  <h2>13. Multi-turn Chat</h2>
+  <div class="concept"><strong>Concept:</strong> A chat session <strong>remembers history</strong> by re-sending all previous turns with each new message. That's why it can answer follow-ups. A raw <code>generate_content</code> call has no memory.</div>
+<pre><code>client = genai.Client()
+chat = client.chats.create(model=<span class="str">"gemini-2.5-flash"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    user_input = <span class="fn">input</span>(<span class="str">"You: "</span>)
+    <span class="kw">if</span> user_input.lower() == <span class="str">"quit"</span>:
+        <span class="kw">break</span>
+    response = chat.send_message(user_input)   <span class="cmt"># history auto-kept</span>
+    <span class="fn">print</span>(<span class="str">"Gemini:"</span>, response.text)</code></pre>
+</section>
+
+<section id="rag">
+  <h2>14. RAG — Retrieval-Augmented Generation ⭐</h2>
+  <div class="concept"><strong>Concept:</strong> LLMs don't know <em>your</em> data. RAG fixes this: <strong>retrieve</strong> the most relevant chunks from your documents, paste them into the prompt as context, and the LLM answers grounded in them. Kills hallucination and adds private knowledge.</div>
+  <div class="analogy"><strong>Analogy:</strong> Open-book exam — don't memorize the textbook, just flip to the relevant page when a question comes.</div>
+<pre><code><span class="kw">from</span> sentence_transformers <span class="kw">import</span> SentenceTransformer
+<span class="kw">from</span> sklearn.metrics.pairwise <span class="kw">import</span> cosine_similarity
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+docs = [<span class="str">"RAG combines search with LLMs."</span>,
+        <span class="str">"Transformers power modern LLMs."</span>,
+        <span class="str">"Embeddings map text to vectors."</span>]
+
+model = <span class="fn">SentenceTransformer</span>(<span class="str">"all-MiniLM-L6-v2"</span>)
+doc_emb = model.encode(docs)          <span class="cmt"># OFFLINE: embed once</span>
+
+<span class="kw">def</span> <span class="fn">retrieve</span>(question, top_k=<span class="num">2</span>):
+    q = model.encode([question])
+    scores = cosine_similarity(q, doc_emb)[<span class="num">0</span>]
+    top = np.argsort(scores)[::-<span class="num">1</span>][:top_k]   <span class="cmt"># highest first</span>
+    <span class="kw">return</span> [docs[i] <span class="kw">for</span> i <span class="kw">in</span> top]
+
+<span class="cmt"># ONLINE: stuff retrieved context into the prompt</span>
+context = <span class="str">"\n"</span>.join(retrieve(<span class="str">"What is RAG?"</span>))
+prompt = <span class="str">f"Answer using only this context:\n{context}\n\nQuestion: What is RAG?"</span>
+<span class="cmt"># ...then send `prompt` to Gemini -> grounded answer</span></code></pre>
+  <div class="quiz"><details><summary>Quiz: what's RAG's biggest weakness?</summary>
+  <p>If <code>retrieve()</code> returns the wrong chunks, the answer is wrong. Garbage in → garbage out. The system is only as good as its retrieval.</p></details></div>
+</section>
+
+<!-- ============ THEORY ============ -->
+<section id="attention">
+  <h2>15. Attention &amp; Transformers <span class="phase-tag">theory</span></h2>
+  <div class="concept"><strong>Concept:</strong> When processing each word, the model looks at <em>all</em> other words at once and weighs which matter. Each word emits a <strong>Query</strong> ("what I want"), a <strong>Key</strong> ("what I offer"), and a <strong>Value</strong> ("what I contain"). Query·Key = attention score; scores weight a sum of Values.</div>
+  <div class="analogy"><strong>Analogy — dating app:</strong> your preferences (Query) matched against everyone's profile tags (Keys); best matches get most attention; you absorb the most from who you matched with (Values).</div>
+  <table>
+    <tr><th>Vector</th><th>Role</th></tr>
+    <tr><td>Query (Q)</td><td>What this word is looking for</td></tr>
+    <tr><td>Key (K)</td><td>What each word advertises — <em>compared against Q</em></td></tr>
+    <tr><td>Value (V)</td><td>The actual info — <em>passed along</em> as the weighted result</td></tr>
+  </table>
+  <p><strong>Why it changed everything:</strong> attention is computed <em>in parallel</em> for all words (not left-to-right), which is the only reason training on trillions of tokens became feasible. <strong>Multi-head</strong> = several attention "perspectives" at once (grammar, reference, etc.).</p>
+</section>
+
+<section id="architecture">
+  <h2>16. Encoder vs Decoder</h2>
+  <table>
+    <tr><th></th><th>Encoder</th><th>Decoder (GPT/Gemini/Claude)</th></tr>
+    <tr><td>Sees</td><td>Whole input, both directions</td><td>Only tokens already generated (causal mask)</td></tr>
+    <tr><td>Good at</td><td>Understanding (search, embeddings)</td><td>Generating text, one token at a time</td></tr>
+    <tr><td>Example</td><td><code>all-MiniLM</code></td><td>ChatGPT, Claude, Gemini</td></tr>
+  </table>
+  <div class="concept"><strong>Key insight:</strong> Modern LLMs are <strong>decoder-only</strong> — pure next-token predictors. <strong>Causal masking</strong> hides future tokens during training so the model can't "cheat" by copying the answer; it's forced to genuinely predict. That one simple objective, at scale, produces grammar, facts, and reasoning.</div>
+</section>
+
+<section id="training">
+  <h2>17. Training Stages</h2>
+  <div class="analogy"><strong>Analogy — raising a doctor:</strong> read every textbook (pretraining) → medical school & residency (fine-tuning) → years of patient feedback shaping bedside manner (RLHF).</div>
+  <table>
+    <tr><th>Stage</th><th>What happens</th><th>Gives the model</th></tr>
+    <tr><td>Pretraining</td><td>Predict next token over the whole internet</td><td><strong>Knowledge</strong> (but just a text-completer)</td></tr>
+    <tr><td>Fine-tuning</td><td>Learn from instruction → response examples</td><td><strong>Format</strong> — to actually answer</td></tr>
+    <tr><td>RLHF</td><td>Humans rank responses; model learns preferences</td><td><strong>Alignment</strong> — helpful, honest, harmless</td></tr>
+  </table>
+  <div class="quiz"><details><summary>Quiz: a model replies to "Capital of France?" with "Capital of Spain?" — what's missing?</summary>
+  <p><strong>Fine-tuning.</strong> It's still just completing a pattern, never learned that a question should be followed by an answer. (RLHF is the later polish.)</p></details></div>
+</section>
+
+<section id="knobs">
+  <h2>18. Runtime Knobs</h2>
+  <table>
+    <tr><th>Knob</th><th>What it controls</th></tr>
+    <tr><td>Context window</td><td>Max tokens the model can see at once (prompt + reply + history). Finite → the reason RAG exists.</td></tr>
+    <tr><td>Temperature</td><td>Randomness. <strong>Low (0–0.3)</strong> = focused/deterministic (facts, code). <strong>High (0.8+)</strong> = creative/varied (brainstorming).</td></tr>
+    <tr><td>top-k / top-p</td><td>Restrict the pool of candidate next-tokens to the most likely ones — keeps output sane even when temperature is high.</td></tr>
+  </table>
+  <div class="analogy"><strong>Analogy — a chef:</strong> context window = how much of the recipe they remember; temperature = how adventurous; top-p = "only pick ingredients that make sense here."</div>
+</section>
+
+<section id="prompting">
+  <h2>19. Prompt Engineering Patterns</h2>
+  <table>
+    <tr><th>Pattern</th><th>Use when</th></tr>
+    <tr><td>Zero-shot</td><td>Task is easy — just ask directly.</td></tr>
+    <tr><td>Few-shot</td><td>You need <strong>consistent format</strong> — show 2–3 examples first.</td></tr>
+    <tr><td>Chain-of-thought</td><td><strong>Reasoning</strong> is failing — say "think step by step" so it works through it before answering.</td></tr>
+    <tr><td>Role / system</td><td>Set persona &amp; behavior for the whole session.</td></tr>
+  </table>
+<pre><code><span class="cmt"># Few-shot: the model copies the pattern</span>
+Review: <span class="str">"Loved it!"</span>        -> Positive
+Review: <span class="str">"Waste of money"</span>    -> Negative
+Review: <span class="str">"Best purchase ever"</span> -> ?     <span class="cmt"># model answers: Positive</span></code></pre>
+  <div class="concept"><strong>Remember:</strong> few-shot fixes <em>format</em>; chain-of-thought fixes <em>reasoning</em>.</div>
+</section>
+
+<section id="agents">
+  <h2>20. RAG vs Agents</h2>
+  <div class="concept"><strong>Concept:</strong> A plain LLM only outputs text. An <strong>agent</strong> can take <em>actions</em> — call tools, run code, query APIs — in a loop: <strong>Think → Act → Observe → repeat</strong> until the task is done. Each result decides the next step (which is why it needs a loop, not one pass).</div>
+  <div class="analogy"><strong>Analogy:</strong> Plain LLM = brilliant person locked in a room answering from memory. RAG = slide relevant documents under the door first. Agent = give them a phone, internet, and calculator to look things up and act.</div>
+  <table>
+    <tr><th>Approach</th><th>Gives the model</th></tr>
+    <tr><td>RAG</td><td><strong>Knowledge</strong> (fresh, private data)</td></tr>
+    <tr><td>Agent</td><td><strong>Capabilities</strong> (the ability to act)</td></tr>
+  </table>
+  <p style="color:var(--muted)">Fun fact: Claude Code (what taught you this) is an <em>agent</em> — it reads files and runs tools in a loop, not just chat.</p>
+</section>
+
+<footer>
+  <p>📚 Built as a personal reference during Nihal's 2-month AI/ML journey · Foundations → Classical ML → Deep Learning → GenAI.</p>
+  <p><strong>Next up:</strong> the capstone — an Angular chat UI talking to a FastAPI + RAG + Gemini backend.</p>
+</footer>
+</main>
+</div>
+</body>
+</html>

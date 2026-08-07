@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angular Mastery — Beginner to Advanced & Interview Prep</title>
+<style>
+  :root{
+    --ink:#0b1221;          /* near-black navy */
+    --paper:#fbfaf7;        /* warm off-white page */
+    --panel:#ffffff;
+    --line:#e4e0d6;
+    --muted:#5d6473;
+    --red:#dd0031;          /* Angular red */
+    --red-2:#c3002f;
+    --violet:#6e3aff;       /* signal accent */
+    --teal:#0a8c7d;         /* rxjs accent */
+    --amber:#b06a00;
+    --code-bg:#0d1426;
+    --code-line:#1d2740;
+    --kw:#ff7b9c;           /* keyword */
+    --str:#9be38a;          /* string */
+    --fn:#79c0ff;           /* function/type */
+    --com:#6b7693;          /* comment */
+    --num:#f0b86e;          /* number/decorator */
+    --tag:#ffa8c4;
+    --radius:14px;
+    --maxw:980px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    line-height:1.65;font-size:16.5px;
+  }
+  a{color:var(--red-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* Layout */
+  .wrap{display:grid;grid-template-columns:280px 1fr;max-width:1380px;margin:0 auto;}
+  nav.side{
+    position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+    border-right:1px solid var(--line);padding:26px 18px 60px;background:#fff;
+  }
+  nav.side .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  nav.side .brand .shield{
+    width:30px;height:34px;background:var(--red);
+    clip-path:polygon(50% 0,100% 18%,86% 100%,50% 86%,14% 100%,0 18%);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;
+  }
+  nav.side .brand b{font-size:18px;letter-spacing:-.3px}
+  nav.side .tagline{font-size:12px;color:var(--muted);margin:0 0 18px 2px}
+  nav.side h4{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:20px 0 8px}
+  nav.side ol{list-style:none;margin:0;padding:0;counter-reset:nav}
+  nav.side ol li a{
+    display:block;padding:5px 10px;border-radius:8px;color:var(--ink);font-size:14px;
+    counter-increment:nav;position:relative;
+  }
+  nav.side ol li a::before{content:counter(nav,decimal-leading-zero);color:var(--muted);font-variant-numeric:tabular-nums;margin-right:9px;font-size:12px}
+  nav.side ol li a:hover{background:#f4f1ea;text-decoration:none}
+
+  main{padding:0;min-width:0}
+  .inner{max-width:var(--maxw);margin:0 auto;padding:0 30px 120px}
+
+  /* Hero */
+  header.hero{
+    background:var(--ink);color:#fff;padding:64px 30px 56px;margin-bottom:46px;
+    border-bottom:4px solid var(--red);
+  }
+  header.hero .inner{padding-bottom:0}
+  header.hero .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#ffa8c4;margin:0 0 14px}
+  header.hero h1{font-size:46px;line-height:1.05;margin:0 0 16px;letter-spacing:-1.2px;font-weight:800}
+  header.hero h1 span{color:var(--red)}
+  header.hero p{font-size:18px;color:#c4cad8;max-width:680px;margin:0 0 24px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{font-size:12.5px;padding:5px 11px;border:1px solid #2b3756;border-radius:30px;color:#cdd4e4;background:#121b30}
+  .pill.live{border-color:var(--red);color:#ffc2d2}
+
+  /* Sections */
+  section{scroll-margin-top:20px;margin-bottom:46px}
+  .sechead{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:22px}
+  .sechead .no{font-size:13px;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
+  .sechead h2{font-size:28px;margin:0;letter-spacing:-.5px;font-weight:800}
+  .lvl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:20px;margin-left:auto;align-self:center}
+  .lvl.b{background:#e7f4ec;color:#0a8c7d}
+  .lvl.i{background:#fff1dd;color:var(--amber)}
+  .lvl.a{background:#efe9ff;color:var(--violet)}
+
+  h3{font-size:19px;margin:30px 0 10px;letter-spacing:-.2px}
+  h4{font-size:15.5px;margin:20px 0 8px;color:var(--ink)}
+  p{margin:0 0 14px}
+  ul,ol.body{margin:0 0 16px;padding-left:22px}
+  li{margin:5px 0}
+  strong{font-weight:700}
+  code.inl{background:#f1ede3;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;color:var(--red-2)}
+
+  /* Code blocks */
+  .code{
+    background:var(--code-bg);border-radius:var(--radius);margin:14px 0 18px;overflow:hidden;
+    border:1px solid #16203a;box-shadow:0 14px 30px -18px rgba(11,18,33,.5);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#0a1120;border-bottom:1px solid var(--code-line)}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%}
+  .code .bar .r{background:#ff5f56}.code .bar .y{background:#ffbd2e}.code .bar .g{background:#27c93f}
+  .code .bar .fname{margin-left:8px;font-family:"JetBrains Mono",monospace;font-size:12px;color:#8a93ab}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.4px;line-height:1.62;color:#cdd6ea}
+  .code pre::-webkit-scrollbar{height:9px}
+  .code pre::-webkit-scrollbar-thumb{background:#2a3656;border-radius:8px}
+  .k{color:var(--kw)}.s{color:var(--str)}.f{color:var(--fn)}.c{color:var(--com);font-style:italic}
+  .n{color:var(--num)}.d{color:var(--num);font-weight:600}.t{color:var(--tag)}
+
+  /* Callouts */
+  .note{border-left:4px solid var(--teal);background:#effaf7;padding:13px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:14.5px}
+  .why{border-left:4px solid var(--violet);background:#f4f0ff;padding:13px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:14.5px}
+  .why b,.note b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+  .why b{color:var(--violet)}.note b{color:var(--teal)}
+  .new{border-left:4px solid var(--red);background:#fff0f3;padding:13px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:14.5px}
+  .new b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;color:var(--red-2)}
+  .old{border-left:4px solid #8a93ab;background:#f3f4f7;padding:13px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:14.5px}
+  .old b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;color:#4a5468}
+  /* migration two-column compare */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+  .cmp .col h5{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  .cmp .col.legacy h5{color:#4a5468}
+  .cmp .col.modern h5{color:var(--red-2)}
+  .cmp .code{margin:0}
+  @media(max-width:900px){.cmp{grid-template-columns:1fr}}
+  /* Part dividers */
+  .partband{margin:54px 0 30px;padding:26px 28px;border-radius:var(--radius);color:#fff;position:relative;overflow:hidden}
+  .partband.one{background:linear-gradient(120deg,#3a3f52,#5d6473)}
+  .partband.two{background:linear-gradient(120deg,var(--red-2),#7a0020)}
+  .partband .ptag{font-size:12px;letter-spacing:.2em;text-transform:uppercase;opacity:.85;margin:0 0 6px}
+  .partband h2{font-size:30px;margin:0 0 8px;letter-spacing:-.5px;font-weight:800;border:0;padding:0}
+  .partband p{margin:0;color:rgba(255,255,255,.9);font-size:15px;max-width:680px}
+  nav.side .partlabel{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:#5d6473;border-radius:6px;padding:4px 8px;margin:18px 0 6px;display:block}
+  nav.side .partlabel.two{background:var(--red-2)}
+  .cmp-note{font-size:13px;color:var(--muted);background:#f4f1ea;border-radius:8px;padding:7px 12px;margin:0 0 14px;display:inline-block}
+  .cmp-note strong{color:var(--ink)}
+
+  /* Q&A */
+  details.qa{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:#fff;overflow:hidden}
+  details.qa summary{cursor:pointer;padding:13px 16px;font-weight:600;font-size:15px;list-style:none;display:flex;gap:10px;align-items:flex-start}
+  details.qa summary::-webkit-details-marker{display:none}
+  details.qa summary::before{content:"Q";flex:0 0 22px;height:22px;background:var(--ink);color:#fff;border-radius:6px;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:1px}
+  details.qa[open] summary{border-bottom:1px solid var(--line);background:#faf8f3}
+  details.qa .ans{padding:14px 16px 16px;font-size:14.5px}
+  details.qa .ans p:last-child{margin-bottom:0}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f4f1ea;font-weight:700}
+  tr:nth-child(even) td{background:#fcfbf8}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  footer{border-top:1px solid var(--line);padding:30px;text-align:center;color:var(--muted);font-size:13px}
+
+  @media(max-width:900px){
+    .wrap{grid-template-columns:1fr}
+    nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    nav.side ol{columns:2;column-gap:14px}
+    header.hero h1{font-size:34px}
+    .grid2{grid-template-columns:1fr}
+    .inner{padding:0 18px 80px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ======================= SIDEBAR ======================= -->
+<nav class="side">
+  <div class="brand"><span class="shield">A</span><b>Angular Mastery</b></div>
+  <p class="tagline">Beginner → Advanced + Interview Prep · v22 (2026)</p>
+  <h4>Start here</h4>
+  <ol>
+    <li><a href="#how">How to use this guide</a></li>
+    <li><a href="#intro">What Angular is & why</a></li>
+  </ol>
+  <span class="partlabel">Part I · Classic Angular</span>
+  <ol>
+    <li><a href="#c-setup">Classic setup & NgModules</a></li>
+    <li><a href="#c-components">Components (decorator I/O)</a></li>
+    <li><a href="#c-templates">Templates & structural directives</a></li>
+    <li><a href="#c-di">Services & constructor DI</a></li>
+    <li><a href="#c-rxjs">RxJS-driven state & async pipe</a></li>
+    <li><a href="#c-routing">Modules, lazy loading & class guards</a></li>
+    <li><a href="#c-forms">Template-driven & reactive forms</a></li>
+    <li><a href="#c-http">HttpClient & class interceptors</a></li>
+    <li><a href="#c-cd">Zone.js change detection</a></li>
+  </ol>
+  <span class="partlabel two">Part II · Modern Angular</span>
+  <ol>
+    <li><a href="#m-standalone">Standalone & inject()</a></li>
+    <li><a href="#m-control">Built-in control flow</a></li>
+    <li><a href="#m-signals">Signals (new reactive core)</a></li>
+    <li><a href="#m-zoneless">Change detection & zoneless</a></li>
+    <li><a href="#m-routing">Functional guards & loadComponent</a></li>
+    <li><a href="#m-forms">Signal Forms</a></li>
+    <li><a href="#m-http">Functional interceptors & resource()</a></li>
+    <li><a href="#m-rxjs">RxJS today & signal bridging</a></li>
+    <li><a href="#m-state">State management</a></li>
+    <li><a href="#m-perf">Performance, SSR & hydration</a></li>
+    <li><a href="#m-testing">Testing (Vitest)</a></li>
+    <li><a href="#new">What's new (v17→v22)</a></li>
+  </ol>
+  <h4>Wrap up</h4>
+  <ol>
+    <li><a href="#interview">Interview question bank</a></li>
+    <li><a href="#plan">Your study plan</a></li>
+  </ol>
+</nav>
+
+<!-- ======================= MAIN ======================= -->
+<main>
+<header class="hero">
+  <div class="inner">
+    <p class="kicker">A complete, current learning prompt & reference</p>
+    <h1>Master <span>Angular</span> from your first component to cracking the interview.</h1>
+    <p>One self-contained path through everything an Angular engineer is expected to know in 2026 — fundamentals, the signal-first reactivity model, RxJS, performance, plus a graded interview question bank with answers.</p>
+    <div class="pillrow">
+      <span class="pill live">● Current: Angular 22 — released Jun 3, 2026</span>
+      <span class="pill">Signals</span>
+      <span class="pill">Zoneless</span>
+      <span class="pill">Signal Forms</span>
+      <span class="pill">RxJS</span>
+      <span class="pill">SSR / Hydration</span>
+      <span class="pill">Standalone APIs</span>
+    </div>
+  </div>
+</header>
+
+<div class="inner">
+
+<!-- HOW TO USE -->
+<section id="how">
+  <div class="sechead"><span class="no">00</span><h2>How to use this guide</h2></div>
+  <p>This guide teaches Angular in <strong>two passes</strong>. <strong>Part I</strong> walks the <em>classic</em> Angular you'll meet in most existing codebases — NgModules, decorator inputs, structural directives, RxJS-driven state, Zone.js. <strong>Part II</strong> then teaches the <em>modern</em> way each of those evolved into — standalone components, signals, built-in control flow, zoneless change detection — and <em>why</em> the change happened.</p>
+  <p>Learning the old first is deliberate: it's what you'll read on day one of a real job, it makes the modern improvements obvious (you feel the boilerplate the new APIs remove), and interviewers test both. Don't write new code the classic way — but you must <strong>recognise and refactor</strong> it.</p>
+  <div class="note"><b>Driving this with an AI tutor</b>Paste a section's topic and ask: <em>"Explain this classic Angular concept, show the modern replacement, then quiz me with 3 interview questions of rising difficulty."</em></div>
+</section>
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="sechead"><span class="no">01</span><h2>What Angular is & why it exists</h2><span class="lvl b">Beginner</span></div>
+  <p>Angular is a <strong>full, opinionated framework</strong> (not just a library) by Google for building single-page and server-rendered web apps in TypeScript. Unlike React, which gives you a view layer and lets you assemble the rest, Angular ships routing, forms, HTTP, testing, and a CLI in one batteries-included package with strong conventions.</p>
+  <h3>The mental model</h3>
+  <ul>
+    <li><strong>Components</strong> — reusable UI building blocks (a class + template + styles).</li>
+    <li><strong>Templates</strong> — HTML extended with Angular syntax for binding and control flow.</li>
+    <li><strong>Services + DI</strong> — shared logic injected where needed instead of imported manually.</li>
+    <li><strong>Signals / RxJS</strong> — two reactivity systems for state that changes over time.</li>
+  </ul>
+  <div class="why"><b>Why a framework, not a library?</b>Large teams benefit from consistency: every Angular project looks structurally similar, so engineers move between codebases quickly. The trade-off is more upfront concepts and a steeper start than React/Vue.</div>
+  <div class="note"><b>AngularJS ≠ Angular</b>"AngularJS" means version 1.x (2010–2016): JavaScript, <code class="inl">$scope</code>, controllers, the digest cycle. "Angular" means 2+ — a complete TypeScript rewrite. This guide is about Angular (2+). Even Part I's "classic" content is modern-era Angular, just the pre-signals style.</div>
+</section>
+
+<!-- ===================== PART I BANNER ===================== -->
+<div class="partband one">
+  <p class="ptag">Part I · learn this first</p>
+  <h2>Classic Angular</h2>
+  <p>The conventions that built almost every Angular app you'll inherit: NgModules, decorator-based inputs, structural directives, constructor injection, RxJS for state, and Zone.js change detection. Solid, battle-tested — and still everywhere.</p>
+</div>
+
+<!-- C-SETUP -->
+<section id="c-setup">
+  <div class="sechead"><span class="no">02</span><h2>Classic setup & NgModules</h2><span class="lvl b">Beginner</span></div>
+  <p>You need <strong>Node.js (LTS)</strong> and the Angular CLI. Classic projects were generated with NgModules enabled and bootstrapped a root <code class="inl">AppModule</code>.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">terminal</span></div>
+<pre><span class="c"># Install the CLI</span>
+npm install -g @angular/cli
+
+<span class="c"># Older CLI flag to scaffold a module-based app</span>
+ng new my-app --standalone=false
+ng serve                          <span class="c"># dev server at http://localhost:4200</span>
+
+ng g component user-card          <span class="c"># adds the component to a module's declarations</span>
+ng g module shared                <span class="c"># a SharedModule for common UI</span></pre></div>
+
+  <h3>NgModules — the old organising unit</h3>
+  <p>Before standalone components, every component, directive, and pipe had to be <strong>declared</strong> in an <code class="inl">@NgModule</code>. Shared code lived in modules you imported. The root <code class="inl">AppModule</code> bootstrapped the app.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app.module.ts</span></div>
+<pre><span class="k">import</span> { NgModule } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+<span class="k">import</span> { BrowserModule } <span class="k">from</span> <span class="s">'@angular/platform-browser'</span>;
+<span class="k">import</span> { FormsModule } <span class="k">from</span> <span class="s">'@angular/forms'</span>;
+
+<span class="d">@NgModule</span>({
+  declarations: [AppComponent, UserCard],   <span class="c">// every component listed here</span>
+  imports: [BrowserModule, FormsModule],     <span class="c">// pull in other modules</span>
+  providers: [AuthService],                  <span class="c">// services for this module</span>
+  bootstrap: [AppComponent],                 <span class="c">// root component</span>
+})
+<span class="k">export class</span> <span class="f">AppModule</span> {}</pre></div>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">main.ts (classic bootstrap)</span></div>
+<pre><span class="k">import</span> { platformBrowserDynamic } <span class="k">from</span> <span class="s">'@angular/platform-browser-dynamic'</span>;
+<span class="k">import</span> { AppModule } <span class="k">from</span> <span class="s">'./app/app.module'</span>;
+
+platformBrowserDynamic().bootstrapModule(AppModule);</pre></div>
+  <div class="why"><b>Why NgModules existed</b>They gave Angular a unit of compilation and a place to wire up declarations, dependency providers, and lazy-load boundaries. The cost: indirection — you'd hunt across modules to find where something was declared, and SharedModules became dumping grounds. Part II shows the standalone replacement.</div>
+</section>
+
+<!-- C-COMPONENTS -->
+<section id="c-components">
+  <div class="sechead"><span class="no">03</span><h2>Components & decorator inputs/outputs</h2><span class="lvl b">Beginner</span></div>
+  <p>A component is a class decorated with <code class="inl">@Component</code>. Classically it was declared in a module (not standalone), received data through <code class="inl">@Input()</code> properties, and emitted events through <code class="inl">@Output()</code> + <code class="inl">EventEmitter</code>.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">user-card.component.ts (classic)</span></div>
+<pre><span class="k">import</span> { Component, Input, Output, EventEmitter } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="d">@Component</span>({
+  selector: <span class="s">'app-user-card'</span>,
+  template: <span class="s">`
+    &lt;article class="card"&gt;
+      &lt;h3&gt;{{ name }}&lt;/h3&gt;
+      &lt;button (click)="select.emit(name)"&gt;Choose&lt;/button&gt;
+    &lt;/article&gt;
+  `</span>,
+})
+<span class="k">export class</span> <span class="f">UserCard</span> {
+  <span class="d">@Input</span>() name = <span class="s">''</span>;                  <span class="c">// data in, read as a plain property</span>
+  <span class="d">@Output</span>() select = <span class="k">new</span> EventEmitter&lt;<span class="f">string</span>&gt;();  <span class="c">// events out</span>
+}</pre></div>
+
+  <h3>Lifecycle hooks</h3>
+  <p>Hooks run code at points in a component's life. Classically you leaned on them heavily:</p>
+  <ul>
+    <li><code class="inl">ngOnInit()</code> — once after inputs are set; initial data fetch.</li>
+    <li><code class="inl">ngOnChanges()</code> — every time an <code class="inl">@Input</code> changes; react to new values.</li>
+    <li><code class="inl">ngOnDestroy()</code> — cleanup: unsubscribe, clear timers.</li>
+  </ul>
+  <div class="why"><b>Why so many hooks classically?</b>Without signals, the framework couldn't tell you precisely <em>what</em> changed, so you hooked into lifecycle moments and manually reconciled. Part II's signal inputs make much of <code class="inl">ngOnChanges</code> unnecessary.</div>
+</section>
+
+<!-- C-TEMPLATES -->
+<section id="c-templates">
+  <div class="sechead"><span class="no">04</span><h2>Templates: binding & structural directives</h2><span class="lvl b">Beginner</span></div>
+  <p>Binding connects class data to the template. The four kinds are unchanged across eras:</p>
+  <table>
+    <tr><th>Syntax</th><th>Direction</th><th>Example</th></tr>
+    <tr><td>Interpolation</td><td>class → view</td><td><code class="inl">{{ title }}</code></td></tr>
+    <tr><td>Property</td><td>class → view</td><td><code class="inl">[disabled]="isLoading"</code></td></tr>
+    <tr><td>Event</td><td>view → class</td><td><code class="inl">(click)="save()"</code></td></tr>
+    <tr><td>Two-way</td><td>both</td><td><code class="inl">[(ngModel)]="email"</code></td></tr>
+  </table>
+
+  <h3>Structural directives — the classic control flow</h3>
+  <p>Conditionals and loops used the <code class="inl">*</code>-prefixed directives <code class="inl">*ngIf</code>, <code class="inl">*ngFor</code>, and <code class="inl">*ngSwitch</code>, which required importing <code class="inl">CommonModule</code>. Lists used a <code class="inl">trackBy</code> <em>function</em> to keep DOM identity stable.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">classic template</span></div>
+<pre><span class="t">&lt;p</span> *ngIf=<span class="s">"user; else signIn"</span><span class="t">&gt;</span>Welcome, {{ user.name }}<span class="t">&lt;/p&gt;</span>
+<span class="t">&lt;ng-template</span> #signIn<span class="t">&gt;&lt;p&gt;</span>Please sign in.<span class="t">&lt;/p&gt;&lt;/ng-template&gt;</span>
+
+<span class="t">&lt;li</span> *ngFor=<span class="s">"let item of items; trackBy: trackById"</span><span class="t">&gt;</span>
+  {{ item.label }}
+<span class="t">&lt;/li&gt;</span>
+
+<span class="t">&lt;div</span> [ngSwitch]=<span class="s">"status"</span><span class="t">&gt;</span>
+  <span class="t">&lt;spinner</span> *ngSwitchCase=<span class="s">"'loading'"</span><span class="t">&gt;&lt;/spinner&gt;</span>
+  <span class="t">&lt;p</span> *ngSwitchDefault<span class="t">&gt;</span>Ready<span class="t">&lt;/p&gt;</span>
+<span class="t">&lt;/div&gt;</span></pre></div>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">component (trackBy fn)</span></div>
+<pre>trackById(index: <span class="f">number</span>, item: <span class="f">Item</span>) {
+  <span class="k">return</span> item.id;       <span class="c">// tells Angular how to identify list rows</span>
+}</pre></div>
+  <div class="note"><b>Why trackBy mattered</b>Without it, <code class="inl">*ngFor</code> could destroy and recreate every row on each change, killing performance on big lists. It was optional — and forgetting it was a classic bug. Part II makes <code class="inl">track</code> mandatory.</div>
+</section>
+
+<!-- C-DI -->
+<section id="c-di">
+  <div class="sechead"><span class="no">05</span><h2>Services & constructor DI</h2><span class="lvl i">Intermediate</span></div>
+  <p>A <strong>service</strong> holds shared logic or state (e.g. an API client). <strong>Dependency injection</strong> means Angular constructs and supplies these for you. Classically you declared dependencies as <strong>constructor parameters</strong>, and registered services either in <code class="inl">providedIn:'root'</code> or a module's <code class="inl">providers</code> array.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">auth.service.ts (classic)</span></div>
+<pre><span class="k">import</span> { Injectable } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+<span class="k">import</span> { HttpClient } <span class="k">from</span> <span class="s">'@angular/common/http'</span>;
+<span class="k">import</span> { BehaviorSubject } <span class="k">from</span> <span class="s">'rxjs'</span>;
+
+<span class="d">@Injectable</span>({ providedIn: <span class="s">'root'</span> })
+<span class="k">export class</span> <span class="f">AuthService</span> {
+  <span class="k">private</span> user$ = <span class="k">new</span> BehaviorSubject&lt;<span class="f">User</span> | <span class="k">null</span>&gt;(<span class="k">null</span>);
+  readonly user = <span class="k">this</span>.user$.asObservable();
+
+  <span class="c">// Classic: dependencies arrive as constructor parameters</span>
+  <span class="k">constructor</span>(<span class="k">private</span> http: HttpClient) {}
+
+  login(email: <span class="f">string</span>) {
+    <span class="k">return this</span>.http.post&lt;<span class="f">User</span>&gt;(<span class="s">'/api/login'</span>, { email });
+  }
+}</pre></div>
+  <div class="why"><b>Why DI at all?</b>It inverts control: a component asks for what it needs and Angular decides how to build it. In tests you provide a mock; in production the real thing — consumer code never changes. A perennial interview topic.</div>
+  <div class="note"><b>Provider scopes</b><code class="inl">providedIn:'root'</code> = app-wide singleton. Listing a service in a component's <code class="inl">providers</code> = a new instance per component. Module providers scoped it to that module.</div>
+</section>
+
+<!-- C-RXJS -->
+<section id="c-rxjs">
+  <div class="sechead"><span class="no">06</span><h2>RxJS-driven state & the async pipe</h2><span class="lvl a">Advanced</span></div>
+  <p>Before signals, RxJS was the <em>only</em> reactivity system. Component state was commonly held in a <code class="inl">BehaviorSubject</code> and rendered through the <code class="inl">async</code> pipe, which subscribes and unsubscribes for you.</p>
+  <h3>Core concepts</h3>
+  <table>
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td>Observable</td><td>A lazy stream you subscribe to.</td></tr>
+    <tr><td>Subject</td><td>An observable you can also push values into; multicasts.</td></tr>
+    <tr><td>BehaviorSubject</td><td>A Subject holding & replaying its latest value (needs an initial value).</td></tr>
+    <tr><td>ReplaySubject</td><td>Replays a configurable buffer of recent values to new subscribers.</td></tr>
+    <tr><td>Operator</td><td>A pure function transforming one observable into another.</td></tr>
+  </table>
+
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">classic state with async pipe</span></div>
+<pre><span class="c">// component</span>
+count$ = <span class="k">new</span> BehaviorSubject(0);
+doubled$ = <span class="k">this</span>.count$.pipe(map(<span class="f">n</span> => n * 2));
+inc() { <span class="k">this</span>.count$.next(<span class="k">this</span>.count$.value + 1); }
+
+<span class="c">// template — async pipe handles subscribe/unsubscribe</span>
+<span class="t">&lt;p&gt;</span>{{ count$ | async }} → {{ doubled$ | async }}<span class="t">&lt;/p&gt;</span></pre></div>
+
+  <h3>The flattening operators (most-asked in interviews)</h3>
+  <table>
+    <tr><th>Operator</th><th>Behaviour</th><th>Use</th></tr>
+    <tr><td><code class="inl">switchMap</code></td><td>Cancels the previous inner observable on a new value.</td><td>Type-ahead search.</td></tr>
+    <tr><td><code class="inl">mergeMap</code></td><td>Runs inner observables concurrently.</td><td>Parallel requests.</td></tr>
+    <tr><td><code class="inl">concatMap</code></td><td>Queues them in order, one at a time.</td><td>Ordered saves.</td></tr>
+    <tr><td><code class="inl">exhaustMap</code></td><td>Ignores new values while one is in flight.</td><td>Prevent double submits.</td></tr>
+  </table>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">type-ahead search</span></div>
+<pre><span class="k">import</span> { debounceTime, distinctUntilChanged, switchMap, catchError } <span class="k">from</span> <span class="s">'rxjs/operators'</span>;
+<span class="k">import</span> { of } <span class="k">from</span> <span class="s">'rxjs'</span>;
+
+results$ = <span class="k">this</span>.searchControl.valueChanges.pipe(
+  debounceTime(300),              <span class="c">// wait for a pause in typing</span>
+  distinctUntilChanged(),         <span class="c">// ignore unchanged values</span>
+  switchMap(<span class="f">q</span> => <span class="k">this</span>.api.search(q).pipe(
+    catchError(() => of([])),     <span class="c">// keep the stream alive on error</span>
+  )),
+);</pre></div>
+
+  <h3>Operators worth memorising</h3>
+  <ul>
+    <li><strong>Transform:</strong> <code class="inl">map</code>, <code class="inl">scan</code>, <code class="inl">tap</code> (side-effects).</li>
+    <li><strong>Filter:</strong> <code class="inl">filter</code>, <code class="inl">take</code>, <code class="inl">takeUntil</code>, <code class="inl">first</code>, <code class="inl">skip</code>.</li>
+    <li><strong>Combine:</strong> <code class="inl">combineLatest</code>, <code class="inl">forkJoin</code> (wait for all), <code class="inl">withLatestFrom</code>, <code class="inl">merge</code>, <code class="inl">zip</code>.</li>
+    <li><strong>Utility:</strong> <code class="inl">debounceTime</code>, <code class="inl">throttleTime</code>, <code class="inl">retry</code>, <code class="inl">startWith</code>, <code class="inl">shareReplay</code>.</li>
+  </ul>
+  <div class="note"><b>Classic leak pitfall</b>Manual <code class="inl">.subscribe()</code> in a component leaks unless you unsubscribe in <code class="inl">ngOnDestroy</code> (often via a <code class="inl">takeUntil(destroy$)</code> pattern). Preferring the <code class="inl">async</code> pipe avoided most leaks. Part II adds <code class="inl">takeUntilDestroyed()</code> and signal conversion.</div>
+</section>
+
+<!-- C-ROUTING -->
+<section id="c-routing">
+  <div class="sechead"><span class="no">07</span><h2>Routing: module lazy loading & class guards</h2><span class="lvl i">Intermediate</span></div>
+  <p>The router maps URLs to components. Classically, lazy loading pulled in feature <strong>modules</strong> via <code class="inl">loadChildren</code>, route protection used <strong>class-based guards</strong> implementing the <code class="inl">CanActivate</code> interface, and params were read by subscribing to <code class="inl">ActivatedRoute</code>.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app-routing.module.ts (classic)</span></div>
+<pre><span class="k">const</span> routes: <span class="f">Routes</span> = [
+  { path: <span class="s">''</span>, component: HomeComponent },
+  { path: <span class="s">'users/:id'</span>, component: UserComponent },
+  {
+    path: <span class="s">'admin'</span>,
+    canActivate: [AuthGuard],                  <span class="c">// a class guard</span>
+    loadChildren: () => <span class="k">import</span>(<span class="s">'./admin/admin.module'</span>)
+      .then(<span class="f">m</span> => m.AdminModule),               <span class="c">// lazy-loads a MODULE</span>
+  },
+  { path: <span class="s">'**'</span>, component: NotFoundComponent },
+];</pre></div>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">auth.guard.ts (class guard) + reading params</span></div>
+<pre><span class="d">@Injectable</span>({ providedIn: <span class="s">'root'</span> })
+<span class="k">export class</span> <span class="f">AuthGuard</span> <span class="k">implements</span> CanActivate {
+  <span class="k">constructor</span>(<span class="k">private</span> auth: AuthService, <span class="k">private</span> router: Router) {}
+  canActivate() {
+    <span class="k">return</span> <span class="k">this</span>.auth.isLoggedIn() ? <span class="k">true</span> : <span class="k">this</span>.router.parseUrl(<span class="s">'/login'</span>);
+  }
+}
+
+<span class="c">// reading a route param, classic style</span>
+<span class="k">constructor</span>(<span class="k">private</span> route: ActivatedRoute) {}
+ngOnInit() {
+  <span class="k">this</span>.route.paramMap.subscribe(<span class="f">p</span> => <span class="k">this</span>.id = p.get(<span class="s">'id'</span>));
+}</pre></div>
+</section>
+
+<!-- C-FORMS -->
+<section id="c-forms">
+  <div class="sechead"><span class="no">08</span><h2>Forms: template-driven & reactive</h2><span class="lvl i">Intermediate</span></div>
+  <p>Two classic approaches, both still fully supported:</p>
+  <ul>
+    <li><strong>Template-driven</strong> — simple forms via <code class="inl">[(ngModel)]</code> and <code class="inl">FormsModule</code>; logic lives in the template.</li>
+    <li><strong>Reactive forms</strong> — the form model is defined in the class with <code class="inl">FormGroup</code>/<code class="inl">FormControl</code> and <code class="inl">ReactiveFormsModule</code>. Explicit, testable, scales well — the classic default for non-trivial forms.</li>
+  </ul>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">reactive-form.component.ts</span></div>
+<pre><span class="k">import</span> { Component } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+<span class="k">import</span> { FormBuilder, Validators } <span class="k">from</span> <span class="s">'@angular/forms'</span>;
+
+<span class="d">@Component</span>({
+  template: <span class="s">`
+    &lt;form [formGroup]="form" (ngSubmit)="submit()"&gt;
+      &lt;input formControlName="email" placeholder="Email" /&gt;
+      &lt;small *ngIf="form.get('email')?.invalid &amp;&amp; form.get('email')?.touched"&gt;
+        Valid email required
+      &lt;/small&gt;
+      &lt;button [disabled]="form.invalid"&gt;Sign up&lt;/button&gt;
+    &lt;/form&gt;
+  `</span>,
+})
+<span class="k">export class</span> <span class="f">SignupForm</span> {
+  <span class="k">constructor</span>(<span class="k">private</span> fb: FormBuilder) {}
+  form = <span class="k">this</span>.fb.group({
+    email: [<span class="s">''</span>, [Validators.required, Validators.email]],
+  });
+  submit() { <span class="k">if</span> (<span class="k">this</span>.form.valid) <span class="f">console</span>.log(<span class="k">this</span>.form.value); }
+}</pre></div>
+  <div class="note"><b>valueChanges</b>Classic reactive forms expose changes as Observables (<code class="inl">form.valueChanges</code>, <code class="inl">control.statusChanges</code>) you subscribe to — powerful, but more wiring than signal forms (Part II).</div>
+</section>
+
+<!-- C-HTTP -->
+<section id="c-http">
+  <div class="sechead"><span class="no">09</span><h2>HttpClient & class interceptors</h2><span class="lvl i">Intermediate</span></div>
+  <p><code class="inl">HttpClient</code> makes API calls returning Observables. Classically you imported <code class="inl">HttpClientModule</code> in a module, subscribed to responses (or used the <code class="inl">async</code> pipe), and added cross-cutting behaviour through <strong>class interceptors</strong> registered with the <code class="inl">HTTP_INTERCEPTORS</code> multi-token.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">auth.interceptor.ts (class) + registration</span></div>
+<pre><span class="d">@Injectable</span>()
+<span class="k">export class</span> <span class="f">AuthInterceptor</span> <span class="k">implements</span> HttpInterceptor {
+  intercept(req: HttpRequest&lt;<span class="f">any</span>&gt;, next: HttpHandler) {
+    <span class="k">const</span> token = localStorage.getItem(<span class="s">'token'</span>);
+    <span class="k">const</span> authReq = token
+      ? req.clone({ setHeaders: { Authorization: <span class="s">`Bearer ${token}`</span> } })
+      : req;
+    <span class="k">return</span> next.handle(authReq);
+  }
+}
+
+<span class="c">// registered in a module's providers</span>
+providers: [
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: <span class="k">true</span> },
+]</pre></div>
+  <div class="why"><b>Why interceptors?</b>Auth tokens, logging, global error handling, retries — these shouldn't be copy-pasted into every request. Interceptors centralise them so every HTTP call passes through one pipeline. The pattern survives in Part II; only the syntax slims down.</div>
+</section>
+
+<!-- C-CD -->
+<section id="c-cd">
+  <div class="sechead"><span class="no">10</span><h2>Zone.js change detection</h2><span class="lvl a">Advanced</span></div>
+  <p><strong>Change detection (CD)</strong> is how Angular decides when to update the DOM. Classic Angular relied on <strong>Zone.js</strong>, which monkey-patches every async API (timers, events, XHR) so the framework knows "something might have changed" and re-checks components.</p>
+  <h3>The two classic strategies</h3>
+  <ul>
+    <li><strong>Default</strong> — re-check the whole component tree on every event. Simple, wasteful.</li>
+    <li><strong>OnPush</strong> — re-check a component only when its inputs change (by reference), an event fires in it, or you call <code class="inl">markForCheck()</code>. The classic performance lever.</li>
+  </ul>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">opting into OnPush (classic)</span></div>
+<pre><span class="d">@Component</span>({
+  selector: <span class="s">'app-list'</span>,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: <span class="s">`...`</span>,
+})
+<span class="k">export class</span> <span class="f">ListComponent</span> {
+  <span class="k">constructor</span>(<span class="k">private</span> cdr: ChangeDetectorRef) {}
+  refresh() { <span class="k">this</span>.cdr.markForCheck(); }  <span class="c">// nudge CD manually</span>
+}</pre></div>
+  <div class="why"><b>The classic pain</b>OnPush relied on <em>reference</em> changes — mutating an array in place wouldn't trigger an update, a notorious bug source. And Zone.js added ~100KB and forced broad tree checks. Part II's signals solve both: precise notifications and no Zone.js at all.</div>
+</section>
+
+<!-- ===================== PART II BANNER ===================== -->
+<div class="partband two">
+  <p class="ptag">Part II · the way you build today</p>
+  <h2>Modern Angular</h2>
+  <p>The signal-first era. Each section here is the direct successor to a Part I topic — standalone replaces modules, signals replace BehaviorSubjects, built-in control flow replaces structural directives, zoneless replaces Zone.js. We lead each with what changed and why.</p>
+</div>
+
+<!-- M-STANDALONE -->
+<section id="m-standalone">
+  <div class="sechead"><span class="no">11</span><h2>Standalone components & inject()</h2><span class="lvl b">Beginner</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> NgModules (§02) and constructor DI (§05).</p>
+  <p>Standalone components declare their own dependencies via an <code class="inl">imports</code> array — no NgModule needed. App-wide providers move to a small <code class="inl">app.config.ts</code>. Standalone is the default since v19.</p>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic — NgModule</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app.module.ts</span></div>
+<pre><span class="d">@NgModule</span>({
+  declarations: [App, UserCard],
+  imports: [BrowserModule, FormsModule],
+  bootstrap: [App],
+})
+<span class="k">export class</span> <span class="f">AppModule</span> {}</pre></div>
+    </div>
+    <div class="col modern"><h5>Modern — standalone</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app.ts + app.config.ts</span></div>
+<pre><span class="d">@Component</span>({
+  selector: <span class="s">'app-root'</span>,
+  imports: [UserCard, FormsModule],
+  template: <span class="s">`...`</span>,
+})
+<span class="k">export class</span> <span class="f">App</span> {}
+
+<span class="c">// app.config.ts</span>
+<span class="k">export const</span> appConfig = {
+  providers: [provideHttpClient(), provideRouter(routes)],
+};</pre></div>
+    </div>
+  </div>
+  <h3>inject() over constructor params</h3>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">constructor DI</span></div>
+<pre><span class="k">constructor</span>(
+  <span class="k">private</span> http: HttpClient,
+  <span class="k">private</span> auth: AuthService,
+) {}</pre></div>
+    </div>
+    <div class="col modern"><h5>Modern</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">inject()</span></div>
+<pre><span class="k">private</span> http = inject(HttpClient);
+<span class="k">private</span> auth = inject(AuthService);</pre></div>
+    </div>
+  </div>
+  <div class="why"><b>Why the change</b>Standalone removes the indirection of hunting across modules and makes lazy loading trivial. <code class="inl">inject()</code> works outside constructors (functions, guards, field initialisers) and reads cleaner with many dependencies. Both DI styles still work — migration is incremental.</div>
+</section>
+
+<!-- M-CONTROL -->
+<section id="m-control">
+  <div class="sechead"><span class="no">12</span><h2>Built-in control flow & signal inputs</h2><span class="lvl b">Beginner</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> structural directives (§04) and decorator inputs/outputs (§03).</p>
+  <p>Since v17, control flow is built into the compiler — no <code class="inl">CommonModule</code> import, faster, and <code class="inl">@for</code> makes <code class="inl">track</code> mandatory.</p>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">*ngIf / *ngFor</span></div>
+<pre><span class="t">&lt;p</span> *ngIf=<span class="s">"user"</span><span class="t">&gt;</span>{{ user.name }}<span class="t">&lt;/p&gt;</span>
+
+<span class="t">&lt;li</span> *ngFor=<span class="s">"let i of items;
+        trackBy: trackById"</span><span class="t">&gt;</span>
+  {{ i.label }}
+<span class="t">&lt;/li&gt;</span></pre></div>
+    </div>
+    <div class="col modern"><h5>Modern</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">@if / @for</span></div>
+<pre><span class="d">@if</span> (user(); as u) { <span class="t">&lt;p&gt;</span>{{ u.name }}<span class="t">&lt;/p&gt;</span> }
+
+<span class="d">@for</span> (i <span class="k">of</span> items(); track i.id) {
+  <span class="t">&lt;li&gt;</span>{{ i.label }}<span class="t">&lt;/li&gt;</span>
+} <span class="d">@empty</span> { <span class="t">&lt;li&gt;</span>None yet.<span class="t">&lt;/li&gt;</span> }</pre></div>
+    </div>
+  </div>
+  <h3>Signal inputs & outputs</h3>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">decorator I/O</span></div>
+<pre><span class="d">@Input</span>() name = <span class="s">''</span>;
+<span class="d">@Output</span>() select = <span class="k">new</span> EventEmitter&lt;<span class="f">string</span>&gt;();
+select.emit(<span class="k">this</span>.name);</pre></div>
+    </div>
+    <div class="col modern"><h5>Modern</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">input() / output()</span></div>
+<pre>name = input.required&lt;<span class="f">string</span>&gt;();
+select = output&lt;<span class="f">string</span>&gt;();
+select.emit(<span class="k">this</span>.name());  <span class="c">// name is a signal</span></pre></div>
+    </div>
+  </div>
+  <div class="why"><b>Why the change</b>The block syntax needs no imports and is compiler-optimised; mandatory <code class="inl">track</code> prevents a whole class of list-rerender bugs that <code class="inl">trackBy</code> left optional. Signal inputs make inputs reactive — they slot directly into <code class="inl">computed()</code> with no <code class="inl">ngOnChanges</code>.</div>
+</section>
+
+<!-- M-SIGNALS -->
+<section id="m-signals">
+  <div class="sechead"><span class="no">13</span><h2>Signals — the new reactive core</h2><span class="lvl i">Intermediate</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> RxJS-for-state and BehaviorSubjects (§06) for synchronous UI state.</p>
+  <p>A <strong>signal</strong> wraps a value and notifies its dependents when it changes. It's Angular's primary reactivity primitive since v16 and the foundation of everything modern.</p>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic state</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">BehaviorSubject</span></div>
+<pre>count$ = <span class="k">new</span> BehaviorSubject(0);
+doubled$ = <span class="k">this</span>.count$.pipe(map(<span class="f">n</span> => n*2));
+inc() { <span class="k">this</span>.count$.next(<span class="k">this</span>.count$.value+1); }
+<span class="c">// template: {{ count$ | async }}</span></pre></div>
+    </div>
+    <div class="col modern"><h5>Signals</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">signal / computed</span></div>
+<pre>count = signal(0);
+doubled = computed(() => <span class="k">this</span>.count() * 2);
+inc() { <span class="k">this</span>.count.update(<span class="f">n</span> => n + 1); }
+<span class="c">// template: {{ count() }}</span></pre></div>
+    </div>
+  </div>
+  <table>
+    <tr><th>Primitive</th><th>Use it for</th></tr>
+    <tr><td><code class="inl">signal()</code></td><td>Mutable state you set directly (<code class="inl">.set()</code>, <code class="inl">.update()</code>).</td></tr>
+    <tr><td><code class="inl">computed()</code></td><td>Derived, cached values that recompute when deps change.</td></tr>
+    <tr><td><code class="inl">effect()</code></td><td>Side-effects (logging, DOM, storage) — not for deriving state.</td></tr>
+    <tr><td><code class="inl">linkedSignal()</code></td><td>Writable state that resets when a source changes (v19+).</td></tr>
+    <tr><td><code class="inl">resource()</code></td><td>Async data as a signal (stable v22) — see §17.</td></tr>
+  </table>
+  <div class="why"><b>Why signals beat plain variables and BehaviorSubjects for UI state</b>A plain property change can't tell the framework what changed; a BehaviorSubject can, but needs subscriptions, the async pipe, and operator plumbing for simple cases. Signals build a precise dependency graph synchronously — when <code class="inl">count</code> changes, only the views/computeds reading it update. This is exactly what makes zoneless possible.</div>
+  <div class="new"><b>Signals vs RxJS — the interview line</b>Use <strong>signals</strong> for synchronous UI state, <strong>RxJS</strong> for streams over time (HTTP, websockets, debounced input). They're not competitors. Bridge with <code class="inl">toSignal()</code> / <code class="inl">toObservable()</code>.</div>
+</section>
+
+<!-- M-ZONELESS -->
+<section id="m-zoneless">
+  <div class="sechead"><span class="no">14</span><h2>Change detection & going zoneless</h2><span class="lvl a">Advanced</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> Zone.js change detection (§10).</p>
+  <p>With signals giving exact change information, Zone.js is no longer needed. New projects are <strong>zoneless</strong> by default since v21, and <strong>OnPush is the default strategy as of v22</strong>.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app.config.ts — zoneless</span></div>
+<pre><span class="k">import</span> { provideZonelessChangeDetection } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="k">export const</span> appConfig = {
+  providers: [ provideZonelessChangeDetection() ],  <span class="c">// drop Zone.js</span>
+};</pre></div>
+  <ul>
+    <li><strong>OnPush</strong> now also re-checks when a <em>signal</em> a component reads changes — so signals + OnPush gives precise updates with no manual <code class="inl">markForCheck()</code>.</li>
+    <li><strong>Zoneless</strong> removes Zone.js entirely; signals drive every update.</li>
+  </ul>
+  <div class="why"><b>Why kill Zone.js</b>It patched everything, added ~100KB, forced broad tree checks, and muddied stack traces. Signals provide exact change info instead. Zoneless apps render faster with far fewer needless re-renders.</div>
+  <div class="note"><b>Migration reality</b>Existing apps keep Zone.js until you opt out. Going zoneless means anything that previously relied on Zone to trigger CD (mutating a plain array in place) must now use signals or immutable updates.</div>
+</section>
+
+<!-- M-ROUTING -->
+<section id="m-routing">
+  <div class="sechead"><span class="no">15</span><h2>Functional guards & loadComponent</h2><span class="lvl i">Intermediate</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> module lazy loading & class guards (§07).</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">app.routes.ts (modern)</span></div>
+<pre><span class="k">export const</span> routes: <span class="f">Routes</span> = [
+  { path: <span class="s">''</span>, component: HomePage },
+  { path: <span class="s">'users/:id'</span>, component: UserPage },
+  {
+    path: <span class="s">'admin'</span>,
+    canActivate: [authGuard],                       <span class="c">// functional guard</span>
+    loadComponent: () => <span class="k">import</span>(<span class="s">'./admin/admin.page'</span>)
+      .then(<span class="f">m</span> => m.AdminPage),                    <span class="c">// lazy COMPONENT, not module</span>
+  },
+  { path: <span class="s">'**'</span>, component: NotFoundPage },
+];</pre></div>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">auth.guard.ts (functional)</span></div>
+<pre><span class="k">export const</span> authGuard: <span class="f">CanActivateFn</span> = () => {
+  <span class="k">const</span> auth = inject(AuthService);
+  <span class="k">const</span> router = inject(Router);
+  <span class="k">return</span> auth.user() ? <span class="k">true</span> : router.createUrlTree([<span class="s">'/login'</span>]);
+};</pre></div>
+  <div class="note"><b>Params as inputs</b>With <code class="inl">withComponentInputBinding()</code>, a <code class="inl">:id</code> route fills an <code class="inl">id = input()</code> automatically — no <code class="inl">ActivatedRoute</code> subscription needed.</div>
+</section>
+
+<!-- M-FORMS -->
+<section id="m-forms">
+  <div class="sechead"><span class="no">16</span><h2>Signal Forms</h2><span class="lvl i">Intermediate</span></div>
+  <p class="cmp-note"><strong>Joins:</strong> template-driven & reactive forms (§08), which remain supported.</p>
+  <p>Signal Forms model a form as a tree of <strong>signals</strong>, so value, validity, and errors are all signals you read directly — no <code class="inl">valueChanges</code> subscriptions. Introduced experimentally in v21, <strong>stable in Angular 22</strong>.</p>
+  <div class="new"><b>What changed & why</b>Reactive forms expose state as Observables, which means subscriptions and async-pipe plumbing for what is fundamentally synchronous form state. Signal Forms remove that boilerplate and integrate with the rest of the signal world. Migrate incrementally — reactive forms aren't going away.</div>
+  <div class="note"><b>Practical advice</b>For a new signal-based app, reach for Signal Forms. In an existing reactive-forms codebase, keep what works and adopt Signal Forms for new screens. Know both for interviews.</div>
+</section>
+
+<!-- M-HTTP -->
+<section id="m-http">
+  <div class="sechead"><span class="no">17</span><h2>Functional interceptors & resource()</h2><span class="lvl i">Intermediate</span></div>
+  <p class="cmp-note"><strong>Replaces:</strong> class interceptors & manual subscription (§09).</p>
+  <div class="cmp">
+    <div class="col legacy"><h5>Classic interceptor</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">class + token</span></div>
+<pre><span class="d">@Injectable</span>()
+<span class="k">class</span> <span class="f">AuthInterceptor</span> <span class="k">implements</span> HttpInterceptor {
+  intercept(req, next) { ... <span class="k">return</span> next.handle(r); }
+}
+{ provide: HTTP_INTERCEPTORS,
+  useClass: AuthInterceptor, multi: <span class="k">true</span> }</pre></div>
+    </div>
+    <div class="col modern"><h5>Functional interceptor</h5>
+      <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">HttpInterceptorFn</span></div>
+<pre><span class="k">export const</span> authInterceptor: <span class="f">HttpInterceptorFn</span> =
+  (req, next) => {
+    <span class="k">const</span> t = localStorage.getItem(<span class="s">'token'</span>);
+    <span class="k">return</span> next(t
+      ? req.clone({ setHeaders:{ Authorization:<span class="s">`Bearer ${t}`</span> }})
+      : req);
+  };
+<span class="c">// provideHttpClient(withInterceptors([authInterceptor]))</span></pre></div>
+    </div>
+  </div>
+  <h3>The Resource API (stable in v22)</h3>
+  <p>Instead of manually subscribing, <code class="inl">resource()</code> turns async data into signals with built-in loading/error/value state.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">user.page.ts</span></div>
+<pre>userId = signal(1);
+userResource = resource({
+  params: () => ({ id: <span class="k">this</span>.userId() }),       <span class="c">// re-fetches when id changes</span>
+  loader: <span class="k">async</span> ({ params }) =>
+    (<span class="k">await</span> fetch(<span class="s">`/api/users/${params.id}`</span>)).json(),
+});
+<span class="c">// template: userResource.value(), .isLoading(), .error()</span></pre></div>
+</section>
+
+<!-- M-RXJS -->
+<section id="m-rxjs">
+  <div class="sechead"><span class="no">18</span><h2>RxJS today & bridging to signals</h2><span class="lvl a">Advanced</span></div>
+  <p class="cmp-note"><strong>Builds on:</strong> classic RxJS (§06) — the operators are identical; the role narrows.</p>
+  <p>RxJS isn't going away — it's still the right tool for <em>event streams over time</em>. What changed: you no longer use it for simple UI state (signals do that), and teardown got easier.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">modern leak-free RxJS</span></div>
+<pre><span class="k">import</span> { takeUntilDestroyed } <span class="k">from</span> <span class="s">'@angular/core/rxjs-interop'</span>;
+
+<span class="k">this</span>.api.events$
+  .pipe(takeUntilDestroyed())     <span class="c">// auto-unsubscribes on destroy</span>
+  .subscribe(<span class="f">e</span> => <span class="k">this</span>.handle(e));</pre></div>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">bridging RxJS ↔ signals</span></div>
+<pre><span class="k">import</span> { toSignal, toObservable } <span class="k">from</span> <span class="s">'@angular/core/rxjs-interop'</span>;
+
+results = toSignal(<span class="k">this</span>.api.search$, { initialValue: [] });  <span class="c">// stream → signal</span>
+query$  = toObservable(<span class="k">this</span>.query);                          <span class="c">// signal → stream</span></pre></div>
+  <div class="note"><b>When to still use RxJS</b>Type-ahead search (<code class="inl">debounceTime</code> + <code class="inl">switchMap</code>), websockets, polling, combining multiple async sources, complex cancellation. For a value that just changes, use a signal.</div>
+</section>
+
+<!-- M-STATE -->
+<section id="m-state">
+  <div class="sechead"><span class="no">19</span><h2>State management</h2><span class="lvl a">Advanced</span></div>
+  <p>Options, smallest to largest:</p>
+  <ul>
+    <li><strong>Signal-based service</strong> — a service exposing signals + computed. Enough for most apps now.</li>
+    <li><strong>NgRx SignalStore</strong> — lightweight, signal-first store; the modern community default.</li>
+    <li><strong>NgRx Store (Redux-style)</strong> — actions, reducers, effects, selectors. Heavy but predictable; common in large enterprises and classic codebases.</li>
+  </ul>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">cart.store.ts — signal service</span></div>
+<pre><span class="d">@Injectable</span>({ providedIn: <span class="s">'root'</span> })
+<span class="k">export class</span> <span class="f">CartStore</span> {
+  <span class="k">private</span> _items = signal&lt;<span class="f">Item</span>[]&gt;([]);
+  <span class="k">readonly</span> items = <span class="k">this</span>._items.asReadonly();
+  <span class="k">readonly</span> total = computed(() =>
+    <span class="k">this</span>._items().reduce((s, i) => s + i.price, 0));
+
+  add(item: <span class="f">Item</span>)    { <span class="k">this</span>._items.update(xs => [...xs, item]); }
+  remove(id: <span class="f">string</span>) { <span class="k">this</span>._items.update(xs => xs.filter(i => i.id !== id)); }
+}</pre></div>
+  <div class="why"><b>Why not always NgRx?</b>Redux-style stores add boilerplate that only pays off at scale (many features sharing state, time-travel debugging, strict audit trails). A signal service handles most cases with far less code — picking the lighter tool shows judgment.</div>
+</section>
+
+<!-- M-PERF -->
+<section id="m-perf">
+  <div class="sechead"><span class="no">20</span><h2>Performance, SSR & hydration</h2><span class="lvl a">Advanced</span></div>
+  <ul>
+    <li><strong>OnPush + signals</strong> — minimise CD work (now the default).</li>
+    <li><strong>@defer</strong> — lazy-load heavy template blocks on a trigger.</li>
+    <li><strong>track in @for</strong> — stable list identity, no full re-renders.</li>
+    <li><strong>SSR + hydration</strong> — server-render HTML for fast first paint and SEO, then hydrate on the client.</li>
+  </ul>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">deferred loading</span></div>
+<pre><span class="d">@defer</span> (on viewport) {                  <span class="c">// load when scrolled into view</span>
+  <span class="t">&lt;heavy-chart [data]="data()" /&gt;</span>
+} <span class="d">@placeholder</span> { <span class="t">&lt;p&gt;</span>Scroll to load…<span class="t">&lt;/p&gt;</span> }
+  <span class="d">@loading</span> (minimum 200ms) { <span class="t">&lt;spinner /&gt;</span> }
+<span class="c">// triggers: on idle | hover | interaction | timer(2s) | when cond()</span></pre></div>
+  <div class="new"><b>Incremental hydration</b>Modern Angular SSR hydrates only the parts of the page that are needed or interacted with, instead of the whole tree — shipping and running less JavaScript on first load. Early adopters report markedly faster initial renders.</div>
+</section>
+
+<!-- M-TESTING -->
+<section id="m-testing">
+  <div class="sechead"><span class="no">21</span><h2>Testing</h2><span class="lvl a">Advanced</span></div>
+  <p>Angular ships <code class="inl">TestBed</code> for unit and component tests. <strong>As of v21, Vitest is the default runner</strong> (replacing Karma); E2E is typically Playwright or Cypress.</p>
+  <div class="code"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">user-card.spec.ts</span></div>
+<pre><span class="k">import</span> { TestBed } <span class="k">from</span> <span class="s">'@angular/core/testing'</span>;
+<span class="k">import</span> { UserCard } <span class="k">from</span> <span class="s">'./user-card.component'</span>;
+
+describe(<span class="s">'UserCard'</span>, () => {
+  <span class="k">it</span>(<span class="s">'renders the name input'</span>, () => {
+    <span class="k">const</span> fixture = TestBed.createComponent(UserCard);
+    fixture.componentRef.setInput(<span class="s">'name'</span>, <span class="s">'Ada'</span>);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain(<span class="s">'Ada'</span>);
+  });
+});</pre></div>
+  <div class="note"><b>What to test</b>Unit-test services and pure logic; component-test rendering and interaction; mock HTTP with <code class="inl">provideHttpClientTesting()</code>. Interviewers ask <em>what</em> you'd test — prioritise behaviour over implementation details.</div>
+</section>
+
+<!-- WHAT'S NEW -->
+<section id="new">
+  <div class="sechead"><span class="no">22</span><h2>What changed recently — & why (v17 → v22)</h2><span class="lvl a">Advanced</span></div>
+  <p>Angular ships on a <strong>6-month major cadence</strong>. Knowing the trajectory — and the reasoning — signals that you keep current.</p>
+  <table>
+    <tr><th>Version</th><th>Headline changes</th><th>Why</th></tr>
+    <tr><td><strong>v17</strong> (2023)</td><td>Built-in control flow (<code class="inl">@if/@for/@switch</code>), <code class="inl">@defer</code>, rebrand.</td><td>Compiler-level control flow; no <code class="inl">CommonModule</code>; ergonomic lazy rendering.</td></tr>
+    <tr><td><strong>v18</strong> (2024)</td><td>Zoneless CD (experimental), Material 3, event replay.</td><td>Begin removing the Zone.js dependency.</td></tr>
+    <tr><td><strong>v19</strong> (2024)</td><td>Standalone <em>by default</em>, <code class="inl">linkedSignal()</code>, incremental hydration, <code class="inl">resource()</code> preview.</td><td>Drop NgModule boilerplate; richer signals; less first-load JS.</td></tr>
+    <tr><td><strong>v20</strong> (2025)</td><td>Signal APIs matured, granular hydration, template polish.</td><td>~30–40% faster initial renders; ~50% fewer needless re-renders.</td></tr>
+    <tr><td><strong>v21</strong> (Nov 2025)</td><td>Zoneless <em>default</em> for new projects; Vitest replaces Karma; Signal Forms (experimental); AI/MCP tooling; removes long-deprecated APIs.</td><td>Commit to signal-first, zoneless architecture; modern tooling.</td></tr>
+    <tr><td><strong>v22</strong> (Jun 3, 2026)</td><td><strong>Signal Forms &amp; Resource API stable</strong>; <strong>OnPush is the new default</strong>; selectorless components; stable MCP server; ergonomic APIs.</td><td>Production-ready maturity of the signal vision; less boilerplate; AI-assisted workflows.</td></tr>
+  </table>
+  <div class="why"><b>The throughline</b>Every recent release pushes one strategy: precise, signal-driven reactivity that removes Zone.js, cuts boilerplate, and ships less JavaScript. "Where is Angular heading?" → signal-first, zoneless, increasingly AI-tooled.</div>
+</section>
+
+<!-- INTERVIEW -->
+<section id="interview">
+  <div class="sechead"><span class="no">23</span><h2>Interview question bank</h2><span class="lvl a">All levels</span></div>
+  <p>Tap a question to reveal a model answer. Practise saying these out loud.</p>
+
+  <h3>Fundamentals</h3>
+  <details class="qa"><summary>Is Angular a framework or a library, and why does it matter?</summary><div class="ans"><p>A framework — it calls your code within its structure (inversion of control) and ships routing, DI, forms, HTTP, and a CLI. React is closer to a view library you assemble around. The trade-off is more conventions but more consistency across teams.</p></div></details>
+  <details class="qa"><summary>Explain the four types of data binding.</summary><div class="ans"><p>Interpolation <code class="inl">{{ }}</code> and property <code class="inl">[prop]</code> flow class→view. Event <code class="inl">(event)</code> flows view→class. Two-way <code class="inl">[(ngModel)]</code> combines both (banana-in-a-box = property binding + event binding).</p></div></details>
+  <details class="qa"><summary>AngularJS vs Angular?</summary><div class="ans"><p>AngularJS is 1.x (2010–2016): JavaScript, <code class="inl">$scope</code>, controllers, digest cycle. Angular (2+) is a complete TypeScript rewrite with components and a new DI/reactivity model. Same name and lineage, no shared code.</p></div></details>
+
+  <h3>Classic concepts (Part I)</h3>
+  <details class="qa"><summary>What were NgModules and what did the root AppModule do?</summary><div class="ans"><p>NgModules grouped declarations (components, directives, pipes), imported other modules, and registered providers. <code class="inl">AppModule</code> bootstrapped the app via <code class="inl">bootstrapModule</code>. They gave a compilation unit and lazy-load boundary but added indirection — superseded by standalone components.</p></div></details>
+  <details class="qa"><summary>Why did *ngFor need trackBy, and what went wrong without it?</summary><div class="ans"><p><code class="inl">trackBy</code> told Angular how to identify each row. Without it, a new array reference could make Angular destroy and recreate every DOM node, hurting performance and losing element state (focus, scroll). It was optional and easy to forget — which is why modern <code class="inl">@for</code> makes <code class="inl">track</code> required.</p></div></details>
+  <details class="qa"><summary>How did classic OnPush change detection decide to run?</summary><div class="ans"><p>OnPush re-checks a component only when an <code class="inl">@Input</code> changes by reference, an event originates inside it, an observable bound via <code class="inl">async</code> emits, or you call <code class="inl">markForCheck()</code>. The reference-equality requirement meant in-place mutations were missed — a classic bug.</p></div></details>
+  <details class="qa"><summary>Subject vs BehaviorSubject vs ReplaySubject?</summary><div class="ans"><p><code class="inl">Subject</code> multicasts but new subscribers miss past values. <code class="inl">BehaviorSubject</code> holds one current value and replays it (needs an initial value). <code class="inl">ReplaySubject</code> replays a configurable buffer of recent values.</p></div></details>
+  <details class="qa"><summary>How did you avoid subscription leaks in classic Angular?</summary><div class="ans"><p>Prefer the <code class="inl">async</code> pipe (auto-unsubscribes), or for manual subscriptions store them and unsubscribe in <code class="inl">ngOnDestroy</code> — commonly via a <code class="inl">destroy$</code> Subject piped through <code class="inl">takeUntil(destroy$)</code>. Modern code uses <code class="inl">takeUntilDestroyed()</code>.</p></div></details>
+
+  <h3>RxJS operators</h3>
+  <details class="qa"><summary>switchMap vs mergeMap vs concatMap vs exhaustMap — a real use for each.</summary><div class="ans"><p><code class="inl">switchMap</code>: type-ahead search (cancel stale request). <code class="inl">mergeMap</code>: independent parallel calls. <code class="inl">concatMap</code>: sequential ordered saves. <code class="inl">exhaustMap</code>: ignore repeat clicks while one request is in flight.</p></div></details>
+  <details class="qa"><summary>combineLatest vs forkJoin?</summary><div class="ans"><p><code class="inl">combineLatest</code> emits whenever <em>any</em> source emits, giving the latest of each (good for live form combinations). <code class="inl">forkJoin</code> waits for <em>all</em> sources to complete and emits once (good for firing several requests and acting when all finish).</p></div></details>
+
+  <h3>Modern concepts (Part II)</h3>
+  <details class="qa"><summary>What is a signal, and how does it differ from an Observable?</summary><div class="ans"><p>A signal is a synchronous container holding a current value that notifies dependents on change — you always read a value with <code class="inl">x()</code>. An Observable is an async stream you subscribe to. Signals suit UI state; Observables suit event streams. Bridge with <code class="inl">toSignal()</code>/<code class="inl">toObservable()</code>.</p></div></details>
+  <details class="qa"><summary>computed() vs effect() — and a common misuse?</summary><div class="ans"><p><code class="inl">computed()</code> derives a cached, pure value from other signals. <code class="inl">effect()</code> runs side-effects when deps change. A common misuse is using an effect to set another signal to derive state — that should be a <code class="inl">computed()</code>; the effect causes extra runs and harder-to-trace updates.</p></div></details>
+  <details class="qa"><summary>What is zoneless change detection and why is it significant?</summary><div class="ans"><p>It removes Zone.js, which previously patched async APIs to trigger broad CD sweeps. Signals tell Angular precisely what changed instead. Result: smaller bundle, faster and fewer re-renders, cleaner stack traces. Default for new projects since v21.</p></div></details>
+  <details class="qa"><summary>Why standalone components over NgModules?</summary><div class="ans"><p>Standalone components declare their own dependencies via <code class="inl">imports</code>, removing module indirection, simplifying lazy loading (<code class="inl">loadComponent</code>), and cutting boilerplate. Default since v19; NgModules still work for incremental migration.</p></div></details>
+  <details class="qa"><summary>How do functional guards/interceptors differ from class-based ones?</summary><div class="ans"><p>Classic guards implemented <code class="inl">CanActivate</code> on an <code class="inl">@Injectable</code> class; interceptors implemented <code class="inl">HttpInterceptor.intercept()</code> and were registered via the <code class="inl">HTTP_INTERCEPTORS</code> multi-token. Modern equivalents are plain functions (<code class="inl">CanActivateFn</code>, <code class="inl">HttpInterceptorFn</code>) using <code class="inl">inject()</code> — less boilerplate, easier to compose and test.</p></div></details>
+  <details class="qa"><summary>When would you pick a signal service over NgRx?</summary><div class="ans"><p>For most apps a signal service (signals + computed) is enough and far less code. Reach for NgRx (Store or SignalStore) when many features share complex state, you need auditable transitions, effects coordination, or time-travel debugging. Picking the lighter tool when it fits shows judgment.</p></div></details>
+
+  <h3>Migration (the senior-signal questions)</h3>
+  <details class="qa"><summary>You inherited a Zone.js app using BehaviorSubjects for state. How do you modernise it?</summary><div class="ans"><p>Incrementally. Migrate UI state from <code class="inl">BehaviorSubject</code> + <code class="inl">async</code> to <code class="inl">signal()</code>/<code class="inl">computed()</code>; keep RxJS for genuine streams and bridge with <code class="inl">toSignal()</code>. Convert components to standalone, move guards/interceptors to functional form, adopt OnPush, then go zoneless once signals drive the UI. Old and new coexist — no big-bang rewrite.</p></div></details>
+  <details class="qa"><summary>What's the most recent stable version and one headline feature?</summary><div class="ans"><p>Angular 22, released June 3, 2026. Headline: Signal Forms and the Resource API became stable, and OnPush became the default change-detection strategy — cementing the signal-first, zoneless direction.</p></div></details>
+</section>
+
+<!-- PLAN -->
+<section id="plan">
+  <div class="sechead"><span class="no">24</span><h2>Your study plan</h2></div>
+  <p>Two phases mirroring the guide: ground yourself in classic Angular, then learn the modern replacements and <em>why</em> they exist.</p>
+  <table>
+    <tr><th>Week</th><th>Phase</th><th>Focus</th><th>Build</th></tr>
+    <tr><td>1</td><td>Classic</td><td>Setup, NgModules, components, templates & structural directives (§02–04)</td><td>A module-based card list with <code class="inl">*ngIf</code>/<code class="inl">*ngFor</code>.</td></tr>
+    <tr><td>2</td><td>Classic</td><td>Constructor DI, RxJS state, routing modules, class guards (§05–07)</td><td>Multi-page app, lazy module, BehaviorSubject store.</td></tr>
+    <tr><td>3</td><td>Classic</td><td>Reactive forms, HttpClient, class interceptors, Zone.js + OnPush (§08–10)</td><td>Signup form posting through an auth interceptor.</td></tr>
+    <tr><td>4</td><td>Modern</td><td>Standalone, <code class="inl">inject()</code>, control flow, signals (§11–13)</td><td>Refactor week 1–2 to standalone + signals.</td></tr>
+    <tr><td>5</td><td>Modern</td><td>Zoneless, functional routing, Signal Forms, functional interceptors + <code class="inl">resource()</code> (§14–17)</td><td>Go zoneless; convert guards/interceptors; type-ahead with <code class="inl">switchMap</code>.</td></tr>
+    <tr><td>6</td><td>Modern</td><td>RxJS-today, state, performance/SSR, testing, recent changes (§18–22)</td><td>Add <code class="inl">@defer</code>; write Vitest tests; review v17→v22.</td></tr>
+  </table>
+  <p>End each week by working the matching interview questions in §23 out loud. The payoff of learning both eras: when shown legacy code you can name the pattern, give the modern equivalent, and explain the migration — which is what separates a senior hire.</p>
+  <div class="note"><b>One last tip</b>Build one real project end-to-end and migrate it from classic to modern, rather than chasing many tutorials. Depth beats breadth — interviewers probe "why did you do it that way?"</div>
+</section>
+
+</div>
+
+<footer>
+  Angular Mastery Guide · classic-first, then modern · current as of Angular 22 (June 2026). Angular ships features on a ~6-month cadence — verify specifics against angular.dev for the latest.
+</footer>
+</main>
+</div>
+</body>
+</html>

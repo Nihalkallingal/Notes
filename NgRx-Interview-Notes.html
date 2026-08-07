@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NgRx Study Notes — Interview Prep</title>
+<style>
+  :root {
+    --accent: #8e2de2;
+    --accent2: #4a00e0;
+    --bg: #ffffff;
+    --code-bg: #1e1e2e;
+    --code-fg: #e4e4f0;
+    --muted: #5b6472;
+    --border: #e3e6ec;
+    --tip-bg: #eef7ff;
+    --warn-bg: #fff6e6;
+    --good-bg: #ecfdf3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    color: #1c2330;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 28px 80px;
+    background: var(--bg);
+  }
+  header.cover {
+    text-align: center;
+    padding: 40px 20px 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border-radius: 16px;
+    margin-bottom: 36px;
+  }
+  header.cover h1 { margin: 0 0 8px; font-size: 2.3rem; }
+  header.cover p { margin: 4px 0; opacity: .95; }
+  h2 {
+    color: var(--accent2);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 6px;
+    margin-top: 48px;
+    font-size: 1.6rem;
+  }
+  h3 { color: #2a2f45; margin-top: 30px; font-size: 1.2rem; }
+  h4 { color: #3a4a63; margin-bottom: 4px; }
+  code {
+    background: #f0f0f7;
+    color: #c2185b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 16px 18px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+  .tip, .warn, .good {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    border-left: 5px solid;
+  }
+  .tip  { background: var(--tip-bg);  border-color: #2196f3; }
+  .warn { background: var(--warn-bg); border-color: #ff9800; }
+  .good { background: var(--good-bg); border-color: #21c55d; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 18px 0;
+    font-size: 0.94rem;
+  }
+  th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: #f5f1fb; color: var(--accent2); }
+  tr:nth-child(even) td { background: #fafafc; }
+  .toc {
+    background: #faf7ff;
+    border: 1px solid #e6dcfa;
+    border-radius: 12px;
+    padding: 20px 28px;
+  }
+  .toc ol { margin: 6px 0; }
+  .toc a { color: var(--accent2); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .flow {
+    background: #f7f9fc;
+    border: 1px dashed #b9c2d6;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+  }
+  .qa { border-left: 4px solid var(--accent); padding-left: 16px; margin: 22px 0; }
+  .qa .q { font-weight: 700; color: var(--accent2); }
+  .qa .a { margin-top: 4px; }
+  .pill {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  @media print {
+    header.cover { background: var(--accent2) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    pre, th, .tip, .warn, .good { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-after: avoid; }
+    pre, table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <h1>NgRx — Complete Study Notes</h1>
+  <p>State management for Angular, learned from scratch 🚀</p>
+  <p class="muted" style="color:#f0e9ff;">Counter example + async Users feature with Effects &middot; Angular 16 + NgRx 16</p>
+</header>
+
+<div class="toc">
+  <strong>📑 Table of Contents</strong>
+  <ol>
+    <li><a href="#what">What is NgRx &amp; Why use it</a></li>
+    <li><a href="#concepts">The Core Building Blocks</a></li>
+    <li><a href="#flow">The Data Flow (the loop)</a></li>
+    <li><a href="#counter">Walkthrough 1 — The Counter (synchronous)</a></li>
+    <li><a href="#users">Walkthrough 2 — Users list (async + Effects)</a></li>
+    <li><a href="#entity">@ngrx/entity — Normalized Collections (all methods)</a></li>
+    <li><a href="#delete">Walkthrough 3 — Delete a user (Effect + removeOne)</a></li>
+    <li><a href="#paramselectors">Parameterized Selectors (selectUserById)</a></li>
+    <li><a href="#routerstore">@ngrx/router-store + Walkthrough 4 (/users/:id)</a></li>
+    <li><a href="#patterns">Key Patterns to Remember</a></li>
+    <li><a href="#devtools">Redux DevTools &amp; Traceability</a></li>
+    <li><a href="#vs">NgRx vs a Shared Service + BehaviorSubject</a></li>
+    <li><a href="#roadmap">What's Left to Learn (roadmap)</a></li>
+    <li><a href="#glossary">Glossary / Cheat Sheet</a></li>
+    <li><a href="#interview">Interview Questions &amp; Answers</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="what">1. What is NgRx &amp; Why use it</h2>
+
+<p><strong>NgRx</strong> is a state-management library for Angular, based on the <strong>Redux pattern</strong> and built on <strong>RxJS</strong>. It gives your app a <em>single, centralized, immutable store</em> as the one source of truth, and a <em>predictable, one-way</em> way to change that state.</p>
+
+<h3>The problem it solves</h3>
+<p>In a growing app, many unrelated components need the same data. Passing it parent → child → grandchild (and emitting events back up) becomes a tangled mess — "prop drilling" and "state spaghetti." It gets fragile and hard to debug.</p>
+
+<div class="tip">
+  <strong>🧠 Analogy — the shared Google Sheet:</strong> NgRx is like one shared sheet the whole app reads from. Nobody edits a cell directly; instead you submit a <em>request slip</em> (an action), and only specific trusted functions (reducers), following strict rules, actually change the sheet. One source of truth + controlled, traceable changes.
+</div>
+
+<h3>Benefits</h3>
+<ul>
+  <li>🔍 <strong>One place</strong> to find the app's state.</li>
+  <li>🧭 <strong>Predictable</strong> changes — state changes only through a known path.</li>
+  <li>🐛 <strong>Debuggable</strong> — every change is a logged action; supports time-travel debugging.</li>
+  <li>🧪 <strong>Testable</strong> — reducers &amp; selectors are pure functions.</li>
+</ul>
+
+<div class="warn">
+  <strong>⚠️ When NOT to use it:</strong> NgRx adds boilerplate. For small/simple apps it's overkill — a plain service works fine. It shines in <em>large apps</em> with lots of shared state, complex async flows, and many developers.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="concepts">2. The Core Building Blocks</h2>
+
+<table>
+  <tr><th>Piece</th><th>Role (one-liner)</th><th>Analogy</th></tr>
+  <tr><td><strong>Store</strong></td><td>The single object holding all app state.</td><td>The shared Google Sheet / warehouse 🏪</td></tr>
+  <tr><td><strong>Action</strong></td><td>A plain message describing "something happened." Changes nothing by itself.</td><td>A doorbell 🔔 / request slip</td></tr>
+  <tr><td><strong>Reducer</strong></td><td>Pure function: <code>(state, action) =&gt; newState</code>. The rulebook.</td><td>The rulebook 📖 / chef following a recipe</td></tr>
+  <tr><td><strong>Selector</strong></td><td>Memoized function to read/derive a slice of state.</td><td>A labeled lens 🔭 / sticky note on the fridge</td></tr>
+  <tr><td><strong>Effect</strong></td><td>Handles side effects (HTTP, async). Listens for an action → does work → dispatches a new action.</td><td>The delivery driver 🛵</td></tr>
+  <tr><td><strong>Meta-reducer</strong></td><td>Wraps reducers to run cross-cutting logic on every action (e.g. localStorage).</td><td>The security guard at the door 💂</td></tr>
+  <tr><td><strong>Slice</strong></td><td>One named top-level section of the store, owned by one reducer.</td><td>One slice of the pizza 🍕</td></tr>
+</table>
+
+<h3>The packages</h3>
+<table>
+  <tr><th>Package</th><th>What it provides</th></tr>
+  <tr><td><code>@ngrx/store</code></td><td>Core — the store, actions, reducers, selectors.</td></tr>
+  <tr><td><code>@ngrx/effects</code></td><td>Side effects (HTTP calls, async).</td></tr>
+  <tr><td><code>@ngrx/entity</code></td><td>Helpers for managing collections (CRUD adapters, normalized <code>{ids, entities}</code>).</td></tr>
+  <tr><td><code>@ngrx/router-store</code></td><td>Connects the Angular Router to the store.</td></tr>
+  <tr><td><code>@ngrx/store-devtools</code></td><td>Connects the store to the Redux DevTools browser extension.</td></tr>
+</table>
+
+<div class="warn">
+  <strong>⚠️ Version lesson learned:</strong> NgRx major version must match the Angular major version (NgRx 16 ↔ Angular 16, NgRx 19 ↔ Angular 19). Mismatched versions cause cryptic build/runtime errors.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="flow">3. The Data Flow (the loop)</h2>
+
+<p>NgRx is strictly <strong>one-directional</strong>. Memorize this loop — it's the heart of every interview answer:</p>
+
+<div class="flow">Component ──dispatch(action)──▶ Reducer ──returns new state──▶ Store
+   ▲                                                          │
+   └──────── Selector (component reads via async pipe) ◀──────┘
+
+For async work, an Effect sits in the middle:
+
+dispatch(loadUsers) ─▶ Effect listens ─▶ calls Service (HTTP)
+                                              │
+        Reducer stores result ◀─ dispatch(loadUsersSuccess) ◀┘</div>
+
+<ol>
+  <li>Component <strong>dispatches</strong> an action.</li>
+  <li>(If async) an <strong>Effect</strong> hears it, does the side effect, and dispatches a <em>result</em> action.</li>
+  <li>The <strong>Reducer</strong> hears the action and returns a new state object.</li>
+  <li>The <strong>Store</strong> updates.</li>
+  <li><strong>Selectors</strong> emit the new value; the component's <code>async</code> pipe re-renders.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="counter">4. Walkthrough 1 — The Counter (synchronous)</h2>
+<p class="pill">No side effects · pure state change</p>
+
+<h4>State (<code>counter.state.ts</code>)</h4>
+<pre><code>export interface CounterState {
+  count: number;
+}
+
+export const initialCounterState: CounterState = {
+  count: 0
+};</code></pre>
+
+<h4>Actions (<code>counter.actions.ts</code>)</h4>
+<pre><code>import { createAction } from '@ngrx/store';
+
+export const increment = createAction('[Counter] Increment');
+export const decrement = createAction('[Counter] Decrement');
+export const reset     = createAction('[Counter] Reset');</code></pre>
+<p class="muted">Naming convention: <code>'[Source] Event'</code> — readable in DevTools logs. These carry no payload.</p>
+
+<h4>Reducer (<code>counter.reducer.ts</code>)</h4>
+<pre><code>import { createReducer, on } from '@ngrx/store';
+import { increment, decrement, reset } from './counter.actions';
+import { CounterState, initialCounterState } from './counter.state';
+
+export const counterReducer = createReducer(
+  initialCounterState,
+  on(increment, (state) =&gt; ({ ...state, count: state.count + 1 })),
+  on(decrement, (state) =&gt; ({ ...state, count: state.count - 1 })),
+  on(reset,     (state) =&gt; ({ ...state, count: 0 }))
+);</code></pre>
+
+<div class="good">
+  <strong>✅ Golden rule — immutability:</strong> A reducer never mutates the existing state. It returns a <em>brand-new</em> object (the <code>...state</code> spread = "photocopy with one change"). This is what enables time-travel &amp; change detection.
+</div>
+
+<h4>Selectors (<code>counter.selectors.ts</code>)</h4>
+<pre><code>import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { CounterState } from './counter.state';
+
+export const selectCounter = createFeatureSelector&lt;CounterState&gt;('counter');
+
+export const selectCount = createSelector(
+  selectCounter,
+  (state) =&gt; state.count
+);
+
+// Derived selectors — compute, don't store:
+export const selectIsEven = createSelector(selectCount, (c) =&gt; c % 2 === 0);
+export const selectDoubleCount = createSelector(selectCount, (c) =&gt; c * 2);</code></pre>
+
+<h4>Register in the module</h4>
+<pre><code>StoreModule.forRoot({ counter: counterReducer })</code></pre>
+
+<h4>Component</h4>
+<pre><code>export class AppComponent {
+  count$: Observable&lt;number&gt; = this.store.select(selectCount);
+
+  constructor(private store: Store) {}
+
+  onIncrement() { this.store.dispatch(increment()); }
+  onDecrement() { this.store.dispatch(decrement()); }
+  onReset()     { this.store.dispatch(reset()); }
+}</code></pre>
+
+<h4>Template</h4>
+<pre><code>&lt;h2&gt;Count: {{ count$ | async }}&lt;/h2&gt;
+&lt;button (click)="onIncrement()"&gt;+&lt;/button&gt;
+&lt;button (click)="onDecrement()"&gt;-&lt;/button&gt;
+&lt;button (click)="onReset()"&gt;Reset&lt;/button&gt;</code></pre>
+<p class="muted">The <code>async</code> pipe auto-subscribes to the observable and auto-unsubscribes on destroy (prevents memory leaks).</p>
+
+<!-- ============================================================ -->
+<h2 id="users">5. Walkthrough 2 — Users list (async + Effects)</h2>
+<p class="pill">HTTP call · the real reason Effects exist</p>
+
+<h4>Model (<code>user.model.ts</code>)</h4>
+<pre><code>export interface User {
+  id: number;
+  name: string;
+  email: string;
+}</code></pre>
+
+<h4>State — the <code>{ data, loading, error }</code> trio (<code>user.state.ts</code>)</h4>
+<pre><code>export interface UserState {
+  users: User[];
+  loading: boolean;
+  error: string | null;
+}
+
+export const initialUserState: UserState = {
+  users: [],
+  loading: false,
+  error: null
+};</code></pre>
+
+<h4>Actions — the async trio (<code>user.actions.ts</code>)</h4>
+<pre><code>import { createAction, props } from '@ngrx/store';
+import { User } from './user.model';
+
+export const loadUsers = createAction('[User] Load Users');
+export const loadUsersSuccess = createAction(
+  '[User] Load Users Success',
+  props&lt;{ users: User[] }&gt;()     // carries a payload
+);
+export const loadUsersFailure = createAction(
+  '[User] Load Users Failure',
+  props&lt;{ error: string }&gt;()
+);</code></pre>
+<div class="tip"><strong>💡 <code>props&lt;T&gt;()</code></strong> defines the <em>payload</em> (the data an action carries). The <code>Trigger → Success → Failure</code> trio is the universal recipe for ANY async operation.</div>
+
+<h4>Service — the only place that knows the URL (<code>user.service.ts</code>)</h4>
+<pre><code>@Injectable({ providedIn: 'root' })
+export class UserService {
+  private apiUrl = 'https://jsonplaceholder.typicode.com/users';
+  constructor(private http: HttpClient) {}
+
+  getUsers(): Observable&lt;User[]&gt; {
+    return this.http.get&lt;User[]&gt;(this.apiUrl);
+  }
+}</code></pre>
+<p class="muted">Single responsibility: the service knows nothing about NgRx; it just fetches data.</p>
+
+<h4>Effect — the bridge (<code>user.effects.ts</code>)</h4>
+<pre><code>@Injectable()
+export class UserEffects {
+  loadUsers$ = createEffect(() =&gt;
+    this.actions$.pipe(
+      ofType(loadUsers),                                  // 1. LISTEN
+      switchMap(() =&gt;                                     // 2. DO async work
+        this.userService.getUsers().pipe(
+          map((users) =&gt; loadUsersSuccess({ users })),    // 3a. SUCCESS → new action
+          catchError((error) =&gt;
+            of(loadUsersFailure({ error: error.message }))) // 3b. FAILURE → new action
+        )
+      )
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private userService: UserService
+  ) {}
+}</code></pre>
+
+<table>
+  <tr><th>Piece</th><th>Meaning</th></tr>
+  <tr><td><code>actions$</code></td><td>A stream of <em>every</em> action dispatched in the app.</td></tr>
+  <tr><td><code>ofType(loadUsers)</code></td><td>Filter — only react to this action.</td></tr>
+  <tr><td><code>switchMap</code></td><td>Run the async call; cancels a previous in-flight call if a new one starts (good for loads).</td></tr>
+  <tr><td><code>map</code></td><td>Transform the result into a success action.</td></tr>
+  <tr><td><code>catchError</code> + <code>of(...)</code></td><td>On failure, emit a failure action. <code>of()</code> wraps a value into an Observable (everything in the pipe must be a stream).</td></tr>
+</table>
+<div class="good"><strong>✅ Effect rule:</strong> an effect listens for one action and (by default) <em>returns a new action</em>. Listen → do → dispatch.</div>
+
+<h4>Reducer — reads payload via destructuring (<code>user.reducer.ts</code>)</h4>
+<pre><code>export const userReducer = createReducer(
+  initialUserState,
+  on(loadUsers,        (state) =&gt; ({ ...state, loading: true, error: null })),
+  on(loadUsersSuccess, (state, { users }) =&gt; ({ ...state, loading: false, users })),
+  on(loadUsersFailure, (state, { error }) =&gt; ({ ...state, loading: false, error }))
+);</code></pre>
+<p class="muted"><code>(state, { users })</code> destructures the payload defined by <code>props()</code>.</p>
+
+<h4>Selectors (<code>user.selectors.ts</code>)</h4>
+<pre><code>export const selectUserState = createFeatureSelector&lt;UserState&gt;('users');
+export const selectAllUsers     = createSelector(selectUserState, (s) =&gt; s.users);
+export const selectUsersLoading = createSelector(selectUserState, (s) =&gt; s.loading);
+export const selectUsersError   = createSelector(selectUserState, (s) =&gt; s.error);</code></pre>
+
+<h4>Register everything (<code>app.module.ts</code>)</h4>
+<pre><code>imports: [
+  HttpClientModule,                                  // enables HttpClient
+  StoreModule.forRoot({ counter: counterReducer, users: userReducer }),
+  EffectsModule.forRoot([UserEffects]),              // registers effects
+  StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: false })
+]</code></pre>
+<p class="muted"><code>StoreModule.forRoot({...})</code> takes an <strong>object</strong> (slice → reducer). <code>EffectsModule.forRoot([...])</code> takes an <strong>array</strong> of effect classes.</p>
+
+<h4>Component — kick off load in <code>ngOnInit</code></h4>
+<pre><code>export class AppComponent implements OnInit {
+  users$   = this.store.select(selectAllUsers);
+  loading$ = this.store.select(selectUsersLoading);
+  error$   = this.store.select(selectUsersError);
+
+  constructor(private store: Store) {}
+
+  ngOnInit() { this.store.dispatch(loadUsers()); }
+}</code></pre>
+
+<h4>Template — three-state UI</h4>
+<pre><code>&lt;p *ngIf="loading$ | async"&gt;Loading...&lt;/p&gt;
+&lt;p *ngIf="error$ | async as error"&gt;Error: {{ error }}&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li *ngFor="let user of users$ | async"&gt;
+    {{ user.name }} — {{ user.email }}
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<div class="flow">On page load:
+1. ngOnInit dispatches loadUsers
+2. Reducer sets loading:true → spinner shows
+3. Effect hears loadUsers → calls service → HTTP request
+4. Response → effect dispatches loadUsersSuccess({ users })
+5. Reducer stores users, loading:false
+6. selectAllUsers emits → list renders</div>
+
+<!-- ============================================================ -->
+<h2 id="entity">6. @ngrx/entity — Normalized Collections (all methods)</h2>
+<p class="pill">Managing lists of records with less code</p>
+
+<h3>The problem &amp; the idea</h3>
+<p>Storing a collection as a plain <code>User[]</code> array forces you to hand-write add/update/remove/find logic in every reducer, and lookups by id are slow (O(n) — loop the array). <code>@ngrx/entity</code> stores collections <strong>normalized</strong> for fast (O(1)) id lookups and gives you ready-made immutable CRUD methods + selectors.</p>
+
+<pre><code>// Normalized shape entity manages for you:
+{
+  ids: [1, 2, 3],                    // order
+  entities: {                        // dictionary keyed by id (instant lookup)
+    1: { id: 1, name: 'Leanne', ... },
+    2: { id: 2, name: 'Ervin',  ... },
+    3: { id: 3, name: 'Clementine', ... }
+  }
+}</code></pre>
+<div class="tip"><strong>🧠 Analogy:</strong> an array is a guest list you read top-to-bottom; the normalized shape is a wall of numbered lockers — "give me #5" is instant.</div>
+
+<h3>Setup</h3>
+<pre><code>import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
+import { User } from './user.model';
+
+// 1. Slice extends EntityState&lt;User&gt; → inherits ids + entities
+export interface UserState extends EntityState&lt;User&gt; {
+  loading: boolean;
+  error: string | null;
+}
+
+// 2. Create the adapter (the toolbox). Optionally customize:
+export const userAdapter: EntityAdapter&lt;User&gt; = createEntityAdapter&lt;User&gt;({
+  // selectId: (u) =&gt; u.id,                 // default is `id`; override if your key differs
+  // sortComparer: (a, b) =&gt; a.name.localeCompare(b.name)  // keep ids sorted, or false
+});
+
+// 3. Initial state = empty collection + your extra fields
+export const initialUserState: UserState = userAdapter.getInitialState({
+  loading: false,
+  error: null
+});</code></pre>
+
+<h3>📋 All EntityAdapter methods</h3>
+<p>Every method takes the data + current state and returns a <strong>new immutable state</strong> (use inside reducer <code>on()</code> handlers).</p>
+<table>
+  <tr><th>Method</th><th>What it does</th></tr>
+  <tr><td><code>addOne(entity, state)</code></td><td>Add one entity (ignored if its id already exists).</td></tr>
+  <tr><td><code>addMany(entities, state)</code></td><td>Add multiple entities.</td></tr>
+  <tr><td><code>setOne(entity, state)</code></td><td>Add or replace one entity by id.</td></tr>
+  <tr><td><code>setMany(entities, state)</code></td><td>Add or replace many.</td></tr>
+  <tr><td><code>setAll(entities, state)</code></td><td>Replace the <em>entire</em> collection (perfect for load-success).</td></tr>
+  <tr><td><code>removeOne(id, state)</code></td><td>Remove one entity by id.</td></tr>
+  <tr><td><code>removeMany(ids, state)</code></td><td>Remove many by ids — or pass a predicate <code>(entity) =&gt; boolean</code>.</td></tr>
+  <tr><td><code>removeAll(state)</code></td><td>Clear the whole collection.</td></tr>
+  <tr><td><code>updateOne({ id, changes }, state)</code></td><td>Shallow-merge <code>changes</code> into the entity with that id.</td></tr>
+  <tr><td><code>updateMany(updates, state)</code></td><td>Apply many <code>{ id, changes }</code> updates.</td></tr>
+  <tr><td><code>upsertOne(entity, state)</code></td><td>Update if exists, else add.</td></tr>
+  <tr><td><code>upsertMany(entities, state)</code></td><td>Upsert many.</td></tr>
+  <tr><td><code>mapOne({ id, map }, state)</code></td><td>Apply a map function to one entity (NgRx 8+).</td></tr>
+  <tr><td><code>map(mapFn, state)</code></td><td>Apply a map function to <em>all</em> entities (e.g. mark all read).</td></tr>
+  <tr><td><code>getInitialState(extras?)</code></td><td>Build <code>{ ids: [], entities: {} }</code> + your extra fields.</td></tr>
+  <tr><td><code>getSelectors(selectState?)</code></td><td>Returns <code>selectAll</code>, <code>selectEntities</code>, <code>selectIds</code>, <code>selectTotal</code>.</td></tr>
+</table>
+
+<h4>Example usage in a reducer</h4>
+<pre><code>on(loadUsersSuccess,  (state, { users }) =&gt; userAdapter.setAll(users, { ...state, loading: false })),
+on(addUser,           (state, { user })  =&gt; userAdapter.addOne(user, state)),
+on(updateUserSuccess, (state, { id, changes }) =&gt; userAdapter.updateOne({ id, changes }, state)),
+on(deleteUserSuccess, (state, { id })   =&gt; userAdapter.removeOne(id, state)),
+on(clearUsers,        (state)           =&gt; userAdapter.removeAll(state));</code></pre>
+
+<h3>The 4 built-in selectors (<code>getSelectors()</code>)</h3>
+<table>
+  <tr><th>Selector</th><th>Returns</th><th>Use for</th></tr>
+  <tr><td><code>selectAll</code></td><td><code>User[]</code> (array)</td><td>Rendering a list (<code>*ngFor</code>)</td></tr>
+  <tr><td><code>selectEntities</code></td><td><code>{ [id]: User }</code> (dictionary)</td><td>Instant lookup by id (detail page)</td></tr>
+  <tr><td><code>selectIds</code></td><td><code>number[]</code></td><td>Existence checks, ordering, keys only</td></tr>
+  <tr><td><code>selectTotal</code></td><td><code>number</code></td><td>Showing a count</td></tr>
+</table>
+<pre><code>const { selectAll, selectEntities, selectIds, selectTotal } = userAdapter.getSelectors();
+
+export const selectUserState = createFeatureSelector&lt;UserState&gt;('users');
+export const selectAllUsers  = createSelector(selectUserState, selectAll);   // → User[]
+export const selectUserCount = createSelector(selectUserState, selectTotal); // → number</code></pre>
+<div class="good"><strong>✅ Win:</strong> <code>selectAllUsers</code> still returns a <code>User[]</code>, so components/templates need <em>no changes</em> — normalization is hidden behind the selector.</div>
+
+<!-- ============================================================ -->
+<h2 id="delete">7. Walkthrough 3 — Delete a user (Effect + removeOne)</h2>
+<p class="pill">Full async write operation, end-to-end</p>
+
+<h4>Actions (add to <code>user.actions.ts</code>)</h4>
+<pre><code>export const deleteUser = createAction('[User] Delete User', props&lt;{ id: number }&gt;());
+export const deleteUserSuccess = createAction('[User] Delete User Success', props&lt;{ id: number }&gt;());
+export const deleteUserFailure = createAction('[User] Delete User Failure', props&lt;{ error: string }&gt;());</code></pre>
+<p class="muted">Trigger &amp; success carry the <code>id</code> so the reducer knows which entity to remove.</p>
+
+<h4>Service (add to <code>user.service.ts</code>)</h4>
+<pre><code>deleteUser(id: number): Observable&lt;void&gt; {
+  return this.http.delete&lt;void&gt;(`${this.apiUrl}/${id}`);
+}</code></pre>
+
+<h4>Effect (add to <code>user.effects.ts</code>)</h4>
+<pre><code>deleteUser$ = createEffect(() =&gt;
+  this.actions$.pipe(
+    ofType(deleteUser),
+    mergeMap(({ id }) =&gt;                                  // mergeMap: don't cancel concurrent deletes
+      this.userService.deleteUser(id).pipe(
+        map(() =&gt; deleteUserSuccess({ id })),             // forward the id (DELETE returns void)
+        catchError((error) =&gt; of(deleteUserFailure({ error: error.message })))
+      )
+    )
+  )
+);</code></pre>
+
+<div class="warn">
+  <strong>⚠️ switchMap vs mergeMap (a classic interview question):</strong>
+  <ul style="margin:6px 0;">
+    <li><strong>switchMap</strong> — cancels the previous inner observable when a new action arrives. Use for <em>reads/searches/loads</em> (only the latest matters).</li>
+    <li><strong>mergeMap</strong> — runs all inner observables in parallel; cancels nothing. Use for <em>independent writes like delete/create</em> (every one must complete).</li>
+    <li><strong>concatMap</strong> — queues them to run one-after-another, in order. Use for <em>ordered writes</em>.</li>
+    <li><strong>exhaustMap</strong> — ignores new actions while one is in flight. Use to <em>prevent double-submit</em> (e.g. login button).</li>
+  </ul>
+</div>
+
+<h4>Reducer (add to <code>user.reducer.ts</code>)</h4>
+<pre><code>on(deleteUserSuccess, (state, { id }) =&gt; userAdapter.removeOne(id, state)),
+on(deleteUserFailure, (state, { error }) =&gt; ({ ...state, error }))</code></pre>
+<div class="warn"><strong>⚠️ Most common beginner bug:</strong> forgetting the <strong>comma between <code>on()</code> handlers</strong> inside <code>createReducer</code>. Each handler is a comma-separated argument.</div>
+
+<h4>Component + template</h4>
+<pre><code>// component
+onDeleteUser(id: number) { this.store.dispatch(deleteUser({ id })); }</code></pre>
+<pre><code>&lt;li *ngFor="let user of users$ | async"&gt;
+  {{ user.name }} — {{ user.email }}
+  &lt;button (click)="onDeleteUser(user.id)"&gt;🗑️ Delete&lt;/button&gt;
+&lt;/li&gt;</code></pre>
+
+<div class="flow">On 🗑️ click:
+1. onDeleteUser(id) dispatches deleteUser({ id })
+2. Effect hears it → service HTTP DELETE
+3. Success → dispatch deleteUserSuccess({ id })
+4. Reducer → userAdapter.removeOne(id, state)
+5. selectAllUsers emits smaller array → row disappears</div>
+
+<!-- ============================================================ -->
+<h2 id="paramselectors">8. Parameterized Selectors (selectUserById)</h2>
+<p>Sometimes you need to select <em>one</em> item by an argument (e.g. a route param). Pattern: a <strong>function that returns a selector</strong> ("selector factory"). Combine with <code>selectEntities</code> for instant O(1) lookup.</p>
+<pre><code>export const selectUserEntities = createSelector(selectUserState, selectEntities);
+
+// A function that takes an id and returns a selector for that one user:
+export const selectUserById = (id: number) =&gt;
+  createSelector(selectUserEntities, (entities) =&gt; entities[id]);
+
+// Usage in a component:
+this.user$ = this.store.select(selectUserById(3));   // → the User with id 3 (or undefined)</code></pre>
+<div class="tip"><strong>💡 Interview point:</strong> the <code>(param) =&gt; createSelector(...)</code> shape is how selectors take arguments. Using <code>selectEntities[id]</code> is why entity normalization gives fast lookups.</div>
+
+<!-- ============================================================ -->
+<h2 id="routerstore">9. @ngrx/router-store + Walkthrough 4 (/users/:id)</h2>
+<p class="pill">Routing state becomes part of the store</p>
+
+<h3>Why</h3>
+<p>The URL is state too: <em>which page</em> (<code>/users</code>), <em>which record</em> (<code>/users/5</code> — a route param), <em>which filters</em> (<code>?sort=name</code> — query params). Normally this lives in the Angular Router (<code>ActivatedRoute</code>), separate from the store — two sources of truth. <code>@ngrx/router-store</code> connects the Router to the store so routing is just another slice: readable via selectors and observable in effects.</p>
+<div class="tip"><strong>🧠 Analogy:</strong> it copies the browser's address bar into the shared Google Sheet, so "which page / which id / which filters" sits alongside all other state — one source of truth.</div>
+
+<h3>What it does on every navigation</h3>
+<ul>
+  <li>Stores a serialized snapshot of router state in a <code>router</code> slice (url, params, queryParams).</li>
+  <li>Dispatches navigation actions: <code>ROUTER_REQUEST</code> → <code>ROUTER_NAVIGATION</code> → <code>ROUTER_NAVIGATED</code> (and <code>ROUTER_CANCEL</code> / <code>ROUTER_ERROR</code>) — listenable in effects.</li>
+</ul>
+
+<h3>Setup (app.module.ts)</h3>
+<pre><code>import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
+
+imports: [
+  StoreModule.forRoot({ counter: counterReducer, users: userReducer, router: routerReducer }),
+  StoreRouterConnectingModule.forRoot(),   // bridges Router ↔ Store
+  // (optional) StoreRouterConnectingModule.forRoot({ serializer: MinimalRouterStateSerializer })
+]</code></pre>
+
+<h3>Router selectors (router.selectors.ts)</h3>
+<pre><code>import { getRouterSelectors } from '@ngrx/router-store';
+
+export const {
+  selectCurrentRoute, selectUrl,
+  selectRouteParams, selectRouteParam,   // selectRouteParam('id') → the :id value (a string)
+  selectQueryParams, selectQueryParam
+} = getRouterSelectors();</code></pre>
+
+<h3>Combine URL + entity for the selected record</h3>
+<pre><code>// "read the :id from the URL, then look it up in the entities dictionary"
+export const selectSelectedUser = createSelector(
+  selectRouteParam('id'),
+  selectUserEntities,
+  (id, entities) =&gt; (id ? entities[Number(id)] : undefined)   // param is a string → Number()
+);</code></pre>
+
+<h3>Detail component — no ActivatedRoute needed</h3>
+<pre><code>@Component({ selector: 'app-user-detail', template: `...{{ (user$ | async)?.name }}...` })
+export class UserDetailComponent {
+  user$ = this.store.select(selectSelectedUser);   // derived purely from the URL via the store
+  constructor(private store: Store) {}
+}</code></pre>
+
+<h3>Route + links</h3>
+<pre><code>// app-routing.module.ts
+const routes: Routes = [{ path: 'users/:id', component: UserDetailComponent }];
+
+// template
+&lt;a [routerLink]="['/users', user.id]"&gt;{{ user.name }}&lt;/a&gt;
+&lt;router-outlet&gt;&lt;/router-outlet&gt;</code></pre>
+
+<div class="flow">Click a user:
+1. routerLink → URL becomes /users/5
+2. router-store dispatches ROUTER_NAVIGATED, updates router slice → { id: '5' }
+3. UserDetailComponent renders in the outlet
+4. selectSelectedUser reads id from router slice + entities[5] → emits the user
+5. Detail page shows — driven entirely by the URL, zero ActivatedRoute</div>
+<div class="warn"><strong>⚠️ Gotcha:</strong> opening <code>/users/5</code> on a fresh reload may show "not found" because the list hasn't been fetched yet. Real apps dispatch <code>loadUsers</code>/<code>loadUser</code> on that route (e.g. via a navigation effect or resolver).</div>
+
+<!-- ============================================================ -->
+<h2 id="patterns">10. Key Patterns to Remember</h2>
+<ul>
+  <li><strong>The async trio:</strong> <code>load</code> → <code>loadSuccess</code> → <code>loadFailure</code>. Reuse for every async op (load/save/delete).</li>
+  <li><strong>The state trio:</strong> <code>{ data, loading, error }</code> for any server data, so the UI can show spinner / data / error.</li>
+  <li><strong>Immutability:</strong> always return a new object with <code>...spread</code>; never mutate state.</li>
+  <li><strong>Reducers are pure:</strong> no HTTP, no <code>Date.now()</code>, no side effects. Side effects go in <strong>Effects</strong>.</li>
+  <li><strong>Don't store what you can derive:</strong> compute via selectors (memoized) instead of storing redundant fields.</li>
+  <li><strong>Feature-selector first:</strong> grab the slice once, then compose smaller selectors on top.</li>
+  <li><strong>Service ≠ NgRx:</strong> keep HTTP logic in a service; the effect just calls it.</li>
+  <li><strong>async pipe</strong> over manual <code>.subscribe()</code> in templates (auto-unsubscribe).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="devtools">11. Redux DevTools &amp; Traceability</h2>
+<p>Install the <strong>Redux DevTools</strong> browser extension + the <code>@ngrx/store-devtools</code> package, then add <code>StoreDevtoolsModule.instrument(...)</code>. Open DevTools → <strong>Redux</strong> tab.</p>
+<ul>
+  <li><strong>Action log</strong> — every action in order (the full story of what happened).</li>
+  <li><strong>Action / State / Diff tabs</strong> — see the action, the full state at that moment, and exactly what changed.</li>
+  <li><strong>Time-travel</strong> — drag the slider to replay state changes; the UI rewinds.</li>
+  <li><strong>maxAge</strong> — how many actions to keep; <strong>logOnly</strong> false in dev for full powers, true in prod.</li>
+</ul>
+<div class="tip"><strong>💡 Interview gold:</strong> this is the concrete payoff of "every change is a named, traceable action" — impossible with a raw BehaviorSubject.</div>
+
+<!-- ============================================================ -->
+<h2 id="vs">12. NgRx vs a Shared Service + BehaviorSubject</h2>
+<p>A common, valid question: "Why not just a service with a <code>BehaviorSubject</code>?" For small apps — you can! The difference is about <em>control and scale</em>.</p>
+
+<p><strong>Key insight:</strong> with a BehaviorSubject, any component can call <code>.next(anything)</code> and <em>directly overwrite</em> state with any value. With NgRx, a component can only <em>dispatch a predefined action</em> (request a change); the <strong>reducer alone</strong> decides how state actually changes.</p>
+
+<table>
+  <tr><th></th><th>Service + BehaviorSubject</th><th>NgRx</th></tr>
+  <tr><td>Who can change</td><td>Anyone (open)</td><td>Anyone can <em>request</em> (open)</td></tr>
+  <tr><td>HOW it changes</td><td>Open — set to any value, anywhere</td><td>Locked — only via finite, named actions + one reducer</td></tr>
+  <tr><td>Possible changes</td><td>Infinite / undocumented</td><td>Finite / documented (your actions file)</td></tr>
+  <tr><td>Change history</td><td>None</td><td>Full action log + time-travel</td></tr>
+  <tr><td>Boilerplate</td><td>Minimal</td><td>More</td></tr>
+  <tr><td>Best for</td><td>Small / simple apps</td><td>Large apps, complex async, many devs</td></tr>
+</table>
+<div class="tip"><strong>🏦 Analogy:</strong> BehaviorSubject = an open vault anyone can take from. NgRx = a bank where you submit a request slip and only the teller (reducer), following fixed rules, touches the money — and every request is logged.</div>
+
+<!-- ============================================================ -->
+<h2 id="roadmap">13. What's Left to Learn (roadmap)</h2>
+<p>You've covered the core ~80% interviews focus on. Remaining topics, by priority:</p>
+
+<h3>🟢 Should-know next</h3>
+<table>
+  <tr><th>Topic</th><th>What it is</th></tr>
+  <tr><td>Feature modules / lazy loading</td><td><code>StoreModule.forFeature()</code> + <code>EffectsModule.forFeature()</code> — register slices per lazy-loaded module (vs <code>forRoot</code>).</td></tr>
+  <tr><td>Meta-reducers</td><td>Wrap reducers for cross-cutting logic (e.g. persist to localStorage, logging). Also <strong>runtime checks</strong> (<code>strictStateImmutability</code>, etc.).</td></tr>
+  <tr><td>Testing</td><td><code>provideMockStore</code>/<code>MockStore</code> for components; test reducers (pure), selectors via <code>.projector</code>, effects via <code>provideMockActions</code>.</td></tr>
+  <tr><td>@ngrx/router-store ✅</td><td><em>(Covered — see §9.)</em> Puts router state (params, url, queryParams) in the store; select route data via selectors.</td></tr>
+</table>
+
+<h3>🟡 Modern NgRx APIs</h3>
+<table>
+  <tr><th>Topic</th><th>What it is</th></tr>
+  <tr><td><code>createFeature()</code></td><td>Bundles a slice's reducer + auto-generated selectors in one call (less boilerplate).</td></tr>
+  <tr><td><code>createActionGroup()</code></td><td>Define a group of related actions compactly.</td></tr>
+  <tr><td>Standalone <code>provide*</code> APIs</td><td><code>provideStore()</code>, <code>provideEffects()</code>, <code>provideState()</code> — the standalone-component way (Angular 15+, default in v19).</td></tr>
+  <tr><td>Functional effects</td><td>Effects using <code>inject()</code> instead of constructor injection.</td></tr>
+</table>
+
+<h3>🔵 Advanced / specialized</h3>
+<table>
+  <tr><th>Topic</th><th>What it is</th></tr>
+  <tr><td>@ngrx/signals (SignalStore)</td><td>Newest NgRx — state via Angular Signals. The future direction.</td></tr>
+  <tr><td>@ngrx/component-store</td><td>Local, component-scoped state (lighter than the global store).</td></tr>
+  <tr><td><code>concatLatestFrom</code> / <code>withLatestFrom</code></td><td>Combine an action with current store state inside an effect.</td></tr>
+  <tr><td><code>{ dispatch: false }</code> effects</td><td>Effects for side effects that don't dispatch (logging, navigation, toasts).</td></tr>
+  <tr><td>Facade pattern</td><td>A service wrapping <code>store.select</code>/<code>dispatch</code> so components don't touch the store directly.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="glossary">14. Glossary / Cheat Sheet</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td><code>createAction</code></td><td>Defines an action; optional <code>props&lt;T&gt;()</code> for payload.</td></tr>
+  <tr><td><code>createReducer</code> / <code>on</code></td><td>Builds a reducer from an initial state + action handlers.</td></tr>
+  <tr><td><code>createFeatureSelector</code></td><td>Selects a top-level slice by its registered name.</td></tr>
+  <tr><td><code>createSelector</code></td><td>Builds a memoized, composable selector (can combine many inputs).</td></tr>
+  <tr><td><code>createEffect</code></td><td>Defines an effect (a stream of actions → actions).</td></tr>
+  <tr><td><code>ofType</code></td><td>Operator to filter the actions stream by action type.</td></tr>
+  <tr><td><code>props&lt;T&gt;()</code></td><td>Declares the payload shape an action carries.</td></tr>
+  <tr><td><code>Store.dispatch()</code></td><td>Sends an action into the store.</td></tr>
+  <tr><td><code>Store.select()</code></td><td>Returns an Observable of a selected piece of state.</td></tr>
+  <tr><td>Memoization</td><td>Selectors cache their last result and recompute only when inputs change.</td></tr>
+  <tr><td><code>forRoot</code> vs <code>forFeature</code></td><td>Register state/effects at the app root vs. a lazy-loaded feature module.</td></tr>
+  <tr><td><code>switchMap</code> / <code>mergeMap</code> / <code>concatMap</code> / <code>exhaustMap</code></td><td>Flattening operators in effects — control how overlapping async calls are handled (cancel / parallel / queue / ignore).</td></tr>
+  <tr><td><code>StoreRouterConnectingModule</code></td><td>Bridges the Angular Router to the store (router-store).</td></tr>
+  <tr><td><code>routerReducer</code></td><td>Built-in reducer holding the serialized router state in the <code>router</code> slice.</td></tr>
+  <tr><td><code>getRouterSelectors()</code></td><td>Returns router selectors: <code>selectUrl</code>, <code>selectRouteParam(key)</code>, <code>selectQueryParam(key)</code>, etc.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="interview">15. Interview Questions &amp; Answers</h2>
+
+<div class="qa"><div class="q">Q1. What is NgRx and what problem does it solve?</div>
+<div class="a">A state-management library for Angular implementing the Redux pattern on RxJS. It centralizes shared state into one immutable store with a predictable, one-way data flow, solving prop-drilling and unpredictable state in large apps.</div></div>
+
+<div class="qa"><div class="q">Q2. Explain the data flow.</div>
+<div class="a">Component dispatches an action → (effects handle any async, dispatching a result action) → reducer produces a new state → store updates → selectors emit → component re-renders via the async pipe. Strictly one-directional.</div></div>
+
+<div class="qa"><div class="q">Q3. What is an action? Does it change state?</div>
+<div class="a">A plain object with a <code>type</code> (and optional payload) describing that something happened. It does NOT change state itself — it just announces an event; the reducer decides the change.</div></div>
+
+<div class="qa"><div class="q">Q4. Why must reducers be pure / immutable?</div>
+<div class="a">Purity (same input → same output, no side effects) + immutability (return new objects) enable predictable state, efficient change detection, and time-travel debugging. Mutating would break all three.</div></div>
+
+<div class="qa"><div class="q">Q5. What are Effects and why do we need them?</div>
+<div class="a">Reducers can't do async/side effects. Effects are the designated place for them: they listen for an action, perform the side effect (e.g. HTTP), then dispatch a success/failure action. Keeps reducers pure.</div></div>
+
+<div class="qa"><div class="q">Q6. What are selectors and why use them?</div>
+<div class="a">Pure, memoized functions to read or derive state. They decouple components from the store's shape, are reusable/composable, and only recompute when inputs change (performance).</div></div>
+
+<div class="qa"><div class="q">Q7. <code>switchMap</code> vs <code>mergeMap</code> vs <code>concatMap</code> vs <code>exhaustMap</code> in effects?</div>
+<div class="a"><strong>switchMap</strong> cancels the previous inner call (good for searches/loads). <strong>mergeMap</strong> runs all in parallel (independent ops). <strong>concatMap</strong> queues them in order (ordered saves). <strong>exhaustMap</strong> ignores new ones while one is running (login button spam).</div></div>
+
+<div class="qa"><div class="q">Q8. <code>props()</code> — what is it?</div>
+<div class="a">It declares the typed payload an action carries, e.g. <code>createAction('[User] Load Success', props&lt;{ users: User[] }&gt;())</code>.</div></div>
+
+<div class="qa"><div class="q">Q9. <code>forRoot</code> vs <code>forFeature</code>?</div>
+<div class="a"><code>forRoot</code> registers root/global state and effects once at the app level; <code>forFeature</code> registers state/effects scoped to a (often lazy-loaded) feature module.</div></div>
+
+<div class="qa"><div class="q">Q10. How do you handle loading and error states?</div>
+<div class="a">Model the slice as <code>{ data, loading, error }</code>. On the trigger action set <code>loading:true</code>; on success store data &amp; <code>loading:false</code>; on failure store the error. The template shows spinner / data / error accordingly.</div></div>
+
+<div class="qa"><div class="q">Q11. NgRx vs a service with BehaviorSubject — when to choose which?</div>
+<div class="a">Service+Subject is fine for small/simple shared state. Choose NgRx for large apps needing predictable, traceable, centralized state with complex async — it constrains <em>how</em> state changes (named actions + one reducer) and gives an audit log + DevTools.</div></div>
+
+<div class="qa"><div class="q">Q12. What does <code>@ngrx/entity</code> do?</div>
+<div class="a">Provides an adapter to manage collections in a normalized <code>{ ids, entities }</code> shape, with ready-made CRUD methods (<code>addOne</code>, <code>updateOne</code>, <code>setAll</code>…) and selectors (<code>selectAll</code>, etc.) — avoids hand-writing array logic.</div></div>
+
+<div class="qa"><div class="q">Q13. What is a meta-reducer?</div>
+<div class="a">A higher-order reducer that wraps your reducers and runs on every action — used for cross-cutting concerns like logging or persisting state to localStorage (rehydrate on startup).</div></div>
+
+<div class="qa"><div class="q">Q14. Why the <code>async</code> pipe instead of subscribing manually?</div>
+<div class="a">It auto-subscribes and, crucially, auto-unsubscribes when the component is destroyed — preventing memory leaks and reducing boilerplate.</div></div>
+
+<div class="qa"><div class="q">Q15. Action naming convention?</div>
+<div class="a"><code>'[Source] Event'</code>, e.g. <code>'[User] Load Users Success'</code> — makes the DevTools action log readable and groups actions by feature.</div></div>
+
+<div class="qa"><div class="q">Q16. How does <code>@ngrx/entity</code> store a collection, and why?</div>
+<div class="a">Normalized as <code>{ ids: [...], entities: { [id]: item } }</code>. The dictionary gives O(1) lookup by id (vs O(n) array search) and avoids duplicates, while <code>ids</code> preserves order. The adapter provides immutable CRUD methods and selectors so you don't hand-write array logic.</div></div>
+
+<div class="qa"><div class="q">Q17. Name the main EntityAdapter methods.</div>
+<div class="a">CRUD: <code>addOne/addMany</code>, <code>setOne/setMany/setAll</code>, <code>upsertOne/upsertMany</code>, <code>updateOne/updateMany</code>, <code>removeOne/removeMany/removeAll</code>, <code>mapOne/map</code>. Plus <code>getInitialState()</code> and <code>getSelectors()</code> (→ <code>selectAll</code>, <code>selectEntities</code>, <code>selectIds</code>, <code>selectTotal</code>). <code>setAll</code> for load-success; <code>removeOne</code> for delete; <code>updateOne({id, changes})</code> for edits.</div></div>
+
+<div class="qa"><div class="q">Q18. How do you create a selector that takes an argument (e.g. by id)?</div>
+<div class="a">Use a selector factory — a function that returns a selector: <code>export const selectUserById = (id) =&gt; createSelector(selectUserEntities, (entities) =&gt; entities[id]);</code> then <code>store.select(selectUserById(3))</code>. Pairs perfectly with entity's <code>selectEntities</code> for instant lookup.</div></div>
+
+<div class="qa"><div class="q">Q19. For a delete (write) effect, which flattening operator and why?</div>
+<div class="a"><code>mergeMap</code> (or <code>concatMap</code> if order matters) — independent writes must all complete. <code>switchMap</code> would be wrong because deleting a second item could cancel the first delete's request. <code>switchMap</code> is for reads/searches where only the latest result matters.</div></div>
+
+<div class="qa"><div class="q">Q20. What's the most common reducer syntax mistake?</div>
+<div class="a">Forgetting the comma between <code>on()</code> handlers inside <code>createReducer(initialState, on(...), on(...))</code> — each handler is a comma-separated argument.</div></div>
+
+<div class="qa"><div class="q">Q21. What is <code>@ngrx/router-store</code> and why use it?</div>
+<div class="a">It connects the Angular Router to the store: on each navigation it stores a serialized router snapshot in a <code>router</code> slice and dispatches navigation actions (<code>ROUTER_NAVIGATED</code>, etc.). This makes routing a single source of truth — you can select route/query params via selectors and react to navigation in effects, with full DevTools traceability. Register with <code>routerReducer</code> + <code>StoreRouterConnectingModule.forRoot()</code>.</div></div>
+
+<div class="qa"><div class="q">Q22. How do you read a route param (e.g. <code>:id</code>) without injecting ActivatedRoute?</div>
+<div class="a">Use <code>getRouterSelectors()</code> from router-store to get <code>selectRouteParam</code>, then compose: <code>createSelector(selectRouteParam('id'), selectUserEntities, (id, entities) =&gt; entities[Number(id)])</code>. The param is a string, so convert with <code>Number()</code>. The component just selects this — no <code>ActivatedRoute</code>.</div></div>
+
+<div class="qa"><div class="q">Q23. A route param change should load data — where does that logic go?</div>
+<div class="a">In an effect listening for <code>routerNavigatedAction</code> (or <code>ROUTER_NAVIGATED</code>): inspect the url/params and dispatch the load action (e.g. <code>loadUser({ id })</code>). Alternatively use a route resolver. Keeps components dumb and data-loading reactive to navigation.</div></div>
+
+<hr>
+<p class="muted" style="text-align:center;">
+  Built from a hands-on NgRx walkthrough — Counter (sync) + Users (async with Effects).<br>
+  Tip: open this file in a browser and press <strong>Ctrl + P → Save as PDF</strong> for a portable copy. 📄
+</p>
+
+</body>
+</html>

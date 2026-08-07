@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hybrid RAG with Citation Verification — Course Wrap-up & Interview Guide</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161c2b; --panel2:#1b2334; --ink:#e8edf6; --muted:#9aa8c0;
+    --accent:#5aa9ff; --accent2:#7ee0b8; --warn:#ffcf6b; --bad:#ff8080; --good:#7ee0b8;
+    --code:#0c1019; --border:#26304a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;font-size:16px}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 22px 96px}
+  h1{font-size:30px;line-height:1.25;margin:0 0 6px}
+  h2{font-size:23px;margin:44px 0 6px;padding-top:14px;border-top:1px solid var(--border);color:var(--accent)}
+  h3{font-size:18px;margin:26px 0 6px;color:var(--accent2)}
+  h4{font-size:15px;margin:18px 0 4px;color:var(--ink);letter-spacing:.3px;text-transform:uppercase;font-weight:600;opacity:.85}
+  p{margin:8px 0}
+  .sub{color:var(--muted);margin-top:0}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    background:var(--code);padding:2px 6px;border-radius:5px;font-size:13.5px;color:#d7e3ff}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+    overflow:auto;font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#cdd9f0}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:16px 0}
+  .method{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:10px;padding:16px 18px;margin:16px 0}
+  .method h3{margin-top:0}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--accent)}
+  .io{display:grid;grid-template-columns:80px 1fr;gap:8px;margin:10px 0}
+  .io .lbl{color:var(--muted);font-weight:600;font-size:13px;padding-top:2px}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;
+    padding:2px 12px;font-size:12px;color:var(--muted);margin:2px 4px 2px 0}
+  .oneliner{background:linear-gradient(90deg,rgba(90,169,255,.12),transparent);
+    border-left:3px solid var(--accent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0;font-style:italic}
+  .oneliner b{font-style:normal;color:var(--accent)}
+  .pill{font-size:12px;padding:2px 8px;border-radius:6px;font-weight:600}
+  .good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+  details{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin:10px 0;padding:0 16px}
+  details[open]{padding-bottom:12px}
+  summary{cursor:pointer;padding:14px 0;font-weight:600;color:var(--ink);font-size:15px}
+  summary:hover{color:var(--accent)}
+  details .ans{color:var(--muted);border-top:1px solid var(--border);padding-top:10px}
+  details .ans b{color:var(--ink)}
+  .flow{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px;
+    font-family:monospace;font-size:12.5px;white-space:pre;overflow:auto;color:#a9c7ff}
+  .toc{columns:2;column-gap:26px;font-size:14px}
+  .toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0}
+  .toc a:hover{text-decoration:underline}
+  .kbd{background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px}
+  .lead{font-size:17px;color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--border);margin:26px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Hybrid-Search RAG with Citation Verification</h1>
+<p class="sub">Course wrap-up &amp; interview guide — every method, sample I/O, and questions you'll get asked.</p>
+<p class="lead">A production-shaped Retrieval-Augmented Generation system: dense (semantic) + sparse (BM25) retrieval, fused with Reciprocal Rank Fusion, reranked cross-encoder–style, answered with grounded per-sentence citations, and — the differentiator — an <b>independent verification pass</b> that checks every citation actually supports its claim. Built in Python + LangChain + Google Gemini.</p>
+
+<div class="panel">
+  <span class="tag">Python 3.14</span><span class="tag">LangChain (text splitters)</span>
+  <span class="tag">Google Gemini (embeddings + LLM)</span><span class="tag">rank-bm25</span>
+  <span class="tag">NumPy</span><span class="tag">ThreadPoolExecutor</span><span class="tag">pickle cache</span>
+</div>
+
+<h2 id="toc">Contents</h2>
+<div class="toc panel">
+  <a href="#pitch">★ How to pitch it to an interviewer</a>
+  <a href="#arch">1 · Architecture &amp; mental model</a>
+  <a href="#chunking">2 · chunking.py</a>
+  <a href="#dense">3 · dense_index.py</a>
+  <a href="#sparse">4 · sparse_index.py</a>
+  <a href="#fusion">5 · fusion.py</a>
+  <a href="#rerank">6 · rerank.py</a>
+  <a href="#generation">7a · generation.py</a>
+  <a href="#verification">7b · verification.py</a>
+  <a href="#evaluate">8 · evaluate.py</a>
+  <a href="#llmutils">9 · llm_utils.py + production</a>
+  <a href="#scale">10 · Scaling &amp; hardening</a>
+  <a href="#principles">Key design principles</a>
+  <a href="#questions">Interview questions (bank)</a>
+</div>
+
+<!-- ============ PITCH ============ -->
+<h2 id="pitch">★ How to pitch this project to an interviewer</h2>
+<p class="sub">Three lengths — pick based on how much room they give you. Start short; expand if they lean in.</p>
+
+<h3>The 30-second version (the opener)</h3>
+<div class="panel">
+<p>"I built a <b>hybrid-search RAG system with citation verification</b> from scratch. It answers questions over a document corpus by combining <b>two kinds of retrieval</b> — semantic vector search and keyword BM25 — fusing the results, reranking them with a cross-encoder-style pass, and generating an answer with per-sentence citations. The part I'm most proud of is the <b>verification layer</b>: after the model writes a cited answer, an <b>independent</b> check confirms each cited source actually supports its claim — which is the step most RAG systems skip, and it's what makes the citations trustworthy instead of decorative."</p>
+</div>
+
+<h3>The 2-minute version (problem → approach → differentiator → learning)</h3>
+<div class="panel">
+<p><b>The problem:</b> "A plain LLM hallucinates, doesn't know your private documents, and can't cite sources. RAG fixes that by retrieving relevant text and making the model answer from evidence — but most RAG demos stop at 'embed, search, stuff into prompt,' which fails on exact-term queries and still produces confident, unverifiable answers."</p>
+<p><b>My approach:</b> "So I built the full production shape. I chunk documents structure-first so each chunk is one topic with provenance metadata. I index them <b>two ways</b> — dense Gemini embeddings for meaning, and BM25 for exact terms like error codes that embeddings blur. I fuse the two rankings with <b>Reciprocal Rank Fusion</b>, which merges by rank position so their incompatible score scales don't fight. Then a <b>cross-encoder-style reranker</b> reads the query and each candidate together to get precision at the top, and the generator writes a grounded answer with <code>[n]</code> citations."</p>
+<p><b>The differentiator:</b> "The key layer is verification. A citation the generator writes about itself is just a self-report. So a separate, <b>independent</b> judge sees only each claim and its cited passage and confirms entailment — failing closed, so an unverified claim is flagged rather than trusted. I proved it by injecting a plausible false claim; retrieval and generation both passed it through, and only the verifier caught it."</p>
+<p><b>What I learned:</b> "I evaluate retrieval and generation separately with recall@k, MRR, and faithfulness, and I added production optimizations I hit the need for live — a persistent embedding cache and parallelized reranking. The biggest lesson was that <b>retrieval recall is the ceiling</b>: no reranker or LLM fixes a chunk that was never retrieved."</p>
+</div>
+
+<h3>If they say "walk me through the architecture"</h3>
+<div class="panel">
+<p>Trace the pipeline in order — point at each stage and give its <i>one job</i>:</p>
+<p><b>Chunk</b> (one topic + provenance) → <b>dense index</b> (meaning) <b>+ BM25</b> (exact terms) → <b>RRF fusion</b> (scale-safe merge) → <b>rerank</b> (precision on a shortlist) → <b>generate</b> (grounded + cited) → <b>verify</b> (independent entailment per claim) → <b>evaluate</b> (measure each stage). Then land the framing: "cheap wide retrieval for recall, expensive narrow reranking for precision, and an independent verifier for trust."</p>
+</div>
+
+<h3>Why this project stands out (if asked "why is it interesting?")</h3>
+<div class="panel">
+<ul style="margin:0">
+  <li><b>It's not a demo.</b> Hybrid retrieval, fusion, reranking, verification, and evaluation — the layers tutorials skip.</li>
+  <li><b>Verification is rare.</b> Independent, fail-closed citation checking is a genuine trust/safety layer most teams don't build.</li>
+  <li><b>Built from scratch.</b> No black-box framework magic — I can explain every design decision and tradeoff.</li>
+  <li><b>Production-aware.</b> I hit and handled real walls: rate limits (backoff + throttle), caching, parallelism, graceful degradation, and I can articulate what swaps out at scale (ANN vector DB, Elasticsearch, incremental indexing).</li>
+</ul>
+</div>
+
+<div class="oneliner"><b>One-sentence summary to memorize:</b> "A hybrid-retrieval RAG that combines semantic and keyword search, reranks for precision, generates grounded cited answers, and independently verifies every citation — so the answers are not just fluent, but provably backed by sources."</div>
+
+<!-- ============ ARCH ============ -->
+<h2 id="arch">1 · Architecture &amp; mental model</h2>
+<p><b>RAG in one line:</b> instead of the LLM answering from memory, we retrieve relevant text from our own documents and make the model answer <i>from that evidence</i> — then we prove each sentence is backed by a source.</p>
+<p>Two phases:</p>
+<ul>
+  <li><b>Indexing (offline, once):</b> documents → chunks → two indexes (dense vectors + BM25).</li>
+  <li><b>Query (online, per request):</b> retrieve from both → fuse → rerank → generate → verify.</li>
+</ul>
+<div class="flow">QUERY
+  │
+  ├─►  dense_index.search()   (semantic / meaning)      ┐
+  └─►  sparse_index.search()  (BM25 / exact terms)      ┘
+                        │
+                fusion.reciprocal_rank_fusion()   ← merge by RANK (scale-safe)
+                        │
+                rerank.rerank()   ← cross-encoder-style precision, on a shortlist
+                        │
+                generation.generate_answer()   ← grounded answer + [n] citations
+                        │
+                verification.verify_answer()    ← INDEPENDENT entailment check per claim
+                        │
+                trustworthy answer + verified citations</div>
+<div class="oneliner"><b>Mental model:</b> a research librarian who searches two ways, pulls the best few sources to the top, writes a cited answer, and then has a fact-checker read behind them to confirm every claim.</div>
+<p><b>The #1 principle:</b> <span class="good">retrieval recall is the ceiling on everything.</span> You can't rerank, generate from, or cite a chunk that was never retrieved.</p>
+
+<!-- ============ CHUNKING ============ -->
+<h2 id="chunking">2 · chunking.py — documents → retrieval-ready chunks</h2>
+<p>Splits documents so each chunk is one focused topic with provenance metadata. Chunk quality is the ceiling on both retrieval and citation precision.</p>
+
+<div class="method">
+  <h3>Chunk <span class="pill" style="background:var(--panel2)">dataclass</span></h3>
+  <p>The data contract for one retrieval unit — flows through every downstream stage.</p>
+  <pre><code>Chunk(text, source, chunk_index, start_char, metadata)</code></pre>
+  <div class="io"><span class="lbl">Fields</span><span><code>text</code> the passage · <code>source</code> filename (citation label) · <code>chunk_index</code> globally-unique id · <code>start_char</code> offset · <code>metadata</code> section header</span></div>
+</div>
+
+<div class="method">
+  <h3>load_corpus(corpus_dir) → list[(filename, text)]</h3>
+  <p>Ingestion layer. Reads every <code>.md</code>/<code>.txt</code> with explicit <code>utf-8</code> (Windows-safe). Filename travels with text so provenance is never lost.</p>
+  <div class="io"><span class="lbl">Input</span><span>a directory path</span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>[('aurora_router_manual.md', '# Aurora X1...'), ('wifi_concepts.md', '# Understanding...')]</code></span></div>
+</div>
+
+<div class="method">
+  <h3>chunk_document(filename, text) → list[Chunk]</h3>
+  <p><b>Two-stage split:</b> (1) <code>MarkdownHeaderTextSplitter</code> cuts on <code>#/##/###</code> so no chunk mixes topics; (2) <code>RecursiveCharacterTextSplitter</code> (size 800, overlap 120) splits any oversized section for sharp embeddings. <code>chunk_index=len(chunks)</code> keeps ids globally unique.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>('aurora_router_manual.md', '&lt;full markdown&gt;')</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span>5 Chunks:</span></div>
+<pre><code>Chunk(text='The Aurora X1 is a dual-band mesh...', chunk_index=0, metadata={'h2':'Overview'})
+Chunk(text='To set up the Aurora X1...',          chunk_index=1, metadata={'h2':'Initial Setup'})
+Chunk(text="The status light communicates...",     chunk_index=2, metadata={'h2':'Status Lights'})
+Chunk(text='...Error code E-4021 means...',        chunk_index=3, metadata={'h2':'Error Codes'})
+Chunk(text='To perform a factory reset...',        chunk_index=4, metadata={'h2':'Factory Reset'})</code></pre>
+</div>
+
+<div class="method">
+  <h3>build_chunks(corpus_dir) → list[Chunk]</h3>
+  <p>Orchestrator: load every doc, chunk each, <code>.extend()</code> into one flat list (not <code>.append()</code>, which would nest lists).</p>
+  <div class="io"><span class="lbl">Output</span><span><code>list of 9 Chunk objects</code> (5 router + 4 wifi)</span></div>
+</div>
+<div class="oneliner"><b>Interview:</b> "I chunk structure-first then size, with provenance metadata, because a chunk is the unit of both embedding and citation — mixed-topic chunks dilute vectors and make citations unverifiable."</div>
+
+<!-- ============ DENSE ============ -->
+<h2 id="dense">3 · dense_index.py — semantic retrieval</h2>
+<p>Embeds chunks into vectors and searches by meaning. Strong on paraphrase, weak on exact tokens. Includes a persistent embedding cache.</p>
+
+<div class="method">
+  <h3>embed_text(text, task_type) → list[float]</h3>
+  <p>One text → one 3072-dim vector via Gemini. <code>task_type</code> is <code>RETRIEVAL_DOCUMENT</code> at index time, <code>RETRIEVAL_QUERY</code> at search time (Gemini optimizes each role). Checks a persistent cache first — hit → no API call.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>("Error code E-4021 means...", "RETRIEVAL_DOCUMENT")</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>[-0.0065, 0.0235, -0.0096, ...]</code> — length 3072, vector norm = 1.0 (unit vector)</span></div>
+</div>
+
+<div class="method">
+  <h3>build_index(chunks) → (np.ndarray, list[Chunk])</h3>
+  <p>Embeds all chunks as documents, stacks into a <code>float32</code> matrix, persists the cache. Returns matrix + chunks paired (row <i>i</i> ↔ <code>chunks[i]</code>).</p>
+  <div class="io"><span class="lbl">Output</span><span><code>matrix shape (9, 3072) dtype float32</code>, plus the 9 chunks</span></div>
+</div>
+
+<div class="method">
+  <h3>search(query, matrix, chunks, top_k) → list[(score, Chunk)]</h3>
+  <p>Embeds the query, computes <code>matrix @ query_vec</code> (dot product = cosine, since vectors are unit-norm) — one score per chunk in a single vectorized op — sorts descending.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>"what does error code E-4021 mean"</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span></span></div>
+<pre><code>[(0.7963, Chunk #3 Error Codes),
+ (0.6424, Chunk #4 Factory Reset),
+ (0.6250, Chunk #2 Status Lights)]   ← note: fuzzy spread, everything "router-ish" scores 0.6+</code></pre>
+</div>
+
+<div class="method">
+  <h3>_cache_key / _load_cache / _save_cache <span class="pill" style="background:var(--panel2)">production</span></h3>
+  <p>Persistent embedding cache. Key = <code>sha256(model + task_type + text)</code> → so changing the model auto-invalidates. Stored as a pickle in <code>data/index/</code>. <b>Result: 5.2s cold → 0.0s warm, 9 API calls → 0.</b></p>
+</div>
+<div class="oneliner"><b>Interview:</b> "Dense retrieval matches meaning via cosine similarity over Gemini embeddings. I cache embeddings by content hash so unchanging chunks are never re-embedded — big latency, cost, and rate-limit win."</div>
+
+<!-- ============ SPARSE ============ -->
+<h2 id="sparse">4 · sparse_index.py — BM25 keyword retrieval</h2>
+<p>Exact-term matching with IDF weighting + length normalization. Nails codes/names/jargon that embeddings blur.</p>
+
+<div class="method">
+  <h3>tokenize(text) → list[str]</h3>
+  <p>Lowercase + <code>\w+</code> regex. <b>Must be identical at index and query time</b> — asymmetric tokenization is the #1 BM25 bug.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>"What does error code E-4021 mean?"</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>['what','does','error','code','e','4021','mean']</code></span></div>
+</div>
+
+<div class="method">
+  <h3>build_bm25_index(chunks) → BM25Okapi</h3>
+  <p>Tokenizes all chunks and builds the index, precomputing IDF + doc lengths at build time.</p>
+  <div class="io"><span class="lbl">Output</span><span><code>BM25Okapi(corpus_size=9, avgdl=58.8)</code></span></div>
+</div>
+
+<div class="method">
+  <h3>search(query, bm25, chunks, top_k) → list[(score, Chunk)]</h3>
+  <p>Tokenizes query, scores all chunks. Rare tokens (high IDF) dominate; chunks with no overlap score exactly 0.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>"what does error code E-4021 mean"</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span></span></div>
+<pre><code>[(9.2954, Chunk #3 Error Codes),   ← rare token '4021' (IDF high) lives only here
+ (0.0000, Chunk #0),
+ (0.0000, Chunk #1),
+ (0.0000, Chunk #2)]                ← razor-sharp separation vs dense's fuzzy 0.6s</code></pre>
+</div>
+<div class="oneliner"><b>Interview:</b> "BM25 scores exact-term overlap with IDF and length normalization. Dense finds docs that <i>mean</i> the same thing; BM25 finds docs that <i>say</i> the same thing. I run both because each covers the other's blind spot."</div>
+
+<!-- ============ FUSION ============ -->
+<h2 id="fusion">5 · fusion.py — Reciprocal Rank Fusion</h2>
+
+<div class="method">
+  <h3>reciprocal_rank_fusion(result_lists, top_k) → list[(score, Chunk)]</h3>
+  <p>Merges multiple ranked lists using <code>score += 1/(RRF_K + rank)</code> per chunk (RRF_K=60), keyed by <code>source#index</code>, summed across lists. <b>Ignores raw scores — only rank position matters</b>, so incompatible scales (cosine 0–1 vs BM25 unbounded) can't distort the merge. Takes a <i>list of lists</i> so it extends to N retrievers.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>[dense_results, bm25_results]</code></span></div>
+  <div class="io"><span class="lbl">Logic</span><span>A: rank0 dense + rank1 bm25 = 1/60 + 1/61 = <b>0.03306</b> · C: rank2 + rank0 = <b>0.03280</b> · B: only in dense = <b>0.01639</b></span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>[(0.03306, A), (0.03280, C), (0.01639, B)]</code></span></div>
+</div>
+<div class="oneliner"><b>Interview:</b> "RRF sums rank-based votes across retrievers. Agreement across both lifts a chunk to the top; a chunk found by only one retriever still survives (non-zero). k=60 dampens how much the very top ranks dominate. Crucially it's scale-independent — naive score addition would let BM25's unbounded scores swamp dense."</div>
+
+<!-- ============ RERANK ============ -->
+<h2 id="rerank">6 · rerank.py — cross-encoder-style reranking</h2>
+<p>Re-scores a shortlist by reading query + chunk <b>together</b> (unlike bi-encoder embeddings, which encode them separately). Runs after fusion, on few candidates, because each is an API call. Parallelized.</p>
+
+<div class="method">
+  <h3>score_chunk(query, chunk) → float</h3>
+  <p>Sends query + passage in one prompt asking a 0–10 relevance score. <code>temperature=0</code> (deterministic/cacheable), <code>max_output_tokens=5</code>, defensive parse → <code>0.0</code> on any failure (never crash the pipeline).</p>
+  <div class="io"><span class="lbl">Input</span><span><code>("how do I fix E-4021", Chunk #3 Error Codes)</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>1.0</code> · same query vs Chunk #4 Factory Reset → <code>0.0</code></span></div>
+</div>
+
+<div class="method">
+  <h3>rerank(query, candidates, top_k) → list[(score, Chunk)]</h3>
+  <p>Scores every candidate (discarding incoming RRF scores), sorts by the fresh score. Uses <code>ThreadPoolExecutor(max_workers=5)</code> + <code>executor.map</code> — concurrent I/O, order preserved, concurrency capped to respect rate limits.</p>
+  <div class="io"><span class="lbl">Input</span><span>candidate order <code>[#4, #2, #3, #0]</code> (answer buried at pos 3)</span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>[(1.0, #3 Error Codes), (0.0, #4), (0.0, #2), (0.0, #0)]</code> — #3 promoted to top</span></div>
+  <div class="io"><span class="lbl">Perf</span><span>sequential 3.57s → parallel 1.14s = <b>3.1× faster</b>, identical ranking</span></div>
+</div>
+<div class="oneliner"><b>Interview:</b> "Retrieval optimizes recall (wide, cheap); reranking optimizes precision at the top (narrow, expensive). The cross-encoder reads query+chunk jointly, so it judges true relevance a bi-encoder can't. I parallelize the calls with a bounded thread pool since they're independent and I/O-bound."</div>
+
+<!-- ============ GENERATION ============ -->
+<h2 id="generation">7a · generation.py — grounded answer with citations</h2>
+
+<div class="method">
+  <h3>format_context(chunks) → str</h3>
+  <p>Numbers chunks <code>[1] (source #idx) text</code>. That <code>[n]</code> is the thread that makes verification possible.</p>
+  <div class="io"><span class="lbl">Output</span><span><code>"[1] (aurora_router_manual.md #3) ...E-4021 means the router could not obtain an IP..."</code></span></div>
+</div>
+
+<div class="method">
+  <h3>generate_answer(query, chunks) → str</h3>
+  <p>Grounding prompt with 3 rules: (1) use ONLY the passages, (2) cite <code>[n]</code> per sentence, (3) refuse with a fixed phrase if unanswerable. <code>temperature=0</code>.</p>
+  <div class="io"><span class="lbl">Input</span><span><code>"how do I fix E-4021?"</code> + 3 chunks</span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>"To resolve E-4021, power cycle the modem, wait sixty seconds, and then restart the Aurora X1 [1]."</code></span></div>
+  <div class="io"><span class="lbl">Refuses</span><span>query "capital of France?" → <code>"I don't have enough information to answer that."</code></span></div>
+</div>
+<div class="oneliner"><b>Interview:</b> "Grounding is prompt discipline plus traceable citations — the model reasons over provided evidence, not training memory, and refuses when the context lacks the answer."</div>
+
+<!-- ============ VERIFICATION ============ -->
+<h2 id="verification">7b · verification.py — the differentiator</h2>
+<p>Independently checks that every cited chunk actually entails its claim. A citation the generator writes about itself is a self-report; this is the proof.</p>
+
+<div class="method">
+  <h3>parse_claims(answer) → list[Claim]</h3>
+  <p>Splits answer into sentences (regex, punctuation lookbehind), extracts <code>[n]</code> numbers (<code>\[(\d+)\]</code> — digits only, so <code>[abc]</code> is ignored safely).</p>
+  <div class="io"><span class="lbl">Input</span><span><code>"To resolve E-4021... restart the Aurora X1 [1]."</code></span></div>
+  <div class="io"><span class="lbl">Output</span><span><code>[Claim(text='To resolve E-4021...', citations=[1])]</code></span></div>
+</div>
+
+<div class="method">
+  <h3>verify_claim(claim_text, chunk) → bool</h3>
+  <p><b>Independent judge</b> — sees ONLY the claim + its cited chunk (not the question, other chunks, or original answer). Strict YES/NO, <code>temperature=0</code>, <b>fail-closed to False</b> on any error.</p>
+  <div class="io"><span class="lbl">Output</span><span>claim vs Chunk #3 Error Codes → <code class="good">True</code> · claim vs Chunk #4 Factory Reset → <code class="bad">False</code></span></div>
+</div>
+
+<div class="method">
+  <h3>verify_answer(answer, chunks) → list[ClaimVerdict]</h3>
+  <p>Parses claims, maps <code>[n] → chunks[n-1]</code> (bounds-checked against hallucinated <code>[7]</code>), verifies each. Uncited sentence → <code>reason="no citation"</code>. Chunk list must be the SAME ordered list passed to generation.</p>
+  <div class="io"><span class="lbl">Real answer</span><span><code>[ClaimVerdict(supported=True, reason='supported')]</code></span></div>
+  <div class="io"><span class="lbl">Injected lie</span><span>"E-4021 means firmware corrupted, factory reset [1]" → <code class="bad">supported=False, reason='not supported by cited passage'</code> — <b>caught</b></span></div>
+</div>
+<div class="oneliner"><b>Interview:</b> "The verifier is independent of the generator so it can't inherit its bias, and it fails closed — a false 'unverified' is safe, a false 'verified' is dangerous. This is the quality layer most RAG skips; it turns decorative citations into proven ones."</div>
+
+<!-- ============ EVAL ============ -->
+<h2 id="evaluate">8 · evaluate.py — measure, don't eyeball</h2>
+<p>Retrieval and generation are measured separately, so a bad answer tells you which half broke.</p>
+
+<div class="method">
+  <h3>recall_at_k(results, relevant_ids, k) → float</h3>
+  <p>1.0 if a relevant chunk is in the top-k (set intersection), else 0.0. Measures the retrieval ceiling.</p>
+  <div class="io"><span class="lbl">Example</span><span>answer at rank 2 → recall@1 = <code>0.0</code>, recall@2 = <code>1.0</code></span></div>
+</div>
+<div class="method">
+  <h3>reciprocal_rank(results, relevant_ids) → float</h3>
+  <p><code>1/position</code> of first relevant hit. Measures how high — rewards reranking.</p>
+  <div class="io"><span class="lbl">Example</span><span>relevant chunk at rank 2 → <code>0.5</code></span></div>
+</div>
+<div class="method">
+  <h3>evaluate_retrieval(retriever, k) → (recall, mrr)</h3>
+  <p>Averages both metrics over the golden <code>EVAL_SET</code>. Takes a retriever <i>function</i> so any config plugs in.</p>
+  <div class="io"><span class="lbl">Output (real run)</span><span></span></div>
+<pre><code>Configuration     Recall@3     MRR
+Dense only            1.00   1.000
+BM25 only             1.00   0.900   ← slips on the paraphrase query (no exact token)
+Hybrid (RRF)          1.00   1.000
+Hybrid+Rerank         (rate-limited)</code></pre>
+</div>
+<div class="oneliner"><b>Interview:</b> "Recall@k = did the right chunk reach the LLM; MRR = how high. Reranking should lift MRR while leaving recall flat. Faithfulness reuses the verifier — the guardrail and the metric are one machine. And a wrong golden label inverts the metric, so label quality is everything."</div>
+
+<!-- ============ LLM UTILS ============ -->
+<h2 id="llmutils">9 · llm_utils.py &amp; production concerns</h2>
+<div class="method">
+  <h3>with_retry(fn, max_retries=5, base_delay=2.0)</h3>
+  <p>Exponential backoff for rate limits. Catches <b>only</b> <code>ResourceExhausted</code> (429) — retrying a bad-key error is pointless — waits 2→4→8→16s, re-raises on the last attempt. Called as <code>with_retry(lambda: api_call())</code>: the lambda hands over the call <i>unrun</i> so it can be re-run.</p>
+</div>
+<table>
+<tr><th>Concern</th><th>Our system</th><th>Production</th></tr>
+<tr><td>Embedding compute</td><td class="good">cached (content hash, persisted)</td><td>vector DB persistence</td></tr>
+<tr><td>Rerank calls</td><td class="good">parallel (thread pool)</td><td>parallel + async</td></tr>
+<tr><td>Rate limits</td><td>reactive backoff</td><td>proactive token-bucket limiter</td></tr>
+<tr><td>Latency drivers</td><td>per-candidate rerank, per-claim verify</td><td>parallelize + cap N/M + stream</td></tr>
+<tr><td>Observability</td><td>print</td><td>per-stage tracing (LangSmith/Phoenix)</td></tr>
+<tr><td>Failure handling</td><td>fail-closed on content</td><td>graceful degradation per stage</td></tr>
+</table>
+
+<!-- ============ SCALE ============ -->
+<h2 id="scale">10 · Scaling &amp; hardening</h2>
+<table>
+<tr><th>Component</th><th>Our version</th><th>At scale (millions of chunks)</th></tr>
+<tr><td>Dense search</td><td>numpy brute-force O(N), in-RAM</td><td><b>ANN</b> (HNSW/IVF) in a vector DB (FAISS/Qdrant/pgvector), on disk</td></tr>
+<tr><td>Sparse search</td><td>rank-bm25 in-memory</td><td>Elasticsearch / OpenSearch (Lucene)</td></tr>
+<tr><td>Indexing</td><td>full rebuild each run</td><td>incremental upsert + change-data-capture; content-hash dedup</td></tr>
+<tr><td>Freshness</td><td>none</td><td>batched incremental; versioned re-embedding on model upgrade</td></tr>
+<tr><td>Serving</td><td>one-shot script</td><td>FastAPI service, replicas, load index once, autoscale</td></tr>
+<tr><td>Security</td><td>none</td><td>prompt-injection guardrails, per-tenant ACL metadata filtering, PII</td></tr>
+<tr><td>Monitoring</td><td>none</td><td>live recall/faithfulness/latency/cost, drift alerts</td></tr>
+</table>
+<div class="oneliner"><b>Meta-lesson:</b> the <b>architecture</b> never changes at scale — only the implementation of each box. Because every stage sits behind a clean function boundary, scaling is a series of contained swaps (numpy → vector DB, rank-bm25 → Elasticsearch, script → service), not a rewrite.</div>
+
+<!-- ============ PRINCIPLES ============ -->
+<h2 id="principles">Key design principles (say these out loud)</h2>
+<ul>
+  <li><b>Retrieval recall is the ceiling</b> — nothing downstream fixes a chunk that wasn't retrieved.</li>
+  <li><b>Chunk quality sets citation quality</b> — structure-first splitting, provenance from day one.</li>
+  <li><b>Dense + sparse are complementary</b> — meaning vs exact terms; hybrid covers both blind spots.</li>
+  <li><b>Never mix raw scores</b> — RRF fuses on rank, which is scale-independent.</li>
+  <li><b>Recall then precision</b> — cheap wide retrieval, then expensive narrow reranking on a shortlist.</li>
+  <li><b>Verification ≠ generation</b> — an independent judge, fail-closed, is what makes citations trustworthy.</li>
+  <li><b>temperature=0 everywhere</b> — deterministic → cacheable → reproducible.</li>
+  <li><b>Measure each stage separately</b> — so you know which half broke.</li>
+  <li><b>Every external call can fail</b> — cache, retry, parallelize, degrade gracefully.</li>
+</ul>
+
+<!-- ============ QUESTIONS ============ -->
+<h2 id="questions">Interview questions (with answers)</h2>
+<p class="sub">Click each to reveal a strong answer.</p>
+
+<h3>Architecture &amp; fundamentals</h3>
+<details><summary>What is RAG and why not just use a bigger LLM / long context?</summary>
+<div class="ans">RAG retrieves relevant text from your own corpus and puts it in the prompt so the model answers from evidence, not training memory. Long-context works for a small corpus but fails on <b>scale</b> (corpus exceeds the window), <b>cost</b> (you resend everything per query), <b>latency</b>, the <b>"lost in the middle"</b> effect, and <b>observability</b> (RAG makes retrieved evidence explicit and measurable).</div></details>
+<details><summary>Walk me through your pipeline end to end.</summary>
+<div class="ans">Chunk documents (structure-first) → index them two ways (dense Gemini embeddings + BM25) → retrieve from both → fuse with RRF → rerank a shortlist cross-encoder-style → generate a grounded answer with <code>[n]</code> citations → independently verify each claim against its cited chunk → return verified answer. Retrieval and generation are evaluated separately.</div></details>
+<details><summary>Why is "retrieval recall is the ceiling" the key idea?</summary>
+<div class="ans">Reranking, fusion, generation, and verification can only operate on chunks retrieval surfaced. A chunk never retrieved is invisible forever — so "use a better LLM" rarely fixes a bad RAG; the bug is usually upstream in retrieval.</div></details>
+
+<h3>Chunking &amp; embeddings</h3>
+<details><summary>How did you choose chunk size, and how does it affect citations?</summary>
+<div class="ans">Structure-first (markdown headers) so no chunk mixes topics, then a ~800-char size guard for sharp embeddings. Chunk size is the ceiling on citation precision — the chunk is the unit of verification, so a huge mixed chunk makes "supported by this chunk" a weak signal. Too small loses context; ~256–512 tokens with 10–20% overlap is a common production default.</div></details>
+<details><summary>What's the difference between a bi-encoder and a cross-encoder?</summary>
+<div class="ans">A bi-encoder (embeddings) encodes query and document <b>separately</b> into vectors compared by cosine — fast, precomputable, but lossy. A cross-encoder reads query and document <b>together</b> and outputs one relevance score — far more accurate but can't be precomputed, so it only runs on a shortlist at query time.</div></details>
+<details><summary>Why the RETRIEVAL_DOCUMENT vs RETRIEVAL_QUERY task types?</summary>
+<div class="ans">Gemini produces embeddings optimized per role; documents and queries get slightly different vectors tuned so queries match documents well. Using the wrong one silently hurts recall.</div></details>
+<details><summary>Why does dot product equal cosine similarity in your code?</summary>
+<div class="ans">Cosine = dot product divided by both norms. Gemini's full-3072-dim embeddings are unit-normalized (I verified norm = 1.0), so the denominator is 1 and dot product equals cosine. If I requested reduced dimensions they wouldn't be normalized and I'd have to normalize manually.</div></details>
+
+<h3>BM25 &amp; fusion</h3>
+<details><summary>What does BM25 catch that embeddings miss, and vice versa?</summary>
+<div class="ans">BM25 nails exact tokens — error codes, SKUs, names, rare jargon — because it matches literal terms with IDF weighting. It's blind to paraphrase. Embeddings catch meaning/synonyms but blur rare opaque tokens like <code>E-4021</code> (no learned associations). Hybrid covers both.</div></details>
+<details><summary>Why RRF instead of just adding the two scores?</summary>
+<div class="ans">Dense scores are ~0–1; BM25 is unbounded and corpus-dependent. Adding them lets BM25 dominate arbitrarily. RRF discards raw scores and sums <code>1/(k+rank)</code> — pure rank position — which is scale-independent, rewards cross-retriever agreement, and keeps single-retriever finds alive.</div></details>
+<details><summary>What does k=60 do in RRF?</summary>
+<div class="ans">It dampens how much the very top ranks dominate — the gap between rank 1 and rank 2 is small, so one lucky top hit can't swamp broad agreement. It's the standard value from the original RRF paper.</div></details>
+
+<h3>Reranking &amp; generation</h3>
+<details><summary>Where does the reranker sit and how many candidates?</summary>
+<div class="ans">After fusion, before generation, on a shortlist (~20–100 in production; I used ~5). Each candidate is a separate model call, so you never rerank the whole corpus — retrieval narrows it first. Rerank ~20, keep top 3–5.</div></details>
+<details><summary>How do you stop the model from hallucinating in generation?</summary>
+<div class="ans">A grounding prompt: answer only from the numbered passages, no prior knowledge, cite <code>[n]</code> per sentence, refuse with a fixed phrase if unanswerable; plus <code>temperature=0</code>. But prompting only lowers the rate — it can't guarantee faithfulness, which is why verification exists.</div></details>
+<details><summary>temperature=0 and a strict prompt — how can it still be wrong?</summary>
+<div class="ans">temperature=0 removes randomness, not error — if the most-probable output is subtly wrong you get that error deterministically. Prompts bias probabilities, they aren't hard constraints. Failure modes: misreading, paraphrase drift, conflating two chunks, resolving ambiguity wrong. So prevention (prompt) and detection (verification) solve different problems.</div></details>
+
+<h3>Citation verification (the differentiator)</h3>
+<details><summary>Why verify citations at all if you gave the model the right chunk?</summary>
+<div class="ans">Because a right and a wrong answer look identical to the user, both cited and confident. The model generates (not copies) so it can drift even with the right chunk; and retrieval isn't perfect either. Prompting makes faithfulness <i>likely</i>; verification makes it <i>checked</i>. You can't ship "likely" for facts users act on.</div></details>
+<details><summary>Why must the verifier be independent of the generator?</summary>
+<div class="ans">If it saw the question, other chunks, or the original answer, it would inherit the generator's framing and bias. Seeing only the claim + its cited chunk keeps it an unbiased judge. A citation the generator makes about itself is a self-report, not verification.</div></details>
+<details><summary>What are the ways to verify, and why LLM-as-judge?</summary>
+<div class="ans">String grounding (fast, brittle on paraphrase), NLI/entailment models (calibrated but need torch), and LLM-as-judge (flexible, handles paraphrase, no torch). I used LLM-as-judge because it fits the stack and handles paraphrase; the tradeoff is per-claim API cost and the judge can itself err — mitigated by using a capable/independent model and failing closed.</div></details>
+<details><summary>What do you do when a claim fails verification?</summary>
+<div class="ans">A graduated response: drop/flag the unsupported sentence, keep the supported ones, and escalate to refuse only if most of the answer or the central claim fails — optionally one regeneration attempt first. Refuse is the floor, triggered by a threshold, not by any single failed claim. The exact dial is a product decision driven by how costly a wrong answer is.</div></details>
+<details><summary>How do you handle a hallucinated citation number like [7]?</summary>
+<div class="ans">Bounds-check <code>0 &lt;= n-1 &lt; len(chunks)</code> before indexing, so an out-of-range citation is skipped (no crash) and the claim ends up unsupported. Uncited sentences are flagged "no citation." Fail-closed throughout.</div></details>
+
+<h3>Evaluation</h3>
+<details><summary>How do you measure retrieval quality?</summary>
+<div class="ans">Recall@k (is a relevant chunk in the top-k — the ceiling) and MRR (how high is the first relevant hit). nDCG when relevance is graded. I evaluate configs separately (dense/BM25/hybrid/+rerank) to prove each layer earns its place.</div></details>
+<details><summary>How do you measure answer quality?</summary>
+<div class="ans">Faithfulness/groundedness = fraction of claims that pass verification (the verifier doubles as the metric). Citation precision (are made citations correct) and recall (do claims that need citations get correct ones).</div></details>
+<details><summary>How would you build an eval set for production (not hardcoded)?</summary>
+<div class="ans">Bootstrap synthetically — have an LLM generate questions from each chunk (the source chunk is the auto-label) — then grow from real logged traffic, labeled by content or reference-answer (not fragile chunk IDs, which break on re-chunking). Treat the eval set as a living, versioned asset; run it in CI to catch regressions.</div></details>
+<details><summary>Why is a wrong golden label dangerous?</summary>
+<div class="ans">It inverts the metric — correct retrieval scores as a failure — so you chase phantom bugs and "fix" things that were right. The eval set is the ruler; a wrong ruler makes every measurement wrong.</div></details>
+
+<h3>Production &amp; scaling</h3>
+<details><summary>Where's the latency, and how do you cut it?</summary>
+<div class="ans">Per-item LLM loops dominate: reranking (per candidate) and verification (per claim). Cut it by parallelizing independent calls (bounded thread pool — I got 3.1×), caching deterministic outputs, capping how many candidates/claims, and streaming generation.</div></details>
+<details><summary>How does your embedding cache work and why is it safe?</summary>
+<div class="ans">Key = sha256 of (model + task_type + text), value = the vector, persisted as a pickle. Content-hash keying means changing the model or text auto-misses — it can't serve stale vectors. Cold 5.2s/9 calls → warm 0.0s/0 calls, and it relieves rate limits.</div></details>
+<details><summary>You hit rate limits — how do you handle them properly?</summary>
+<div class="ans">Reactively with exponential backoff (retry only the 429, wait 2→4→8→16s). Proactively with a token-bucket rate limiter that spaces calls under the limit so you never 429. Backoff is the safety net; the limiter is the plan. Caching and parallel-with-a-cap also reduce pressure.</div></details>
+<details><summary>What changes when the corpus is 9 million chunks?</summary>
+<div class="ans">Dense goes from numpy brute-force to ANN (HNSW/IVF) in a vector DB; BM25 to Elasticsearch; full rebuilds to incremental upserts with change-data-capture; script to a FastAPI service that loads the index once and scales horizontally. The architecture is unchanged — only each box's implementation swaps.</div></details>
+<details><summary>What are the security concerns?</summary>
+<div class="ans">Prompt injection via retrieved documents (the corpus is an attack surface — treat retrieved text as untrusted, separate instructions from data), per-tenant access control via metadata filtering so users only retrieve authorized chunks, PII handling, and cost/abuse governance.</div></details>
+<details><summary>What would you improve if you kept going?</summary>
+<div class="ans">Parallelize verification too; wrap the remaining API calls in retry; add a proactive rate limiter; migrate off the deprecated <code>google-generativeai</code> SDK to <code>google-genai</code>; add structured tracing; move embeddings to a real vector DB; and build the synthetic eval-set generator.</div></details>
+
+<hr>
+<p class="sub">Built from scratch as a guided course — chunking, dual indexing, RRF fusion, cross-encoder reranking, grounded generation, independent citation verification, evaluation, and production optimizations (caching + parallelism). The point was to understand every layer, not follow a demo.</p>
+
+</div>
+</body>
+</html>

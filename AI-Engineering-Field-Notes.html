@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineering — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12181f;
+  --paper:#f3efe6;
+  --panel:#faf7f0;
+  --line:#d8d0bf;
+  --muted:#6a7078;
+  --wire:#2b6a63;
+  --wire-2:#c25a3a;
+  --accent:#0e5c54;
+  --tag:#e9e2d2;
+  --shadow:0 1px 0 rgba(0,0,0,.03);
+  --maxw:820px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+/* ---------- Layout ---------- */
+.wrap{display:grid;grid-template-columns:288px 1fr;min-height:100vh}
+/* ---------- Sidebar ---------- */
+.side{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--ink);
+  color:#e8e4d8;
+  padding:28px 20px 60px;
+  border-right:1px solid #000;
+}
+.side::-webkit-scrollbar{width:8px}
+.side::-webkit-scrollbar-thumb{background:#2f3742;border-radius:8px}
+.brand{font-family:'Fraunces',serif;font-weight:600;font-size:22px;line-height:1.15;color:#fff;letter-spacing:-.01em}
+.brand .dot{color:var(--wire-2)}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8b9199;margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
+.nav-group{margin-top:26px}
+.nav-group h4{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--wire-2);margin-bottom:8px;padding-left:2px;display:flex;align-items:center;gap:8px;
+}
+.nav-group h4::before{content:"";width:14px;height:1px;background:var(--wire-2);opacity:.6}
+.side a{
+  display:block;color:#c3c8cd;text-decoration:none;font-size:13.3px;padding:3px 8px;border-radius:5px;
+  border-left:2px solid transparent;transition:all .15s;
+}
+.side a:hover{color:#fff;background:#1d242c;border-left-color:var(--wire)}
+/* ---------- Main ---------- */
+.main{padding:0}
+.hero{
+  padding:64px 48px 40px;max-width:var(--maxw);margin:0 auto;
+}
+.hero .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wire);margin-bottom:18px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(38px,6vw,60px);line-height:1.02;letter-spacing:-.02em;margin-bottom:20px}
+.hero h1 em{font-style:italic;color:var(--wire-2)}
+.hero p{font-size:17px;color:#3a424b;max-width:60ch}
+.hero .meta{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
+.hero .meta span{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--tag);border:1px solid var(--line);padding:5px 10px;border-radius:20px;color:#54514a}
+.content{max-width:var(--maxw);margin:0 auto;padding:0 48px 120px}
+/* ---------- Section headers ---------- */
+.chapter{margin-top:56px;margin-bottom:8px;padding-top:18px;border-top:2px solid var(--ink)}
+.chapter .num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--wire-2);letter-spacing:.1em}
+.chapter h2{font-family:'Fraunces',serif;font-weight:600;font-size:27px;letter-spacing:-.01em;margin-top:2px}
+/* ---------- Topic cards ---------- */
+.topic{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:24px 26px;
+  margin-top:20px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.topic::before{
+  content:"";position:absolute;left:0;top:22px;bottom:22px;width:3px;border-radius:3px;
+  background:linear-gradient(var(--wire),var(--wire-2));
+}
+.topic h3{
+  font-family:'Fraunces',serif;font-weight:600;font-size:21px;letter-spacing:-.01em;margin-bottom:4px;
+  display:flex;align-items:baseline;gap:10px;
+}
+.topic h3 .id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--wire);font-weight:500;letter-spacing:.02em}
+.topic .gist{font-size:15px;color:var(--muted);font-style:italic;margin-bottom:14px}
+.topic p{font-size:14.8px;margin-bottom:11px;color:#232a31}
+.topic p:last-child{margin-bottom:0}
+.topic strong{font-weight:600;color:var(--ink)}
+.topic .lbl{font-weight:600;color:var(--accent)}
+/* example block */
+.eg{
+  background:#fff;
+  border:1px solid var(--line);
+  border-left:3px solid var(--wire-2);
+  border-radius:8px;
+  padding:12px 15px;
+  margin:12px 0;
+  font-size:14px;
+}
+.eg .eg-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--wire-2);display:block;margin-bottom:5px}
+.eg code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--tag);padding:1px 5px;border-radius:4px}
+/* takeaway */
+.key{
+  display:flex;gap:9px;align-items:flex-start;
+  background:#eef4f0;border:1px solid #cfe0d6;border-radius:8px;padding:10px 13px;margin-top:12px;font-size:13.8px;
+}
+.key b{color:var(--accent)}
+.key .k-ico{color:var(--accent);font-weight:700;flex-shrink:0}
+/* mini comparison table */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.4px}
+th,td{text-align:left;padding:7px 10px;border:1px solid var(--line)}
+th{background:var(--ink);color:#f0ece0;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;font-weight:500;text-transform:uppercase}
+tr:nth-child(even) td{background:#fff}
+tr:nth-child(odd) td{background:var(--panel)}
+ul.tight{margin:6px 0 11px 20px}
+ul.tight li{font-size:14.5px;margin-bottom:5px;color:#232a31}
+/* back to top */
+.totop{
+  position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;text-decoration:none;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .3s;z-index:50;
+}
+.totop.show{opacity:1;pointer-events:auto}
+.footer{max-width:var(--maxw);margin:0 auto;padding:30px 48px 60px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;font-family:'JetBrains Mono',monospace}
+/* mobile */
+.menu-btn{display:none}
+@media(max-width:960px){
+  .wrap{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;width:280px;z-index:100;transform:translateX(-100%);transition:transform .3s}
+  .side.open{transform:translateX(0)}
+  .menu-btn{
+    display:flex;align-items:center;gap:8px;position:fixed;top:14px;left:14px;z-index:90;
+    background:var(--ink);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2)
+  }
+  .hero{padding:72px 22px 32px}
+  .content{padding:0 22px 100px}
+  .footer{padding:30px 22px 60px}
+  .hero h1{font-size:clamp(32px,9vw,44px)}
+  .backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+  .backdrop.open{display:block}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<button class="menu-btn" onclick="toggleNav()">☰ Topics</button>
+<div class="backdrop" id="backdrop" onclick="toggleNav()"></div>
+<div class="wrap">
+<!-- SIDEBAR -->
+<aside class="side" id="side">
+  <div class="brand">Field Notes<span class="dot">.</span></div>
+  <div class="brand-sub">AI Engineering // A→Z</div>
+
+  <nav class="nav-group">
+    <h4>Foundations</h4>
+    <a href="#supervised">Supervised learning</a>
+    <a href="#classreg">Classification vs regression</a>
+    <a href="#unsupervised">Unsupervised learning</a>
+    <a href="#reinforcement">Reinforcement learning</a>
+    <a href="#features">Feature engineering</a>
+    <a href="#evalmetrics">Evaluation metrics</a>
+    <a href="#prf1">Precision, recall, F1</a>
+    <a href="#overfit">Overfitting &amp; regularization</a>
+    <a href="#hyperparam">Hyperparameter tuning</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>Deep Learning</h4>
+    <a href="#deeplearning">Deep learning</a>
+    <a href="#dataclean">Cleaning data for DL</a>
+    <a href="#neuralnets">Neural networks</a>
+    <a href="#relu">ReLU</a>
+    <a href="#cnn">CNN</a>
+    <a href="#rnn">RNN</a>
+    <a href="#transformers">Transformers</a>
+    <a href="#encdec">Encoder / Decoder</a>
+    <a href="#attention">Attention</a>
+    <a href="#frameworks">PyTorch vs TensorFlow</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>LLMs</h4>
+    <a href="#llm">LLMs</a>
+    <a href="#llmarch">LLM architecture</a>
+    <a href="#tokenization">Tokenization</a>
+    <a href="#embeddings">Embeddings</a>
+    <a href="#prompteng">Prompt engineering</a>
+    <a href="#context">Context windows</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>Customization &amp; RAG</h4>
+    <a href="#finetune">Fine-tuning</a>
+    <a href="#rag">RAG</a>
+    <a href="#chunking">Chunking</a>
+    <a href="#vectordb">Vector databases</a>
+    <a href="#embedmodels">Embedding models</a>
+    <a href="#hybrid">Hybrid search</a>
+    <a href="#rerank">Re-ranking</a>
+    <a href="#pvrvf">Prompt vs RAG vs Fine-tune</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>Agents</h4>
+    <a href="#agentic">Agentic AI</a>
+    <a href="#mcp">MCP</a>
+    <a href="#toolcalling">Tool / function calling</a>
+    <a href="#structured">Structured outputs</a>
+    <a href="#multiagent">Multi-agent systems</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>Production</h4>
+    <a href="#systemdesign">AI system design</a>
+    <a href="#inference">Inference optimization</a>
+    <a href="#quant">Quantization</a>
+    <a href="#caching">Caching</a>
+    <a href="#kvcache">KV caching</a>
+    <a href="#serving">vLLM vs TensorRT-LLM</a>
+    <a href="#docker">Docker</a>
+    <a href="#k8s">Kubernetes</a>
+    <a href="#cloud">AWS / Azure / GCP</a>
+    <a href="#cicd">CI/CD pipelines</a>
+    <a href="#monitoring">Monitoring &amp; logging</a>
+    <a href="#scaling">Scaling AI apps</a>
+  </nav>
+
+  <nav class="nav-group">
+    <h4>Trust &amp; Safety</h4>
+    <a href="#ragas">Ragas &amp; LLM eval</a>
+    <a href="#hallucination">Hallucination detection</a>
+    <a href="#guardrails">Guardrails</a>
+    <a href="#injection">Prompt injection defense</a>
+    <a href="#security">AI security &amp; privacy</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<header class="hero" id="top">
+  <div class="kicker">A learning log · foundations → frontier</div>
+  <h1>The AI engineer's <em>field notes</em>.</h1>
+  <p>Every concept we worked through, distilled to its essence — each one a plain-language explanation plus a real example. Built to skim, search, and revisit. Follow the wire from the basics all the way to shipping and securing systems in production.</p>
+  <div class="meta">
+    <span>55 topics</span>
+    <span>7 chapters</span>
+    <span>foundations → production → safety</span>
+  </div>
+</header>
+
+<section class="content">
+<!-- ============ CH 1 ============ -->
+<div class="chapter"><span class="num">CHAPTER 01</span><h2>Foundations</h2></div>
+
+<article class="topic" id="supervised">
+  <h3><span class="id">1.1</span> Supervised Learning</h3>
+  <div class="gist">Learn from examples where the answer is already known.</div>
+  <p>You show the model many inputs paired with their correct answers (labels). It learns the pattern, then predicts answers for new, unseen inputs. "Supervised" = there's a teacher (the labels) guiding it.</p>
+  <div class="eg"><span class="eg-tag">Example</span>Show a child fruits and name each one — round+red = "apple", long+yellow = "banana". Later they see a new apple and say "apple!" They learned from labeled examples.</div>
+  <p>Two flavors: <span class="lbl">classification</span> (predict a category, e.g. spam / not-spam) and <span class="lbl">regression</span> (predict a number, e.g. house price).</p>
+  <div class="key"><span class="k-ico">→</span><span>Needs lots of labeled data, and quality of labels = quality of model. <b>Garbage labels in, garbage predictions out.</b></span></div>
+</article>
+
+<article class="topic" id="classreg">
+  <h3><span class="id">1.2</span> Classification vs Regression</h3>
+  <div class="gist">Same idea, different kind of answer: a category vs a number.</div>
+  <p><span class="lbl">Classification</span> picks a bucket ("which class?"). <span class="lbl">Regression</span> predicts a quantity ("how much?").</p>
+  <table>
+    <tr><th></th><th>Classification</th><th>Regression</th></tr>
+    <tr><td>Output</td><td>Category</td><td>Number</td></tr>
+    <tr><td>Example</td><td>"Spam" / "Not spam"</td><td>$452,000</td></tr>
+    <tr><td>Metric</td><td>Accuracy, F1</td><td>MAE, RMSE</td></tr>
+  </table>
+  <div class="key"><span class="k-ico">?</span><span><b>Quick test:</b> would averaging two answers make sense? Avg of "cat" &amp; "dog" = nonsense → classification. Avg of $300k &amp; $400k = $350k → regression.</span></div>
+</article>
+
+<article class="topic" id="unsupervised">
+  <h3><span class="id">1.3</span> Unsupervised Learning</h3>
+  <div class="gist">No labels — the model finds hidden patterns on its own.</div>
+  <p>You give raw data with no answers, and the model discovers structure by itself. Main jobs: <span class="lbl">clustering</span> (group similar things), <span class="lbl">association</span> (things that go together), and <span class="lbl">dimensionality reduction</span> (simplify without losing the essence).</p>
+  <div class="eg"><span class="eg-tag">Example</span>Hand a child a box of mixed toys and say nothing. They naturally group cars together, soft toys together — grouping by similarity, with no one telling them the categories.</div>
+  <div class="key"><span class="k-ico">→</span><span>Hard to evaluate — there's no "right answer" to check against. Judging if patterns are <b>useful</b> takes human judgment.</span></div>
+</article>
+
+<article class="topic" id="reinforcement">
+  <h3><span class="id">1.4</span> Reinforcement Learning</h3>
+  <div class="gist">Learn by trial and error, guided by rewards and penalties.</div>
+  <p>An <b>agent</b> takes <b>actions</b> in an <b>environment</b>, gets <b>rewards</b> or penalties, and learns the strategy that maximizes reward over time.</p>
+  <div class="eg"><span class="eg-tag">Example</span>Training a dog: it sits → treat (reward); it jumps on the couch → "No!" (penalty). Over many tries it learns "sitting = treats."</div>
+  <p>Key tension: <span class="lbl">exploration vs exploitation</span> — try new things that might be better, or stick with what already works? (Like picking your usual restaurant vs a new one.)</p>
+  <div class="key"><span class="k-ico">!</span><span>The agent optimizes <b>what you reward, not what you intend.</b> Design rewards carefully or it "cheats." RLHF is how models like ChatGPT are polished.</span></div>
+</article>
+
+<article class="topic" id="features">
+  <h3><span class="id">1.5</span> Feature Engineering</h3>
+  <div class="gist">Reshaping raw data into better clues for the model.</div>
+  <p>A model is only as smart as the clues (features) you feed it. Feature engineering = crafting better ones: creating new features, encoding categories as numbers, scaling, handling missing data, extracting signals from dates/text.</p>
+  <div class="eg"><span class="eg-tag">Example</span>For delivery-time prediction, raw addresses are weak. Engineered features like <code>distance_km</code>, <code>is_peak_hour</code>, and <code>is_raining</code> are far more useful.</div>
+  <div class="key"><span class="k-ico">!</span><span>Beware <b>feature leakage</b> — accidentally including a feature that gives away the answer (e.g. <code>cancellation_date</code> when predicting cancellations). Looks perfect in testing, useless in reality.</span></div>
+</article>
+
+<article class="topic" id="evalmetrics">
+  <h3><span class="id">1.6</span> Model Evaluation Metrics</h3>
+  <div class="gist">Scorecards that tell you if a model is actually any good.</div>
+  <p>The wrong metric makes a bad model look great. Classification: <b>accuracy</b> (% right), but dangerous on imbalanced data. Regression: <b>MAE</b> (average miss), <b>RMSE</b> (punishes big misses), <b>R²</b> ("better than guessing the average?").</p>
+  <div class="eg"><span class="eg-tag">The accuracy trap</span>A rare-disease model that always says "healthy" is 99% accurate — but catches zero sick people. Useless, yet "99% accurate."</div>
+  <div class="key"><span class="k-ico">→</span><span>Match the metric to the <b>real-world cost of mistakes</b>. Never evaluate on training data — always on unseen data.</span></div>
+</article>
+
+<article class="topic" id="prf1">
+  <h3><span class="id">1.7</span> Precision, Recall &amp; F1</h3>
+  <div class="gist">Three questions about the two kinds of mistakes.</div>
+  <ul class="tight">
+    <li><span class="lbl">Precision</span> — of what I flagged positive, how much was right? (Punishes false alarms.)</li>
+    <li><span class="lbl">Recall</span> — of all real positives, how many did I catch? (Punishes misses.)</li>
+    <li><span class="lbl">F1</span> — one balanced score (harmonic mean); stays low unless <em>both</em> are good.</li>
+  </ul>
+  <div class="eg"><span class="eg-tag">Which to prioritize?</span>Cancer screening → <b>recall</b> (never miss a case). Spam filter → <b>precision</b> (don't flag real emails).</div>
+  <div class="key"><span class="k-ico">↔</span><span>They <b>trade off</b>: flag more → higher recall, lower precision. Choose based on which mistake costs more.</span></div>
+</article>
+
+<article class="topic" id="overfit">
+  <h3><span class="id">1.8</span> Overfitting &amp; Regularization</h3>
+  <div class="gist">Memorizing vs learning — and how to force real learning.</div>
+  <p><span class="lbl">Overfitting</span> = the model memorizes the training data (including its noise) instead of learning the general pattern. Sign: great on training data, bad on new data.</p>
+  <div class="eg"><span class="eg-tag">Example</span>A student who memorizes the 50 practice questions aces the practice test but fails the real exam. They memorized, didn't understand.</div>
+  <p><span class="lbl">Regularization</span> = techniques that penalize complexity to keep the model simple and general: <b>L1/L2</b> (penalize large weights), <b>dropout</b> (randomly switch off neurons), <b>early stopping</b>, and <b>more data</b>.</p>
+  <div class="key"><span class="k-ico">→</span><span>You can only <b>detect</b> overfitting by testing on unseen data — which is why we split into train / validation / test sets.</span></div>
+</article>
+
+<article class="topic" id="hyperparam">
+  <h3><span class="id">1.9</span> Hyperparameter Tuning</h3>
+  <div class="gist">Finding the best "settings" you choose before training.</div>
+  <p><b>Parameters</b> are learned by the model; <b>hyperparameters</b> are set by you beforehand (learning rate, number of layers, tree depth). Tuning = experimenting to find the best combination.</p>
+  <div class="eg"><span class="eg-tag">Example</span>Baking a cake — oven temperature and baking time are settings <em>you</em> choose before baking. Get them right → perfect cake.</div>
+  <p>Methods: <b>grid search</b> (try every combo), <b>random search</b> (sample combos — often faster), <b>Bayesian optimization</b> (learn from past attempts).</p>
+  <div class="key"><span class="k-ico">!</span><span>Tune on a <b>validation set</b>, never the test set — otherwise you're peeking at the exam and your final score is a lie.</span></div>
+</article>
+
+<!-- ============ CH 2 ============ -->
+<div class="chapter"><span class="num">CHAPTER 02</span><h2>Deep Learning</h2></div>
+
+<article class="topic" id="deeplearning">
+  <h3><span class="id">2.1</span> Deep Learning</h3>
+  <div class="gist">Neural networks with many layers that learn features by themselves.</div>
+  <p>A powerful subset of ML (AI ⊃ ML ⊃ Deep Learning). "Deep" = many stacked layers. Its superpower: it learns features <b>automatically</b> from raw data instead of you hand-crafting them.</p>
+  <div class="eg"><span class="eg-tag">Example</span>To recognize a cat: traditional ML needs you to define "detect whiskers, ears." Deep learning figures out "cat-ness" itself from thousands of photos.</div>
+  <p>Each layer learns something more abstract: edges → shapes → parts → whole face (like building with LEGO).</p>
+  <div class="key"><span class="k-ico">→</span><span>Data-hungry, compute-heavy, and a "black box." For small/tabular data, simpler models often win. Use DL when data is <b>unstructured and abundant</b>.</span></div>
+</article>
+
+<article class="topic" id="dataclean">
+  <h3><span class="id">2.2</span> Do We Clean Data for Deep Learning?</h3>
+  <div class="gist">Yes — DL removes manual feature engineering, not data cleaning.</div>
+  <p>Deep learning learns features itself, but you still must <b>clean</b>: remove corrupted files, fix mislabeled data, drop duplicates, handle missing values, and — almost always — <b>scale/normalize</b> inputs (e.g. pixels 0–1).</p>
+  <div class="key"><span class="k-ico">!</span><span><b>Garbage in, garbage out</b> never dies. A powerful model on messy data just learns the mess confidently. Teams spend ~70–80% of time on data.</span></div>
+</article>
+
+<article class="topic" id="neuralnets">
+  <h3><span class="id">2.3</span> Neural Networks</h3>
+  <div class="gist">Layers of simple "neurons" that learn by adjusting connection strengths.</div>
+  <p>Each <b>neuron</b> takes inputs, multiplies each by a <b>weight</b> (importance), sums them, and passes the result through an <b>activation function</b> that decides how strongly to "fire." Stack thousands into layers → complex learning.</p>
+  <div class="eg"><span class="eg-tag">Example</span>Deciding to go to a party: inputs = "is a friend going?", "is it far?"; weights = how much each matters. Sum crosses a threshold → yes/no.</div>
+  <p>Learns via <b>backpropagation</b> + <b>gradient descent</b>: guess → measure error → adjust weights to reduce it → repeat (like adjusting a shower's temperature knob).</p>
+  <div class="key"><span class="k-ico">→</span><span>Weights = the parameters it <b>learns</b>. Activation functions add non-linearity so it can learn curvy patterns, not just straight lines.</span></div>
+</article>
+
+<article class="topic" id="relu">
+  <h3><span class="id">2.4</span> ReLU</h3>
+  <div class="gist">Rectified Linear Unit — the most popular activation function.</div>
+  <p>One simple rule: keep positive inputs as-is, turn negatives into zero. <code>ReLU(x) = max(0, x)</code>. Input 5 → 5; input −3 → 0.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A one-way valve — lets positive signals through, blocks negatives to zero.</div>
+  <div class="key"><span class="k-ico">→</span><span>Simple, fast, and avoids the "vanishing gradient" problem. Catch: "dying ReLU" (stuck at zero) — fixed by variants like Leaky ReLU.</span></div>
+</article>
+
+<article class="topic" id="cnn">
+  <h3><span class="id">2.5</span> CNN — Convolutional Neural Network</h3>
+  <div class="gist">The network that "sees" — powers image recognition.</div>
+  <p>Slides a small <b>filter</b> across an image (convolution), detecting patterns wherever they appear — reusing the same filter everywhere (far fewer weights than a regular net). <b>Pooling</b> layers shrink the image while keeping key info.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Scanning a photo with a magnifying glass, section by section: first edges, then shapes, then parts (eyes, wheels), then whole objects.</div>
+  <p>Uses: medical scans, face unlock, self-driving vision, defect detection.</p>
+  <div class="key"><span class="k-ico">→</span><span>Recognizes a cat wherever it sits in the photo (translation invariance). Needs lots of labeled images; helped hugely by data augmentation.</span></div>
+</article>
+
+<article class="topic" id="rnn">
+  <h3><span class="id">2.6</span> RNN — Recurrent Neural Network</h3>
+  <div class="gist">For sequences, where order matters — has a "memory."</div>
+  <p>Processes data one step at a time, carrying a <b>hidden state</b> (memory) forward so context builds up. Good for text, speech, time-series.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Reading a sentence — you carry meaning forward word by word. "The clouds are in the ___" → "sky", because you remember earlier words.</div>
+  <p>Problem: plain RNNs <b>forget</b> long-ago context (vanishing gradient). Fixed by <b>LSTM</b> / <b>GRU</b>, which use gates to remember important things and forget the rest.</p>
+  <div class="key"><span class="k-ico">→</span><span>Slow (step-by-step) and still struggle with very long context — which is why <b>Transformers</b> replaced them.</span></div>
+</article>
+
+<article class="topic" id="transformers">
+  <h3><span class="id">2.7</span> Transformers</h3>
+  <div class="gist">The architecture behind ChatGPT, Claude, and modern AI.</div>
+  <p>Solved RNNs' two flaws: it processes <b>all words at once</b> (fast, parallel) and uses <b>attention</b> to directly connect any word to any other (no forgetting). Introduced in 2017's "Attention Is All You Need."</p>
+  <div class="eg"><span class="eg-tag">Example</span>"The animal didn't cross the street because <b>it</b> was tired." Attention lets "it" focus on "animal" to resolve the meaning.</div>
+  <p>Scales beautifully — more data + parameters + compute = reliably better. This scaling is why AI exploded.</p>
+  <div class="key"><span class="k-ico">!</span><span>Attention cost grows <b>quadratically</b> with input length (2× text = 4× work) — the main limit on context window size.</span></div>
+</article>
+
+<article class="topic" id="encdec">
+  <h3><span class="id">2.8</span> Encoder / Decoder</h3>
+  <div class="gist">Two halves of a Transformer: understanding vs generating.</div>
+  <ul class="tight">
+    <li><span class="lbl">Encoder-only</span> (BERT) — <em>understands</em> input. For search, classification. (A literary critic.)</li>
+    <li><span class="lbl">Decoder-only</span> (GPT, Claude) — <em>generates</em> text one word at a time. Today's LLMs. (A storyteller.)</li>
+    <li><span class="lbl">Encoder-Decoder</span> (T5) — understands <em>then</em> generates. For translation. (A translator.)</li>
+  </ul>
+  <div class="key"><span class="k-ico">→</span><span>Modern LLMs are <b>decoder-only</b> — a big enough decoder can do everything (translate, summarize, classify) via next-word prediction.</span></div>
+</article>
+
+<article class="topic" id="attention">
+  <h3><span class="id">2.9</span> Attention Mechanism</h3>
+  <div class="gist">Each word decides which other words to focus on.</div>
+  <p>For every word, the model creates a <b>Query</b> ("what am I looking for?"), matches it against every word's <b>Key</b> ("what do I offer?"), and pulls in the <b>Values</b> of the best matches — building context-aware meaning.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Searching YouTube: your search = Query, video titles = Keys, video content = Values. Best matches get the most attention.</div>
+  <p><b>Multi-head attention</b> does this many times in parallel, each head catching a different relationship (grammar, meaning, etc.).</p>
+  <div class="key"><span class="k-ico">→</span><span>No distance limit (word 1 can attend to word 1000), computed in parallel — the core breakthrough of modern AI.</span></div>
+</article>
+
+<article class="topic" id="frameworks">
+  <h3><span class="id">2.10</span> PyTorch vs TensorFlow</h3>
+  <div class="gist">The two main toolkits for building neural networks.</div>
+  <table>
+    <tr><th></th><th>PyTorch (Meta)</th><th>TensorFlow (Google)</th></tr>
+    <tr><td>Feel</td><td>Pythonic, easy to debug</td><td>Mature production tooling</td></tr>
+    <tr><td>Best for</td><td>Research, new projects, gen-AI</td><td>Legacy stacks, mobile/edge at scale</td></tr>
+    <tr><td>2026 status</td><td>Dominates research &amp; new work</td><td>Enterprise installed base</td></tr>
+  </table>
+  <div class="key"><span class="k-ico">→</span><span>For anything new — especially LLM/gen-AI — <b>PyTorch is the rational default</b>. The concepts transfer; the framework is just syntax.</span></div>
+</article>
+
+<!-- ============ CH 3 ============ -->
+<div class="chapter"><span class="num">CHAPTER 03</span><h2>Large Language Models</h2></div>
+
+<article class="topic" id="llm">
+  <h3><span class="id">3.1</span> LLMs</h3>
+  <div class="gist">Giant Transformers trained on huge text to predict the next word.</div>
+  <p>At its core, an LLM does one thing: <b>predict the next token, over and over.</b> Scale that up massively and reasoning, writing, and conversation <em>emerge</em>.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Someone who read the entire internet and got extraordinarily good at predicting how any sentence should continue.</div>
+  <p>Built in 3 stages: <b>pre-training</b> (read everything) → <b>fine-tuning</b> (learn to follow instructions) → <b>RLHF</b> (align to human preferences).</p>
+  <div class="key"><span class="k-ico">!</span><span>Biggest risk: <b>hallucination</b> — confident, fluent, but wrong. It optimizes for plausibility, not truth.</span></div>
+</article>
+
+<article class="topic" id="llmarch">
+  <h3><span class="id">3.2</span> LLM Architecture</h3>
+  <div class="gist">How text flows through the machine, end to end.</div>
+  <p>Text → <b>tokenize</b> → <b>embeddings</b> (meaning as numbers) → + <b>positional encoding</b> → a deep stack of <b>Transformer blocks</b> (self-attention + feed-forward, glued by residuals &amp; normalization) → <b>output layer</b> predicts the next token → loop.</p>
+  <p>Key dials: number of layers (depth), parameters (e.g. "70B"), attention heads, context window, and <b>temperature</b> (output randomness).</p>
+  <div class="key"><span class="k-ico">→</span><span>Modern top models often use <b>Mixture of Experts (MoE)</b> — many "expert" sub-networks, only a few activated per token (like a hospital routing you to the right specialist).</span></div>
+</article>
+
+<article class="topic" id="tokenization">
+  <h3><span class="id">3.3</span> Tokenization</h3>
+  <div class="gist">Chopping text into tokens (word-pieces) and mapping them to numbers.</div>
+  <p>Models read tokens, not letters. Rough rule: <b>1 token ≈ ¾ of a word</b>. Uses sub-word splitting (BPE) so common words are one token and rare words break into pieces.</p>
+  <div class="eg"><span class="eg-tag">Example</span><code>tokenization</code> → <code>token</code> + <code>ization</code> (2 tokens). This is why LLMs fumble "how many r's in strawberry?" — they see tokens, not letters.</div>
+  <div class="key"><span class="k-ico">→</span><span>Cost, context limits, and speed are all measured in <b>tokens</b>. Non-English languages cost more tokens per word.</span></div>
+</article>
+
+<article class="topic" id="embeddings">
+  <h3><span class="id">3.4</span> Embeddings</h3>
+  <div class="gist">Turning words/sentences into numbers that capture meaning.</div>
+  <p>Each item becomes a <b>vector</b> (list of numbers). Similar meanings get similar vectors — so machines can do <em>math on meaning</em>.</p>
+  <div class="eg"><span class="eg-tag">The magic</span><code>King − Man + Woman ≈ Queen</code>. Meaning becomes arithmetic. "Cat" and "dog" land close; "cat" and "car" don't.</div>
+  <p>Similarity is measured by <b>cosine similarity</b> (the angle between vectors). Powers semantic search, recommendations, and RAG.</p>
+  <div class="key"><span class="k-ico">!</span><span>Must use the <b>same embedding model</b> for both stored data and queries — different models live in incompatible "meaning-spaces."</span></div>
+</article>
+
+<article class="topic" id="prompteng">
+  <h3><span class="id">3.5</span> Prompt Engineering</h3>
+  <div class="gist">Writing inputs that get the best outputs — the cheapest lever.</div>
+  <p>Same model, same question — but <em>how</em> you ask changes everything. Techniques: be specific, give a <b>role</b>, provide <b>examples</b> (few-shot), ask it to <b>"think step by step"</b> (chain-of-thought), and specify the output format.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Delegating to a brilliant but literal intern. "Write something about our product" → generic. "Write a 100-word description for busy parents, friendly tone" → exactly right.</div>
+  <div class="key"><span class="k-ico">→</span><span>Always try prompting <b>first</b> — before RAG or fine-tuning. It's free and instant, and often solves the problem.</span></div>
+</article>
+
+<article class="topic" id="context">
+  <h3><span class="id">3.6</span> Context Windows</h3>
+  <div class="gist">The LLM's working memory — measured in tokens.</div>
+  <p>Everything in a request — instructions, chat history, documents, and the response — must fit in this fixed budget. Overflow = the model literally can't see it.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A desk that only holds so many papers. Add too many and the oldest fall off the edge — the model "forgets" the start of a long chat.</div>
+  <p>Trap: <b>"lost in the middle"</b> — models recall the start and end of long context well, but miss the middle. Put key info at the edges.</p>
+  <div class="key"><span class="k-ico">→</span><span>Bigger ≠ always better (costly, slower, lost-in-middle). Smart retrieval (RAG) often beats stuffing everything in.</span></div>
+</article>
+
+<!-- ============ CH 4 ============ -->
+<div class="chapter"><span class="num">CHAPTER 04</span><h2>Customization &amp; RAG</h2></div>
+
+<article class="topic" id="finetune">
+  <h3><span class="id">4.1</span> Fine-Tuning</h3>
+  <div class="gist">Training an existing model further to change HOW it behaves.</div>
+  <p>Take a pre-trained LLM and train it on your own examples to specialize its <b>style, tone, or format</b>. Best for behavior — not for adding facts (that's RAG).</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Hiring an experienced professional and giving them company-specific training — not sending them back to school.</div>
+  <p>Modern practice uses cheap methods: <b>LoRA</b> / <b>QLoRA</b> (train tiny "adapter" layers instead of the whole model).</p>
+  <div class="key"><span class="k-ico">!</span><span>Reach for it <b>last</b> — it's expensive, needs clean data, and goes stale. Depends 90% on data quality.</span></div>
+</article>
+
+<article class="topic" id="rag">
+  <h3><span class="id">4.2</span> RAG — Retrieval-Augmented Generation</h3>
+  <div class="gist">Look things up first, then answer — grounding the model in real facts.</div>
+  <p>Retrieve relevant info → add it to the prompt → generate a grounded answer. Fixes hallucination and frozen knowledge, and gives sources.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>An open-book exam. Instead of answering from memory, the student looks up the relevant page first — more accurate, and can cite the source.</div>
+  <p>Flow: <b>Index</b> (chunk docs → embed → store in vector DB), then <b>Query</b> (embed question → search → inject top chunks → LLM answers).</p>
+  <div class="key"><span class="k-ico">→</span><span>Most RAG problems are <b>retrieval</b> problems. Retrieve the wrong chunks → wrong answer, no matter how good the LLM.</span></div>
+</article>
+
+<article class="topic" id="chunking">
+  <h3><span class="id">4.3</span> Chunking</h3>
+  <div class="gist">How you split documents before embedding — makes or breaks RAG.</div>
+  <p>Core tension: chunks <b>too big</b> → noisy, blurred meaning; <b>too small</b> → lose context. Strategies: fixed-size, <b>overlapping</b> (sliding window), sentence/paragraph, semantic, and structure-based (by headers).</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Prepping a textbook for quick reference — whole chapters are too broad, single sentences lack context. Coherent sections are "just right."</div>
+  <div class="key"><span class="k-ico">→</span><span>No universal magic number. Add some overlap, respect document structure, attach metadata, and tune on <b>real queries</b>.</span></div>
+</article>
+
+<article class="topic" id="vectordb">
+  <h3><span class="id">4.4</span> Vector Databases</h3>
+  <div class="gist">Store embeddings and find the most <em>similar</em> ones fast.</div>
+  <p>A normal DB finds exact matches ("id = 452"); a vector DB finds closest-in-<b>meaning</b> matches — using <b>ANN</b> (Approximate Nearest Neighbor) search to stay fast at scale.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A knowledgeable librarian: "I want something like this book" → walks you to thematically similar books, matching by meaning not exact title.</div>
+  <p>Options: Pinecone, Weaviate, Qdrant, Chroma, FAISS, and <b>pgvector</b> (adds vector search to Postgres).</p>
+  <div class="key"><span class="k-ico">→</span><span>It stores &amp; searches — it doesn't <b>create</b> embeddings. Keep the embedding model consistent, and use metadata filtering.</span></div>
+</article>
+
+<article class="topic" id="embedmodels">
+  <h3><span class="id">4.5</span> Embedding Models</h3>
+  <div class="gist">The model that turns text into meaning-vectors — decides retrieval quality.</div>
+  <p>The right choice can swing retrieval precision 20–30%. Measured by <b>MTEB</b> (look at the <em>retrieval</em> score for RAG). Weigh accuracy, cost, self-hosted vs API, language support, and multimodal needs.</p>
+  <div class="eg"><span class="eg-tag">2026 landscape</span>API: Gemini, Cohere Embed v4, Voyage. Open-source: Qwen3, NVIDIA, BGE-M3. (Shifts constantly.)</div>
+  <div class="key"><span class="k-ico">!</span><span>MTEB scores are self-reported — <b>benchmark on your own data</b>. Fine-tuning adds +10–30% for specialized domains.</span></div>
+</article>
+
+<article class="topic" id="hybrid">
+  <h3><span class="id">4.6</span> Hybrid Search (BM25 + Vector)</h3>
+  <div class="gist">Combine keyword search and semantic search to cover each other's blind spots.</div>
+  <ul class="tight">
+    <li><span class="lbl">Vector</span> — great at meaning/synonyms, bad at exact codes &amp; names.</li>
+    <li><span class="lbl">BM25</span> (keyword) — great at exact terms, bad at synonyms.</li>
+  </ul>
+  <div class="eg"><span class="eg-tag">Example</span>"Fix login error E-401" — vector finds troubleshooting docs by meaning; BM25 locks onto the exact code "E-401". Together = both.</div>
+  <p>Results fused (usually via <b>Reciprocal Rank Fusion</b>).</p>
+  <div class="key"><span class="k-ico">→</span><span>The more your data has exact IDs, codes, or names, the more hybrid beats pure vector. Often the production default.</span></div>
+</article>
+
+<article class="topic" id="rerank">
+  <h3><span class="id">4.7</span> Re-ranking</h3>
+  <div class="gist">A second, smarter model reorders the retrieved candidates to surface the best.</div>
+  <p>Two-stage retrieval: fast search casts a wide net (~25 candidates), then a slow-but-accurate <b>cross-encoder</b> re-scores them and keeps the top few.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Hiring — a quick resume screen shortlists 25; deep interviews pick the top 3. Fast filter + careful judgment.</div>
+  <p>Key difference: bi-encoder (retrieval) compares separate summaries; cross-encoder (rerank) examines query + doc <b>together</b> = more accurate.</p>
+  <div class="key"><span class="k-ico">→</span><span>Often the single biggest RAG quality boost. Lets you send fewer, better chunks (helps "lost in the middle").</span></div>
+</article>
+
+<article class="topic" id="pvrvf">
+  <h3><span class="id">4.8</span> Prompting vs RAG vs Fine-tuning</h3>
+  <div class="gist">The core customization decision.</div>
+  <p><b>Prompting</b> changes how you <em>ask</em>. <b>RAG</b> changes what it <em>knows</em>. <b>Fine-tuning</b> changes how it <em>behaves</em>.</p>
+  <div class="eg"><span class="eg-tag">Analogy (new hire)</span>Prompting = clear instructions. RAG = handing them reference docs. Fine-tuning = sending them to training.</div>
+  <p><b>The ladder — climb cheapest-first:</b> Prompting → RAG → Fine-tuning. They also stack (best systems combine all three).</p>
+  <div class="key"><span class="k-ico">!</span><span>#1 mistake: jumping to fine-tuning when a better prompt or RAG would solve it faster and cheaper. <b>Prompting + RAG is the sweet spot</b> for most cases.</span></div>
+</article>
+
+<!-- ============ CH 5 ============ -->
+<div class="chapter"><span class="num">CHAPTER 05</span><h2>Agents</h2></div>
+
+<article class="topic" id="agentic">
+  <h3><span class="id">5.1</span> Agentic AI</h3>
+  <div class="gist">LLMs that don't just answer — they plan, act, and use tools toward a goal.</div>
+  <p>Give it a <em>goal</em>, and it plans, acts, observes results, adjusts, and repeats. Built from an LLM (brain), <b>tools</b> (hands), <b>memory</b>, and a reasoning loop.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>An LLM is a consultant who answers questions; an agent is an employee you hand a project to — they break it down and get it done.</div>
+  <p>Runs the <b>ReAct loop</b>: Think → Act → Observe → repeat.</p>
+  <div class="key"><span class="k-ico">!</span><span>Errors compound over steps, and autonomy = real-world risk. <b>Start simple</b>: prompt → RAG → workflow → agent, only when truly needed.</span></div>
+</article>
+
+<article class="topic" id="mcp">
+  <h3><span class="id">5.2</span> MCP — Model Context Protocol</h3>
+  <div class="gist">An open standard connecting AI to tools — "USB-C for AI."</div>
+  <p>Build one MCP <b>server</b> per tool, and any MCP-compatible AI can use it — turning the N×M custom-integration nightmare into N+M. The AI (via a client) requests a tool with arguments; the server runs it and returns the result.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Before USB-C, every device had its own charger. One standard port = everything plugs in. MCP standardizes AI-to-tool connections.</div>
+  <div class="key"><span class="k-ico">!</span><span>Its fast rise brought real security issues (data leaks, tool poisoning). Sandbox servers and require human approval for sensitive actions.</span></div>
+</article>
+
+<article class="topic" id="toolcalling">
+  <h3><span class="id">5.3</span> Tool / Function Calling</h3>
+  <div class="gist">How an LLM uses external tools — the atomic unit of agency.</div>
+  <p>The LLM outputs a structured request ("call this function with these args"); <b>your code</b> runs it and feeds the result back. The LLM <em>decides &amp; directs; it never executes.</em></p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A manager who can't operate the machines — they write a work order ("run report X for customer 452"); a technician runs it and returns the result.</div>
+  <p>"Function calling" = original narrower term; "tool calling" = broader modern umbrella. Same mechanism.</p>
+  <div class="key"><span class="k-ico">→</span><span>Reliability lives or dies on <b>clear tool descriptions</b> (they're a mini-prompt). Always validate inputs before executing.</span></div>
+</article>
+
+<article class="topic" id="structured">
+  <h3><span class="id">5.4</span> Structured Outputs</h3>
+  <div class="gist">Force the LLM to return strict, machine-readable data (usually JSON).</div>
+  <p>Turns free-form prose into a fixed shape software can use. Strongest method: <b>constrained decoding</b> — invalid tokens are blocked as they're generated, so malformed output is impossible.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A fill-in-the-blank form vs a handwritten letter. Every response comes back in the same slots, so a machine can process thousands identically.</div>
+  <div class="key"><span class="k-ico">!</span><span>Guarantees valid <b>shape</b>, not correct <b>content</b> — the model can still hallucinate inside a perfectly-formatted structure.</span></div>
+</article>
+
+<article class="topic" id="multiagent">
+  <h3><span class="id">5.5</span> Multi-Agent Systems</h3>
+  <div class="gist">Several specialized agents collaborating — a team of specialists.</div>
+  <p>Instead of one generalist, use focused agents (each with its own role, context, and tools) coordinated by patterns like orchestrator/worker, pipeline, or debate. Bonus: they can <b>check each other's work</b>.</p>
+  <div class="eg"><span class="eg-tag">Example</span>Building software: an architect agent, a coder, a reviewer, a tester — coordinated like a real dev team.</div>
+  <div class="key"><span class="k-ico">!</span><span>Cost, latency, and errors compound across agents. Notoriously over-engineered — a <b>last resort</b>, only when the task truly needs specialization or parallelism.</span></div>
+</article>
+
+<!-- ============ CH 6 ============ -->
+<div class="chapter"><span class="num">CHAPTER 06</span><h2>Production</h2></div>
+
+<article class="topic" id="systemdesign">
+  <h3><span class="id">6.1</span> AI System Design</h3>
+  <div class="gist">Architecting the whole system, not just the model.</div>
+  <p>The model is only ~10–20% of the work. The rest: interface, <b>orchestration</b>, knowledge (RAG), tools, memory, <b>guardrails</b>, and <b>observability</b>.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A restaurant — a great chef (model) still fails without the kitchen, supply chain, waitstaff, and ability to handle a dinner rush.</div>
+  <p>Core decisions: the customization ladder, <b>model routing</b> (cheap model for easy requests, big one for hard), and the eternal triangle: <b>cost ⚖ latency ⚖ quality</b>.</p>
+  <div class="key"><span class="k-ico">→</span><span>Design for graceful failure, non-determinism, and swappable models. Start with the <b>simplest system</b> that meets the need.</span></div>
+</article>
+
+<article class="topic" id="inference">
+  <h3><span class="id">6.2</span> Inference Optimization</h3>
+  <div class="gist">Making each response faster, cheaper, and more scalable.</div>
+  <p>You train once but run inference <em>forever</em> — so it dominates lifetime cost. Techniques: shrink the model (<b>quantization</b>, distillation), serve smart (<b>KV caching</b>, <b>batching</b>), and generate cleverly (<b>speculative decoding</b>, caching, routing).</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Batching = a bus vs individual taxis. One pass through the model serves 40 users far more efficiently than 40 separate runs.</div>
+  <div class="key"><span class="k-ico">→</span><span>Metrics: latency (esp. time-to-first-token), throughput, cost. Simplest wins (caching, routing) often beat exotic tricks.</span></div>
+</article>
+
+<article class="topic" id="quant">
+  <h3><span class="id">6.3</span> Quantization</h3>
+  <div class="gist">Store the model's numbers in lower precision → smaller, faster, cheaper.</div>
+  <p>Use 8-bit or 4-bit instead of 16/32-bit. A model shrinks ~4× going 16-bit → 4-bit — the difference between needing many GPUs and fitting on one.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Saving a photo as a compressed JPEG instead of RAW — much smaller, loads faster, barely noticeable quality loss.</div>
+  <p>8-bit ≈ near-lossless (often a free lunch); 4-bit ≈ usually fine but task-dependent; below that, quality can fall off a cliff.</p>
+  <div class="key"><span class="k-ico">!</span><span>Quality loss is <b>silent and task-specific</b> — always evaluate the quantized model on your real workload before shipping.</span></div>
+</article>
+
+<article class="topic" id="caching">
+  <h3><span class="id">6.4</span> Caching</h3>
+  <div class="gist">Store expensive results and reuse them — compute once, serve many.</div>
+  <ul class="tight">
+    <li><span class="lbl">Exact-match</span> — identical request → stored answer.</li>
+    <li><span class="lbl">Semantic</span> — same <em>meaning</em> (via embeddings), even different words.</li>
+    <li><span class="lbl">Prefix caching</span> — reuse the processing of a shared long prompt.</li>
+  </ul>
+  <div class="eg"><span class="eg-tag">Analogy</span>A restaurant preps ingredients once in the morning and reuses them all service, instead of re-chopping per order.</div>
+  <div class="key"><span class="k-ico">!</span><span>Watch <b>staleness</b> (use expiration), too-loose semantic matches serving wrong answers, and privacy (don't share personalized answers across users).</span></div>
+</article>
+
+<article class="topic" id="kvcache">
+  <h3><span class="id">6.5</span> KV Caching</h3>
+  <div class="gist">Key-Value cache — reuse attention computations for past tokens.</div>
+  <p>Since LLMs generate one token at a time and each attends to all previous ones, the model stores the attention <b>Keys</b> and <b>Values</b> already computed, instead of recomputing them every step.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A running total — you keep the sum and just add the new number, rather than re-adding the whole column each time.</div>
+  <div class="key"><span class="k-ico">→</span><span>Dramatically faster generation (standard everywhere), but the cache grows with sequence length — long context = lots of GPU memory.</span></div>
+</article>
+
+<article class="topic" id="serving">
+  <h3><span class="id">6.6</span> vLLM vs TensorRT-LLM</h3>
+  <div class="gist">Inference-serving frameworks that run self-hosted LLMs efficiently.</div>
+  <table>
+    <tr><th></th><th>vLLM</th><th>TensorRT-LLM</th></tr>
+    <tr><td>Strength</td><td>Flexible, easy, hardware-agnostic</td><td>Max NVIDIA performance (+15–30%)</td></tr>
+    <tr><td>Setup</td><td>Minutes</td><td>1–2 weeks; rebuilds per model</td></tr>
+    <tr><td>Best for</td><td>Most teams, changing models</td><td>Stable, high-volume, NVIDIA-only</td></tr>
+  </table>
+  <div class="key"><span class="k-ico">→</span><span>Default to <b>vLLM</b>. SGLang is a strong rising option (great for shared prefixes); TGI is now deprecated. If you use an API, none of this is your concern.</span></div>
+</article>
+
+<article class="topic" id="docker">
+  <h3><span class="id">6.7</span> Docker</h3>
+  <div class="gist">Package an app with its entire environment into a portable container.</div>
+  <p>Runs identically anywhere — solving "but it works on my machine!" Especially vital for ML's fragile dependency trees (PyTorch, CUDA versions).</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Standardized shipping containers — a uniform box that fits any ship or truck, regardless of what's inside.</div>
+  <p>Flow: write a <b>Dockerfile</b> → build an <b>Image</b> → run it as a <b>Container</b>. Lightweight (shares the host OS) vs heavy VMs.</p>
+  <div class="key"><span class="k-ico">→</span><span>Guarantees <b>consistency, not correctness</b>. Watch image size, GPU setup, secrets, and persistent storage.</span></div>
+</article>
+
+<article class="topic" id="k8s">
+  <h3><span class="id">6.8</span> Kubernetes</h3>
+  <div class="gist">Orchestrates containers at scale — runs a whole fleet reliably.</div>
+  <p>Automatically schedules, <b>auto-scales</b>, <b>self-heals</b> (restarts crashed containers), load-balances, and does zero-downtime updates across many machines.</p>
+  <div class="eg"><span class="eg-tag">Analogy (thermostat)</span>You declare the <em>desired state</em> ("keep 10 copies running"), and K8s continuously works to maintain it despite failures.</div>
+  <div class="key"><span class="k-ico">!</span><span>Famously complex &amp; costly — adopt (preferably <b>managed</b>: GKE/EKS/AKS) only when scale justifies it. Simpler options often win for small workloads.</span></div>
+</article>
+
+<article class="topic" id="cloud">
+  <h3><span class="id">6.9</span> AWS / Azure / GCP</h3>
+  <div class="gist">The three big clouds where your AI systems actually run.</div>
+  <ul class="tight">
+    <li><span class="lbl">AWS</span> — broadest catalog, biggest ecosystem/jobs. Bedrock = widest model choice (incl. Claude). Safe default.</li>
+    <li><span class="lbl">Azure</span> — enterprise/Microsoft shops, compliance leader. Exclusive OpenAI/GPT access.</li>
+    <li><span class="lbl">GCP</span> — the AI/ML &amp; data cloud. Gemini/Vertex AI, TPUs, cheapest GPUs, best Kubernetes (GKE).</li>
+  </ul>
+  <div class="key"><span class="k-ico">!</span><span>Pricing is deliberately confusing — model your <b>real workload</b>, watch data-transfer (egress) fees and vendor lock-in.</span></div>
+</article>
+
+<article class="topic" id="cicd">
+  <h3><span class="id">6.10</span> CI/CD Pipelines</h3>
+  <div class="gist">Automate testing and shipping code — with eval gates for AI.</div>
+  <p><b>CI</b> auto-builds &amp; tests every change; <b>CD</b> auto-ships it. An assembly line with quality gates — fail a stage, and the bad change is halted.</p>
+  <div class="eg"><span class="eg-tag">The AI twist</span>Beyond code, it tests <em>models</em>: your eval suite (Ragas, faithfulness) runs automatically. A worse model scores low → <b>deploy blocked</b>. Evaluation becomes enforced, not hoped.</div>
+  <p>Safe rollouts: canary, blue-green, A/B, instant rollback.</p>
+  <div class="key"><span class="k-ico">→</span><span>Only as good as your tests. For AI, the eval gate must be <b>genuinely representative</b> or it waves bad models through.</span></div>
+</article>
+
+<article class="topic" id="monitoring">
+  <h3><span class="id">6.11</span> Monitoring &amp; Logging</h3>
+  <div class="gist">Watch the system in production and catch problems live.</div>
+  <p><b>Logging</b> records every event; <b>monitoring</b> watches metrics and alerts. Three tiers: operational (latency, errors), cost (tokens, spend), and — uniquely — quality (live eval, hallucination rate, user feedback, <b>drift</b>).</p>
+  <div class="eg"><span class="eg-tag">Key insight</span>AI degrades <em>silently</em> — no crash, just quietly worse answers as the world changes (drift). Only monitoring the right signals reveals it.</div>
+  <p><b>Tracing</b> follows one request through every stage — vital for debugging agents &amp; RAG.</p>
+  <div class="key"><span class="k-ico">!</span><span>Monitor <b>quality, not just uptime</b>. Logs hold user data — respect privacy (redact, restrict, retain-minimally).</span></div>
+</article>
+
+<article class="topic" id="scaling">
+  <h3><span class="id">6.12</span> Scaling AI Applications</h3>
+  <div class="gist">Handle growth reliably and affordably — a cost problem as much as a capacity one.</div>
+  <p>AI is brutal to scale (heavy, slow, expensive GPUs). Toolbox: <b>horizontal scaling</b> + auto-scaling, load balancing, <b>caching</b> (highest-leverage), inference optimization, <b>model routing</b>, async queuing, rate limiting.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Scaling a restaurant — more chefs (GPUs, scarce), a faster kitchen (optimization), handling rushes (auto-scaling), prepped ingredients (caching).</div>
+  <div class="key"><span class="k-ico">!</span><span>Cost scales with usage relentlessly — watch <b>cost-per-request</b> as closely as latency. Don't scale prematurely; chase the moving bottleneck with real metrics.</span></div>
+</article>
+
+<!-- ============ CH 7 ============ -->
+<div class="chapter"><span class="num">CHAPTER 07</span><h2>Trust &amp; Safety</h2></div>
+
+<article class="topic" id="ragas">
+  <h3><span class="id">7.1</span> Ragas &amp; LLM Evaluation</h3>
+  <div class="gist">Measuring whether your system actually works — at scale.</div>
+  <p>You can't unit-test non-deterministic output or eyeball it past a few dozen cases. <b>Ragas</b> defined the RAG metrics, split across the two failure points:</p>
+  <ul class="tight">
+    <li><span class="lbl">Retrieval</span> — context precision (retrieved stuff relevant?) + context recall (retrieved everything needed?)</li>
+    <li><span class="lbl">Generation</span> — faithfulness (answer supported by context?) + answer relevancy (addresses the question?)</li>
+  </ul>
+  <div class="eg"><span class="eg-tag">Why measure both</span>A legal RAG scored 0.91 faithfulness but missed statutes — its retriever was broken (recall 0.62). The answer was faithful to <em>wrongly-retrieved</em> context. Generation metrics alone hid it.</div>
+  <div class="key"><span class="k-ico">→</span><span>If you track one metric, make it <b>faithfulness</b> (hallucination). Uses LLM-as-judge; calibrate with human review.</span></div>
+</article>
+
+<article class="topic" id="hallucination">
+  <h3><span class="id">7.2</span> Hallucination Detection</h3>
+  <div class="gist">Catching confident-but-wrong output before it reaches users.</div>
+  <p>LLMs optimize for <em>plausibility, not truth</em> — fluency is identical whether right or wrong. Detect via: <b>grounding checks</b> (verify each claim against a source), <b>self-consistency</b> (inconsistent re-answers = fabrication), LLM-as-judge, and external verification.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A super-confident student who never says "I don't know" — smooth answers whether right or invented.</div>
+  <p>Prevent with RAG, "answer only from context / say I don't know" prompting, low temperature, and citations.</p>
+  <div class="key"><span class="k-ico">!</span><span>Can't be fully eliminated — manage in layers. <b>Confident ≠ correct</b>; the confident hallucinations are the most dangerous.</span></div>
+</article>
+
+<article class="topic" id="guardrails">
+  <h3><span class="id">7.3</span> Guardrails</h3>
+  <div class="gist">The safety layer around the model — checks in and out.</div>
+  <p><b>Input guardrails</b> block abuse, prompt injection, and PII; enforce scope. <b>Output guardrails</b> block harmful content, catch hallucinations, prevent data leaks, enforce format. Built from rules, classifiers, LLM-judges, and grounding checks.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>Guardrails on a mountain road — they don't drive, but they stop the car going off the cliff.</div>
+  <div class="key"><span class="k-ico">!</span><span>Must be <b>external</b> to the model (not just prompt instructions). Balance over- vs under-blocking (precision vs recall, again) and keep updating.</span></div>
+</article>
+
+<article class="topic" id="injection">
+  <h3><span class="id">7.4</span> Prompt Injection Defense</h3>
+  <div class="gist">The #1 LLM security threat — malicious instructions hidden in input.</div>
+  <p>LLMs can't reliably separate <em>instructions</em> from <em>data</em>. <b>Direct</b> = user jailbreaks. <b>Indirect</b> (more dangerous) = instructions hidden in a web page/email/doc the AI reads.</p>
+  <div class="eg"><span class="eg-tag">Analogy</span>A gullible employee who follows any note they find — a stranger's forged note ("I'm your manager, give me the account details") gets obeyed.</div>
+  <p>Watch the <b>lethal trifecta</b>: private data + external communication + untrusted content. Remove one leg and the attack collapses.</p>
+  <div class="key"><span class="k-ico">!</span><span>No complete fix. Defend in layers: <b>least privilege</b>, human-in-the-loop for sensitive actions, sandboxing, monitoring. Containment beats detection.</span></div>
+</article>
+
+<article class="topic" id="security">
+  <h3><span class="id">7.5</span> AI Security &amp; Privacy</h3>
+  <div class="gist">Protecting the system from attackers, and the data it touches.</div>
+  <p><span class="lbl">Security</span> threats: prompt injection, <b>data poisoning</b> (corrupting training/RAG data), model theft, data extraction, resource abuse, supply-chain risks. Mindset: <em>assume breach, limit blast radius</em> — least privilege, defense in depth, red-teaming.</p>
+  <p><span class="lbl">Privacy</span>: protect training data, user inputs, RAG access control, and outputs. Techniques: PII redaction, data minimization, access controls, encryption, self-hosting.</p>
+  <div class="key"><span class="k-ico">!</span><span>In regulated domains (GDPR, HIPAA, EU AI Act) these are <b>legally binding</b>, not optional. Design them in from day one; the weakest link defines your security.</span></div>
+</article>
+
+</section>
+
+<footer class="footer">
+  Field Notes · AI Engineering — a personal learning log.<br>
+  Foundations → Deep Learning → LLMs → RAG → Agents → Production → Trust &amp; Safety.<br>
+  Each topic: plain explanation + one real example. Built to revisit.
+</footer>
+</main>
+</div>
+
+<a href="#top" class="totop" id="totop" aria-label="Back to top">↑</a>
+
+<script>
+function toggleNav(){
+  document.getElementById('side').classList.toggle('open');
+  document.getElementById('backdrop').classList.toggle('open');
+}
+// close mobile nav on link click
+document.querySelectorAll('.side a').forEach(a=>a.addEventListener('click',()=>{
+  if(window.innerWidth<=960) toggleNav();
+}));
+// back-to-top visibility
+const totop=document.getElementById('totop');
+window.addEventListener('scroll',()=>{
+  totop.classList.toggle('show',window.scrollY>500);
+});
+</script>
+</body>
+</html>

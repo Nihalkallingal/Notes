@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angular Signals — Interview Prep</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2027;
+    --panel-2: #222b34;
+    --text: #e6edf3;
+    --muted: #9aa7b2;
+    --accent: #4ea1ff;
+    --accent-2: #7ee787;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+    --border: #2d3742;
+    --code-bg: #11161c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    background: linear-gradient(135deg, #1b2735, #243447);
+    padding: 48px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 8px; font-size: 2.2rem; }
+  header p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  .layout { display: flex; max-width: 1200px; margin: 0 auto; }
+  nav {
+    position: sticky; top: 0; align-self: flex-start;
+    width: 240px; padding: 24px 16px; height: 100vh; overflow-y: auto;
+    border-right: 1px solid var(--border); font-size: 0.9rem;
+  }
+  nav a { display: block; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+  nav a:hover { background: var(--panel-2); color: var(--text); }
+  main { flex: 1; padding: 32px 28px; min-width: 0; }
+  section { margin-bottom: 48px; scroll-margin-top: 16px; }
+  h2 {
+    font-size: 1.6rem; border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px; margin-top: 0;
+  }
+  h3 { font-size: 1.2rem; color: var(--accent); margin-top: 28px; }
+  code {
+    background: var(--code-bg); padding: 2px 6px; border-radius: 4px;
+    font-family: "SF Mono", Consolas, "Courier New", monospace; font-size: 0.9em; color: #ffd9a0;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; color: #d7e3ee; }
+  .k { color: #ff7b72; }    /* keyword */
+  .f { color: #d2a8ff; }    /* function */
+  .s { color: #a5d6ff; }    /* string */
+  .c { color: #8b949e; font-style: italic; }  /* comment */
+  .callout { border-left: 4px solid var(--accent); background: var(--panel); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .callout.warn { border-color: var(--warn); }
+  .callout.danger { border-color: var(--danger); }
+  .callout.tip { border-color: var(--accent-2); }
+  .callout .label { font-weight: 700; display: block; margin-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel-2); }
+  .qa { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 4px 18px; margin: 12px 0; }
+  .qa summary { cursor: pointer; font-weight: 600; padding: 12px 0; color: var(--accent); }
+  .qa[open] summary { color: var(--accent-2); }
+  .pill { display: inline-block; background: var(--panel-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; color: var(--muted); margin-right: 6px; }
+  footer { text-align: center; padding: 32px; color: var(--muted); border-top: 1px solid var(--border); }
+  @media (max-width: 800px) { nav { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Angular Signals — Interview Prep 🚦</h1>
+  <p>A complete, hands-on reference built from everything covered in the lesson</p>
+</header>
+
+<div class="layout">
+<nav>
+  <strong style="display:block;padding:6px 10px;color:var(--text)">Contents</strong>
+  <a href="#intro">1. What is a Signal?</a>
+  <a href="#reactivity">2. Reactivity</a>
+  <a href="#reading">3. Reading a Signal</a>
+  <a href="#updating">4. set vs update</a>
+  <a href="#computed">5. computed()</a>
+  <a href="#effect">6. effect()</a>
+  <a href="#immutability">7. Arrays & Objects</a>
+  <a href="#getter">8. Getter vs computed</a>
+  <a href="#gotchas">9. Common Gotchas</a>
+  <a href="#rxjs">10. Signals vs RxJS</a>
+  <a href="#feature">11. Full Feature Code</a>
+  <a href="#questions">12. Interview Q&amp;A</a>
+  <a href="#cheatsheet">13. Cheat Sheet</a>
+  <strong style="display:block;padding:14px 10px 4px;color:var(--accent-2);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em">Advanced</strong>
+  <a href="#inputs">14. Signal Inputs</a>
+  <a href="#model">15. Two-way (model)</a>
+  <a href="#outputs">16. output()</a>
+  <a href="#queries">17. Signal Queries</a>
+  <a href="#untracked">18. untracked()</a>
+  <a href="#cleanup">19. Effect Cleanup</a>
+  <a href="#equality">20. Equality Functions</a>
+  <a href="#linkedsignal">21. linkedSignal()</a>
+  <a href="#resource">22. resource()</a>
+  <a href="#interop">23. RxJS Interop</a>
+  <a href="#adv-questions">24. Advanced Q&amp;A</a>
+</nav>
+
+<main>
+
+<section id="intro">
+  <h2>1. What is a Signal?</h2>
+  <p>A <strong>signal</strong> is a reactive value holder — a "smart variable" that <em>announces</em> when it changes, so Angular knows exactly what to update.</p>
+  <h3>The problem it solves</h3>
+  <ul>
+    <li><strong>Old way (Zone.js):</strong> Angular watched the <em>entire</em> app and guessed what changed on every event — like a guard checking every room when anyone moves. Broad and wasteful.</li>
+    <li><strong>Signals way:</strong> the signal tells Angular <em>exactly</em> what changed and <em>exactly</em> which part of the screen depends on it. Precise and fast.</li>
+  </ul>
+  <pre><code><span class="k">import</span> { signal } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+count = <span class="f">signal</span>(<span class="s">0</span>); <span class="c">// 0 is the initial value</span></code></pre>
+  <div class="callout tip"><span class="label">🧠 Analogy</span>A signal is a live "smart variable": a normal variable just holds a value; a signal also raises its hand and says "I changed!"</div>
+</section>
+
+<section id="reactivity">
+  <h2>2. Reactivity (the big idea)</h2>
+  <p><strong>Reactivity = values that update themselves when their inputs change.</strong></p>
+  <pre><code><span class="c">// Non-reactive: a frozen snapshot</span>
+<span class="k">let</span> a = <span class="s">2</span>;
+<span class="k">let</span> b = a * <span class="s">2</span>;   <span class="c">// b is 4</span>
+a = <span class="s">5</span>;           <span class="c">// b is STILL 4 — it doesn't care</span>
+
+<span class="c">// Reactive: a live mirror</span>
+a = <span class="f">signal</span>(<span class="s">2</span>);
+b = <span class="f">computed</span>(() => a() * <span class="s">2</span>);  <span class="c">// b is 4</span>
+a.<span class="f">set</span>(<span class="s">5</span>);                    <span class="c">// b is NOW 10, automatically</span></code></pre>
+  <div class="callout tip"><span class="label">🧠 Analogy</span>A normal variable is a <em>photo</em> (frozen). A reactive value is a <em>live mirror</em> (always current). You describe relationships once; the system keeps everything in sync forever.</div>
+</section>
+
+<section id="reading">
+  <h2>3. Reading a Signal</h2>
+  <p>A signal is a <strong>function</strong>. To read its value, you <strong>call it</strong> with parentheses.</p>
+  <pre><code>count()   <span class="c">// ✅ reads the value → 0</span>
+count     <span class="c">// ❌ this is the signal itself, not the value</span></code></pre>
+  <p>In the template:</p>
+  <pre><code>{{ count() }}   <span class="c">// ✅ shows 0</span>
+{{ count }}     <span class="c">// ❌ prints the function object</span></code></pre>
+  <div class="callout"><span class="label">Why it matters</span>Calling the signal tells Angular "I'm reading you right now" — that's how it registers this exact spot as a dependency and knows to update it later. <strong>Reading always needs <code>()</code></strong>, in templates and TypeScript alike.</div>
+</section>
+
+<section id="updating">
+  <h2>4. Updating: <code>set</code> vs <code>update</code></h2>
+  <table>
+    <tr><th>Method</th><th>Use when</th><th>Example</th></tr>
+    <tr><td><code>.set(value)</code></td><td>The new value does <strong>not</strong> depend on the old one</td><td><code>count.set(0)</code></td></tr>
+    <tr><td><code>.update(fn)</code></td><td>The new value is <strong>derived from</strong> the old one</td><td><code>count.update(c =&gt; c + 1)</code></td></tr>
+  </table>
+  <div class="callout danger"><span class="label">⚠️ Never reassign</span>Don't do <code>count = 5</code>. That destroys the signal and replaces it with a plain number. Always go through <code>.set()</code> or <code>.update()</code>.</div>
+  <div class="callout tip"><span class="label">🧠 Analogy</span><code>.set()</code> = "forget what you had, here's the new value." <code>.update()</code> = "take what you've got and transform it."</div>
+</section>
+
+<section id="computed">
+  <h2>5. Computed Signals — <code>computed()</code></h2>
+  <p>Creates a <strong>derived, read-only</strong> signal that recalculates automatically when its dependencies change.</p>
+  <pre><code><span class="k">import</span> { computed } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+doubleCount = <span class="f">computed</span>(() => <span class="k">this</span>.count() * <span class="s">2</span>);</code></pre>
+  <ul>
+    <li><strong>Read-only:</strong> no <code>.set()</code> / <code>.update()</code> — it's derived, not owned. Trying to set it is a compile error.</li>
+    <li><strong>Lazy + cached:</strong> only recomputes when a dependency actually changes; otherwise returns the cached result.</li>
+    <li><strong>Auto-tracked:</strong> reading <code>this.count()</code> inside registers <code>count</code> as a dependency.</li>
+  </ul>
+  <div class="callout tip"><span class="label">🧠 Analogy</span>Like a spreadsheet formula cell: <code>B1 = A1 * 2</code>. Change A1 and B1 updates itself. You never edit B1 directly.</div>
+</section>
+
+<section id="effect">
+  <h2>6. Effects — <code>effect()</code></h2>
+  <p>Runs a <strong>side effect</strong> (logging, saving to storage, syncing) whenever a signal it reads changes.</p>
+  <pre><code><span class="k">import</span> { effect } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="f">constructor</span>() {
+  <span class="f">effect</span>(() => {
+    console.<span class="f">log</span>(<span class="s">'Count is now:'</span>, <span class="k">this</span>.count());
+  });
+}</code></pre>
+  <ul>
+    <li>Runs <strong>once immediately</strong> to establish dependencies, then re-runs on every change.</li>
+    <li>Must be created in an <strong>injection context</strong> (the constructor is one; <code>ngOnInit</code> is not).</li>
+  </ul>
+  <div class="callout danger"><span class="label">⚠️ Golden rule: never write to a signal inside an effect</span>The effect reads the signal (dependency) and writing to it re-triggers the effect → infinite loop. It's like a mic picking up its own speaker — feedback screech. For derived values, use <code>computed()</code> instead.</div>
+</section>
+
+<section id="immutability">
+  <h2>7. Signals holding Arrays / Objects</h2>
+  <div class="callout warn"><span class="label">Golden rule</span>Never mutate the existing array/object. Always create a <strong>new</strong> one. A signal only fires when it gets a <strong>new reference</strong> — mutating in place looks like "no change."</div>
+  <pre><code>toggleTodo(id: <span class="k">number</span>) {
+  <span class="k">this</span>.todos.<span class="f">update</span>(list =>
+    list.<span class="f">map</span>(todo =>
+      todo.id === id ? { ...todo, done: !todo.done } : todo
+    )
+  );
+}</code></pre>
+  <ul>
+    <li><code>.map()</code> returns a <strong>brand-new array</strong> (never mutates the original).</li>
+    <li><code>{ ...todo, done: !todo.done }</code> builds a <strong>new object</strong> with one field changed.</li>
+    <li>Unmatched items are returned unchanged.</li>
+  </ul>
+  <div class="callout tip"><span class="label">🧠 Analogy</span>A signal notices when you hand it a <em>different box</em>, not when you quietly rearrange the contents of the box it already has.</div>
+</section>
+
+<section id="getter">
+  <h2>8. Getter vs <code>computed()</code></h2>
+  <p>A plain getter <code>get itemsLeft() { return ... }</code> <em>works visually</em>, but <code>computed()</code> is better:</p>
+  <table>
+    <tr><th></th><th>Getter</th><th>computed()</th></tr>
+    <tr><td>Runs</td><td>Every change-detection cycle</td><td>Only when a dependency changes</td></tr>
+    <tr><td>Caching</td><td>None — recomputes always</td><td>Lazy + cached</td></tr>
+    <tr><td>Composable</td><td>No (invisible to signals)</td><td>Yes (feed into other computed/effect)</td></tr>
+    <tr><td>Zoneless-ready</td><td>Risky</td><td>Yes — drives change detection</td></tr>
+  </table>
+  <div class="callout"><span class="label">Rule of thumb</span>Trivial + used once → inline/getter is fine. Reused or non-trivial → name it with <code>computed()</code>.</div>
+</section>
+
+<section id="gotchas">
+  <h2>9. Common Gotchas (debugged in the lesson)</h2>
+
+  <h3>① <code>effect()</code> in <code>ngOnInit</code> throws</h3>
+  <p><code>NG0203: effect() can only be used within an injection context.</code> The injection context is only "open" during the constructor. Move effects into the <strong>constructor</strong> (or pass an <code>Injector</code> as an advanced escape hatch).</p>
+
+  <h3>② Theme didn't persist — effect timing</h3>
+  <p>Loading saved state in <code>ngOnInit</code> failed because the save-effect runs <em>immediately in the constructor</em> and overwrote storage with the default <em>before</em> <code>ngOnInit</code> read it. Fix: restore state <strong>before</strong> the effect runs — ideally right in the signal's initializer.</p>
+  <pre><code><span class="c">// ✅ Born with the saved value, so the effect saves the right thing</span>
+theme = <span class="f">signal</span>&lt;<span class="s">'light'</span> | <span class="s">'dark'</span>&gt;(
+  (localStorage.<span class="f">getItem</span>(<span class="s">'theme'</span>) <span class="k">as</span> <span class="s">'light'</span> | <span class="s">'dark'</span>) || <span class="s">'light'</span>
+);</code></pre>
+
+  <h3>③ <code>@for</code> error on Angular 16</h3>
+  <p>The <code>@for</code> control-flow block needs <strong>Angular 17+</strong>. On v16 use the classic <code>*ngFor</code>:</p>
+  <pre><code>&lt;p *ngFor=<span class="s">"let todo of todos()"</span>&gt;{{ todo.title }}&lt;/p&gt;</code></pre>
+
+  <h3>④ Mutating an array signal</h3>
+  <p>Pushing into the same array won't trigger updates — create a new array (see §7).</p>
+</section>
+
+<section id="rxjs">
+  <h2>10. Signals vs RxJS</h2>
+  <p class="pill">Rule of thumb</p>
+  <p><strong>Signals for local/synchronous UI state. RxJS for async streams & events over time.</strong></p>
+  <table>
+    <tr><th></th><th>Signals</th><th>RxJS (Observables)</th></tr>
+    <tr><td>Best for</td><td>Component/UI state, derived values</td><td>HTTP, websockets, debounced search, event streams</td></tr>
+    <tr><td>Nature</td><td>Synchronous value (always has a current value)</td><td>Async stream over time (may emit 0..∞)</td></tr>
+    <tr><td>Read</td><td>Call it: <code>count()</code></td><td>Subscribe / <code>async</code> pipe</td></tr>
+    <tr><td>Operators</td><td>Few (set/update/computed/effect)</td><td>Hundreds (map, filter, debounceTime, switchMap…)</td></tr>
+    <tr><td>Cleanup</td><td>Automatic</td><td>Must unsubscribe (or use <code>async</code> pipe / takeUntilDestroyed)</td></tr>
+  </table>
+  <div class="callout tip"><span class="label">Bridge</span>Angular offers <code>toSignal()</code> and <code>toObservable()</code> (from <code>@angular/core/rxjs-interop</code>) to convert between the two when you need both worlds.</div>
+</section>
+
+<section id="feature">
+  <h2>11. Full Feature Code (Todo + Theme)</h2>
+  <p>Everything wired together: writable signals, computed, effect, immutability, and persistence.</p>
+  <h3>app.component.ts</h3>
+  <pre><code><span class="k">import</span> { Component, computed, signal, effect } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="f">@Component</span>({
+  selector: <span class="s">'app-root'</span>,
+  templateUrl: <span class="s">'./app.component.html'</span>,
+  styleUrls: [<span class="s">'./app.component.scss'</span>]
+})
+<span class="k">export class</span> AppComponent {
+  <span class="c">// born with the saved theme so the effect won't clobber it</span>
+  theme = <span class="f">signal</span>&lt;<span class="s">'light'</span> | <span class="s">'dark'</span>&gt;(
+    (localStorage.<span class="f">getItem</span>(<span class="s">'theme'</span>) <span class="k">as</span> <span class="s">'light'</span> | <span class="s">'dark'</span>) || <span class="s">'light'</span>
+  );
+  themeClass = <span class="f">computed</span>(() => <span class="k">this</span>.theme() === <span class="s">'light'</span> ? <span class="s">'light-theme'</span> : <span class="s">'dark-theme'</span>);
+
+  todos = <span class="f">signal</span>([
+    { id: <span class="s">1</span>, title: <span class="s">'Learn signals'</span>, done: <span class="k">false</span> },
+    { id: <span class="s">2</span>, title: <span class="s">'Learn computed'</span>, done: <span class="k">false</span> },
+    { id: <span class="s">3</span>, title: <span class="s">'Learn effects'</span>, done: <span class="k">false</span> },
+  ]);
+  itemsLeft = <span class="f">computed</span>(() => <span class="k">this</span>.todos().<span class="f">filter</span>(t => !t.done).length);
+
+  <span class="f">constructor</span>() {
+    <span class="f">effect</span>(() => localStorage.<span class="f">setItem</span>(<span class="s">'theme'</span>, <span class="k">this</span>.theme()));
+  }
+
+  toggleTodo(id: <span class="k">number</span>) {
+    <span class="k">this</span>.todos.<span class="f">update</span>(list =>
+      list.<span class="f">map</span>(t => t.id === id ? { ...t, done: !t.done } : t));
+  }
+  toggleTheme() {
+    <span class="k">this</span>.theme.<span class="f">update</span>(t => t === <span class="s">'light'</span> ? <span class="s">'dark'</span> : <span class="s">'light'</span>);
+  }
+}</code></pre>
+
+  <h3>app.component.html</h3>
+  <pre><code>&lt;div [class]=<span class="s">"themeClass()"</span>&gt;
+  &lt;p *ngFor=<span class="s">"let todo of todos()"</span> (click)=<span class="s">"toggleTodo(todo.id)"</span>&gt;
+    {{ todo.title }} — {{ todo.done }}
+  &lt;/p&gt;
+  &lt;p&gt;{{ itemsLeft() }} items left&lt;/p&gt;
+  &lt;button (click)=<span class="s">"toggleTheme()"</span>&gt;Toggle theme&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+  <h3>app.component.scss</h3>
+  <pre><code>.light-theme { background-color: <span class="s">#fff</span>; color: <span class="s">#000</span>; }
+.dark-theme  { background-color: <span class="s">#000</span>; color: <span class="s">#fff</span>; }</code></pre>
+</section>
+
+<section id="questions">
+  <h2>12. Interview Q&amp;A</h2>
+
+  <details class="qa"><summary>Q: What is a signal and why did Angular introduce them?</summary>
+  <p>A signal is a reactive wrapper around a value that notifies consumers when it changes. They give Angular <strong>fine-grained reactivity</strong> — updating only what actually depends on the changed value — reducing reliance on Zone.js and enabling future <strong>zoneless</strong> change detection.</p></details>
+
+  <details class="qa"><summary>Q: Why do you call a signal with parentheses?</summary>
+  <p>Signals are functions. Calling <code>count()</code> reads the current value <em>and</em> registers the caller as a dependency, so the framework knows to re-run that consumer when the value changes.</p></details>
+
+  <details class="qa"><summary>Q: Difference between <code>set</code> and <code>update</code>?</summary>
+  <p><code>set(v)</code> replaces the value outright. <code>update(fn)</code> computes the new value from the current one. Use <code>update</code> for increments/toggles where the new value depends on the old.</p></details>
+
+  <details class="qa"><summary>Q: What is a computed signal? Is it cached?</summary>
+  <p>A read-only signal derived from other signals. It's <strong>lazy</strong> (computes only when read) and <strong>cached</strong> (re-runs only when a tracked dependency changes). You can't write to it.</p></details>
+
+  <details class="qa"><summary>Q: What is an effect and what's the #1 rule?</summary>
+  <p>An effect runs a side effect whenever a signal it reads changes. <strong>Never write to a signal inside an effect</strong> — it causes an infinite loop. Use <code>computed()</code> for derived state instead.</p></details>
+
+  <details class="qa"><summary>Q: Why does <code>effect()</code> fail in <code>ngOnInit</code>?</summary>
+  <p>Effects must be created in an <strong>injection context</strong>, which is active during the constructor but not in <code>ngOnInit</code>. Create effects in the constructor, or pass an explicit <code>Injector</code>.</p></details>
+
+  <details class="qa"><summary>Q: How do you update a signal that holds an array or object?</summary>
+  <p>Immutably — return a <strong>new</strong> array/object (e.g. via <code>map</code>/spread). Signals detect change by reference, so mutating in place won't trigger updates.</p></details>
+
+  <details class="qa"><summary>Q: Signals vs RxJS — when do you use each?</summary>
+  <p>Signals for synchronous local UI state and derived values; RxJS for asynchronous streams (HTTP, websockets, debounced input). Bridge with <code>toSignal()</code> / <code>toObservable()</code>.</p></details>
+
+  <details class="qa"><summary>Q: Getter vs computed for derived values?</summary>
+  <p>A getter recomputes on every change-detection cycle and isn't reactive/composable. <code>computed()</code> is lazy, cached, composable, and zoneless-ready — preferred for anything non-trivial or reused.</p></details>
+
+  <details class="qa"><summary>Q: Are computed signals writable?</summary>
+  <p>No. <code>computed()</code> returns a read-only <code>Signal</code> (no <code>set</code>/<code>update</code>). Attempting to write is a TypeScript compile error.</p></details>
+</section>
+
+<section id="cheatsheet">
+  <h2>13. Cheat Sheet</h2>
+  <pre><code><span class="c">// create</span>
+count = <span class="f">signal</span>(<span class="s">0</span>);
+name  = <span class="f">signal</span>&lt;<span class="k">string</span>&gt;(<span class="s">'Nihal'</span>);
+
+<span class="c">// read (always with parens)</span>
+count();
+
+<span class="c">// write</span>
+count.<span class="f">set</span>(<span class="s">5</span>);
+count.<span class="f">update</span>(c => c + <span class="s">1</span>);
+
+<span class="c">// derive (read-only, lazy, cached)</span>
+double = <span class="f">computed</span>(() => count() * <span class="s">2</span>);
+
+<span class="c">// side effect (constructor only; never write a signal here)</span>
+<span class="f">effect</span>(() => console.<span class="f">log</span>(count()));
+
+<span class="c">// arrays/objects → new reference</span>
+items.<span class="f">update</span>(list => [...list, newItem]);</code></pre>
+</section>
+
+<!-- ============ ADVANCED ============ -->
+
+<section id="inputs">
+  <h2>14. Signal Inputs — <code>input()</code> <span class="pill">Angular 17.1+</span></h2>
+  <p>The modern replacement for the <code>@Input()</code> decorator. A component input that <strong>is a signal</strong> — read it with <code>()</code>, and it integrates with <code>computed</code>/<code>effect</code> automatically.</p>
+  <pre><code><span class="k">import</span> { Component, input } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="f">@Component</span>({ selector: <span class="s">'user-card'</span>, <span class="c">/* ... */</span> })
+<span class="k">export class</span> UserCardComponent {
+  <span class="c">// optional input, default undefined</span>
+  name = <span class="f">input</span>&lt;<span class="k">string</span>&gt;();
+
+  <span class="c">// optional with a default value</span>
+  role = <span class="f">input</span>(<span class="s">'guest'</span>);
+
+  <span class="c">// REQUIRED input — caller must provide it</span>
+  userId = <span class="f">input</span>.<span class="f">required</span>&lt;<span class="k">number</span>&gt;();
+
+  <span class="c">// derived from an input — fully reactive</span>
+  greeting = <span class="f">computed</span>(() => <span class="s">`Hello, ${</span><span class="k">this</span>.name()<span class="s">}`</span>);
+}</code></pre>
+  <p>Used by the parent exactly like before:</p>
+  <pre><code>&lt;user-card [name]=<span class="s">"'Nihal'"</span> [userId]=<span class="s">"42"</span> /&gt;</code></pre>
+
+  <h3>Transforms &amp; aliases</h3>
+  <pre><code><span class="c">// transform: coerce/clean the incoming value</span>
+disabled = <span class="f">input</span>(<span class="k">false</span>, { transform: booleanAttribute });
+<span class="c">// alias: external name differs from the property name</span>
+value = <span class="f">input</span>(<span class="s">0</span>, { alias: <span class="s">'count'</span> });</code></pre>
+
+  <div class="callout"><span class="label">@Input() vs input()</span>
+  <table style="margin:8px 0 0">
+    <tr><th></th><th>@Input() decorator</th><th>input() function</th></tr>
+    <tr><td>Type</td><td>Plain property</td><td>Read-only signal</td></tr>
+    <tr><td>Read</td><td><code>this.name</code></td><td><code>this.name()</code></td></tr>
+    <tr><td>Reactive</td><td>Needs <code>ngOnChanges</code></td><td>Works in <code>computed</code>/<code>effect</code> natively</td></tr>
+    <tr><td>Required</td><td><code>@Input({ required: true })</code></td><td><code>input.required()</code></td></tr>
+  </table></div>
+  <div class="callout warn"><span class="label">⚠️ Read-only</span>Signal inputs are <strong>read-only</strong> — you can't <code>.set()</code> them. The value flows in from the parent. (For writable, see <code>model()</code> below.)</div>
+</section>
+
+<section id="model">
+  <h2>15. Two-way Binding — <code>model()</code> <span class="pill">Angular 17.2+</span></h2>
+  <p>A <strong>writable</strong> signal input that supports two-way binding with the <code>[(...)]</code> "banana-in-a-box" syntax. The child can change it <em>and</em> notify the parent.</p>
+  <pre><code><span class="k">import</span> { Component, model } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="f">@Component</span>({ selector: <span class="s">'toggle-switch'</span>, <span class="c">/* ... */</span> })
+<span class="k">export class</span> ToggleSwitch {
+  checked = <span class="f">model</span>(<span class="k">false</span>); <span class="c">// writable AND two-way bindable</span>
+
+  toggle() {
+    <span class="k">this</span>.checked.<span class="f">update</span>(v => !v); <span class="c">// updates child + emits to parent</span>
+  }
+}</code></pre>
+  <p>Parent binds both directions at once:</p>
+  <pre><code>&lt;toggle-switch [(checked)]=<span class="s">"isOn"</span> /&gt;</code></pre>
+  <div class="callout tip"><span class="label">How it works</span><code>model('x')</code> is sugar for an <code>input</code> named <code>x</code> <em>plus</em> an <code>output</code> named <code>xChange</code> — the exact convention Angular's two-way binding looks for.</div>
+</section>
+
+<section id="outputs">
+  <h2>16. Outputs — <code>output()</code> <span class="pill">Angular 17.3+</span></h2>
+  <p>The function-based replacement for <code>@Output()</code> + <code>EventEmitter</code>. Cleaner, fully typed. <em>(Note: outputs are not signals — they're event emitters — but they're part of the same modern API family.)</em></p>
+  <pre><code><span class="k">import</span> { Component, output } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="k">export class</span> SearchBox {
+  search = <span class="f">output</span>&lt;<span class="k">string</span>&gt;(); <span class="c">// typed event</span>
+
+  onType(text: <span class="k">string</span>) {
+    <span class="k">this</span>.search.<span class="f">emit</span>(text); <span class="c">// fire the event</span>
+  }
+}</code></pre>
+  <pre><code>&lt;search-box (search)=<span class="s">"handleSearch($event)"</span> /&gt;</code></pre>
+  <div class="callout"><span class="label">vs @Output()</span>No need to instantiate <code>new EventEmitter()</code>; <code>output()</code> returns an <code>OutputEmitterRef</code> with a clean <code>.emit()</code> API and better type inference.</div>
+</section>
+
+<section id="queries">
+  <h2>17. Signal Queries — <code>viewChild()</code> / <code>contentChild()</code> <span class="pill">Angular 17.2+</span></h2>
+  <p>Signal versions of <code>@ViewChild</code> / <code>@ContentChild</code>. The query result is a signal — no more "undefined until <code>ngAfterViewInit</code>" surprises; you just read it reactively.</p>
+  <pre><code><span class="k">import</span> { Component, viewChild, viewChildren, ElementRef } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="k">export class</span> Form {
+  <span class="c">// single element (signal, may be undefined until rendered)</span>
+  nameInput = <span class="f">viewChild</span>&lt;ElementRef&gt;(<span class="s">'nameInput'</span>);
+
+  <span class="c">// required → never undefined once view is ready</span>
+  submitBtn = <span class="f">viewChild</span>.<span class="f">required</span>&lt;ElementRef&gt;(<span class="s">'submitBtn'</span>);
+
+  <span class="c">// multiple elements → signal of a readonly array</span>
+  items = <span class="f">viewChildren</span>&lt;ElementRef&gt;(<span class="s">'item'</span>);
+
+  focusName() {
+    <span class="k">this</span>.nameInput()?.nativeElement.<span class="f">focus</span>();
+  }
+}</code></pre>
+  <div class="callout tip"><span class="label">Why it's better</span>Because it's a signal, you can react to query results in a <code>computed</code> or <code>effect</code> instead of relying on lifecycle hooks like <code>ngAfterViewInit</code>.</div>
+</section>
+
+<section id="untracked">
+  <h2>18. <code>untracked()</code> <span class="pill">Angular 16+</span></h2>
+  <p>Reads a signal <strong>without</strong> registering it as a dependency. Use it inside an <code>effect</code>/<code>computed</code> when you want the <em>current value</em> but don't want changes to that signal to trigger a re-run.</p>
+  <pre><code><span class="k">import</span> { effect, untracked } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="f">effect</span>(() => {
+  <span class="c">// re-runs ONLY when userId changes...</span>
+  <span class="k">const</span> id = <span class="k">this</span>.userId();
+  <span class="c">// ...reads currentTab WITHOUT depending on it</span>
+  <span class="k">const</span> tab = <span class="f">untracked</span>(() => <span class="k">this</span>.currentTab());
+  <span class="k">this</span>.analytics.<span class="f">log</span>(id, tab);
+});</code></pre>
+  <div class="callout"><span class="label">Mental model</span>Inside a reactive context, <em>every</em> signal you call becomes a dependency. <code>untracked()</code> is the opt-out — "let me peek at this value without subscribing to it."</div>
+</section>
+
+<section id="cleanup">
+  <h2>19. Effect Cleanup — <code>onCleanup</code> <span class="pill">Angular 16+</span></h2>
+  <p>An effect can register a cleanup callback that runs <strong>before the next run</strong> and <strong>when the effect is destroyed</strong>. Essential for timers, subscriptions, or listeners so you don't leak.</p>
+  <pre><code><span class="f">effect</span>((onCleanup) => {
+  <span class="k">const</span> id = <span class="k">this</span>.activeId();
+  <span class="k">const</span> timer = <span class="f">setInterval</span>(() => poll(id), <span class="s">1000</span>);
+
+  onCleanup(() => <span class="f">clearInterval</span>(timer)); <span class="c">// tidy up before re-run / on destroy</span>
+});</code></pre>
+  <div class="callout warn"><span class="label">Remember</span>Effects created in an injection context are <strong>auto-destroyed</strong> with their component. <code>onCleanup</code> handles the <em>resources inside</em> the effect, not the effect itself.</div>
+</section>
+
+<section id="equality">
+  <h2>20. Equality Functions <span class="pill">Angular 16+</span></h2>
+  <p>By default signals use <code>Object.is</code> to decide if the value "changed." You can supply a custom <code>equal</code> function to skip notifications for values you consider equivalent.</p>
+  <pre><code><span class="c">// won't fire if the new object is deep-equal to the old</span>
+user = <span class="f">signal</span>(initialUser, { equal: _.isEqual });
+
+<span class="c">// also available on computed</span>
+total = <span class="f">computed</span>(() => expensive(), { equal: (a, b) => a === b });</code></pre>
+  <div class="callout"><span class="label">Why</span>Prevents needless recomputations/re-renders when a "new" value is logically the same. Default <code>Object.is</code> means a new array/object reference <em>always</em> counts as changed (hence the immutability rule).</div>
+</section>
+
+<section id="linkedsignal">
+  <h2>21. <code>linkedSignal()</code> <span class="pill">Angular 19+</span></h2>
+  <p>A <strong>writable</strong> signal that also <em>resets/derives</em> from a source — think "a <code>computed</code> you're allowed to override." Perfect for state that should follow a source but still be locally editable.</p>
+  <pre><code><span class="k">import</span> { linkedSignal } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+<span class="c">// selectedOption resets whenever the options list changes,</span>
+<span class="c">// but the user can still pick a different one in between</span>
+selected = <span class="f">linkedSignal</span>(() => <span class="k">this</span>.options()[<span class="s">0</span>]);
+
+choose(opt: Option) {
+  <span class="k">this</span>.selected.<span class="f">set</span>(opt); <span class="c">// writable, unlike computed</span>
+}</code></pre>
+  <p>Advanced form with explicit source + computation:</p>
+  <pre><code>selected = <span class="f">linkedSignal</span>({
+  source: () => <span class="k">this</span>.options(),
+  computation: (opts, prev) =>
+    opts.<span class="f">includes</span>(prev?.value) ? prev!.value : opts[<span class="s">0</span>],
+});</code></pre>
+  <div class="callout tip"><span class="label">computed vs linkedSignal</span><code>computed</code> = read-only, always reflects the formula. <code>linkedSignal</code> = derives a default <em>but you can write to it</em>, and it re-derives when the source changes.</div>
+</section>
+
+<section id="resource">
+  <h2>22. <code>resource()</code> / <code>rxResource()</code> <span class="pill">Angular 19+</span></h2>
+  <p>Loads <strong>async data</strong> into signals. It tracks a reactive request, runs a loader, and exposes <code>value</code>, <code>status</code>, <code>error</code>, and <code>isLoading</code> as signals — no manual subscriptions.</p>
+  <pre><code><span class="k">import</span> { resource } <span class="k">from</span> <span class="s">'@angular/core'</span>;
+
+userId = <span class="f">signal</span>(<span class="s">1</span>);
+
+userResource = <span class="f">resource</span>({
+  <span class="c">// re-fetches automatically whenever request() changes</span>
+  request: () => ({ id: <span class="k">this</span>.userId() }),
+  loader: <span class="k">async</span> ({ request, abortSignal }) => {
+    <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`/api/users/${</span>request.id<span class="s">}`</span>, { signal: abortSignal });
+    <span class="k">return</span> res.<span class="f">json</span>();
+  },
+});
+
+<span class="c">// in template:</span>
+<span class="c">// @if (userResource.isLoading()) { Loading... }</span>
+<span class="c">// @else { {{ userResource.value()?.name }} }</span></code></pre>
+  <div class="callout"><span class="label">rxResource()</span>Same idea but the loader returns an <strong>Observable</strong> instead of a Promise — use it when you already have RxJS-based services (e.g. <code>HttpClient</code>).</div>
+  <div class="callout warn"><span class="label">Status</span>Exposes a <code>status()</code> signal: <code>idle</code>, <code>loading</code>, <code>resolved</code>, <code>error</code>, etc. — great for driving UI states declaratively.</div>
+</section>
+
+<section id="interop">
+  <h2>23. RxJS Interop — <code>toSignal()</code> / <code>toObservable()</code> <span class="pill">Angular 16+</span></h2>
+  <p>Bridge the two reactivity worlds. From <code>@angular/core/rxjs-interop</code>.</p>
+  <pre><code><span class="k">import</span> { toSignal, toObservable } <span class="k">from</span> <span class="s">'@angular/core/rxjs-interop'</span>;
+
+<span class="c">// Observable → Signal (auto-unsubscribes on destroy)</span>
+data = <span class="f">toSignal</span>(<span class="k">this</span>.http.<span class="f">get</span>(<span class="s">'/api/data'</span>), { initialValue: [] });
+
+<span class="c">// Signal → Observable (e.g. to use debounceTime, switchMap)</span>
+query$ = <span class="f">toObservable</span>(<span class="k">this</span>.query);
+results$ = <span class="k">this</span>.query$.<span class="f">pipe</span>(
+  <span class="f">debounceTime</span>(<span class="s">300</span>),
+  <span class="f">switchMap</span>(q => <span class="k">this</span>.api.<span class="f">search</span>(q))
+);</code></pre>
+  <div class="callout tip"><span class="label">When to bridge</span>Use <code>toSignal()</code> to consume async data as a signal in templates; use <code>toObservable()</code> when you need RxJS operators (debounce, retry, combineLatest) on signal-driven values.</div>
+</section>
+
+<section id="adv-questions">
+  <h2>24. Advanced Interview Q&amp;A</h2>
+
+  <details class="qa"><summary>Q: How do signal inputs differ from <code>@Input()</code>?</summary>
+  <p>Signal inputs (<code>input()</code>) are <strong>read-only signals</strong> read with <code>()</code>, are reactive in <code>computed</code>/<code>effect</code> without <code>ngOnChanges</code>, and support <code>input.required()</code>, <code>transform</code>, and <code>alias</code> options. <code>@Input()</code> is a plain property needing lifecycle hooks to react.</p></details>
+
+  <details class="qa"><summary>Q: What is <code>model()</code> and when do you use it?</summary>
+  <p>A <strong>writable</strong> signal input enabling two-way binding <code>[(x)]</code>. Internally it's an input <code>x</code> plus an output <code>xChange</code>. Use it for reusable form controls / toggles where the child both reads and writes a value the parent owns.</p></details>
+
+  <details class="qa"><summary>Q: What problem does <code>untracked()</code> solve?</summary>
+  <p>It reads a signal's current value <em>without</em> creating a dependency, so changes to it won't re-trigger the surrounding effect/computed. Prevents unwanted re-runs when you only need a snapshot of a value.</p></details>
+
+  <details class="qa"><summary>Q: <code>computed()</code> vs <code>linkedSignal()</code>?</summary>
+  <p><code>computed</code> is read-only and always equals its formula. <code>linkedSignal</code> derives an initial/default value from a source <strong>but is writable</strong>, and re-derives when the source changes — ideal for "selected item resets when the list changes, but the user can still pick another."</p></details>
+
+  <details class="qa"><summary>Q: How does <code>resource()</code> handle race conditions?</summary>
+  <p>It tracks the reactive <code>request()</code>; when it changes, the previous load is <strong>aborted</strong> via the provided <code>abortSignal</code> and a new one starts — so stale responses don't overwrite fresh ones. Status/value/error are all signals.</p></details>
+
+  <details class="qa"><summary>Q: How do you prevent memory leaks with effects?</summary>
+  <p>Effects in an injection context auto-destroy with the component. For resources <em>inside</em> the effect (timers, listeners, subscriptions), register an <code>onCleanup</code> callback that runs before each re-run and on destroy.</p></details>
+
+  <details class="qa"><summary>Q: When would you bridge signals and RxJS?</summary>
+  <p>Use <code>toSignal()</code> to render async streams (e.g. HTTP) as signals in templates with auto-unsubscribe. Use <code>toObservable()</code> when you need RxJS operators (<code>debounceTime</code>, <code>switchMap</code>, <code>retry</code>) on a signal-driven value like a search box.</p></details>
+
+  <details class="qa"><summary>Q: Why supply a custom <code>equal</code> function?</summary>
+  <p>The default <code>Object.is</code> treats every new object/array reference as a change. A custom <code>equal</code> (e.g. deep equality) suppresses notifications when the value is logically unchanged, avoiding wasteful recomputation/re-render.</p></details>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Built from the Angular Signals lesson · Angular 16+ · Open this file in any browser to study 🚀
+</footer>
+
+</body>
+</html>
