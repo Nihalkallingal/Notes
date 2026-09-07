@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OOP Interview Revision Guide</title>
+<style>
+:root {
+  --bg:#1a1b1e; --surface:#25262b; --surface2:#2c2d32; --surface3:#37383e;
+  --border:#373a40; --text:#c1c2c5; --text-strong:#f1f1f1; --text-muted:#909296;
+  --accent:#4c6ef5; --accent-light:#748ffc; --green:#51cf66; --yellow:#fcc419;
+  --red:#ff6b6b; --sidebar-w:290px; --header-h:56px; --radius:8px;
+  --shadow:0 2px 12px rgba(0,0,0,.35);
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono','Fira Code',Consolas,'Courier New',monospace;
+}
+[data-theme=light] {
+  --bg:#f8f9fa; --surface:#fff; --surface2:#f1f3f5; --surface3:#e9ecef;
+  --border:#ced4da; --text:#495057; --text-strong:#212529; --text-muted:#868e96;
+  --accent:#4263eb; --accent-light:#5c7cfa; --shadow:0 2px 12px rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:.85rem;z-index:100;box-shadow:var(--shadow)}
+.header-title{font-weight:800;font-size:.95rem;color:var(--text-strong);white-space:nowrap;letter-spacing:-.01em}
+.search-wrap{flex:1;max-width:420px}
+.search-input{width:100%;padding:.42rem .85rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text-strong);font-size:.88rem;outline:none;transition:border-color .2s;font-family:var(--font)}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--text-muted)}
+.header-actions{display:flex;gap:.45rem;align-items:center;margin-left:auto}
+.btn-icon{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);cursor:pointer;padding:.35rem .7rem;font-size:.8rem;transition:background .15s,color .15s;font-family:var(--font)}
+.btn-icon:hover{background:var(--surface3);color:var(--text-strong)}
+.progress-wrap{display:flex;align-items:center;gap:.55rem;font-size:.77rem;color:var(--text-muted);white-space:nowrap}
+.progress-bar-outer{width:110px;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.progress-bar-inner{height:100%;width:0%;background:var(--green);border-radius:3px;transition:width .35s ease}
+.layout{display:flex;padding-top:var(--header-h);min-height:100vh}
+.sidebar{position:fixed;top:var(--header-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--header-h));overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:.6rem 0 2rem;z-index:50;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.nav-group{padding:0 .7rem}
+.nav-group-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);padding:.85rem .5rem .3rem;border-top:1px solid var(--border);margin-top:.2rem}
+.nav-group:first-child .nav-group-title{border-top:none;margin-top:0}
+.nav-item{display:block;padding:.29rem .6rem;border-radius:5px;color:var(--text);text-decoration:none;font-size:.81rem;transition:background .15s,color .15s;line-height:1.4}
+.nav-item:hover{background:var(--surface2);color:var(--text-strong)}
+.nav-item.active{background:var(--accent);color:#fff;font-weight:500}
+.main{margin-left:var(--sidebar-w);flex:1;padding:2.5rem 2.75rem 6rem;min-width:0}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s;box-shadow:none}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shadow)}
+  .main{margin-left:0;padding:1.25rem 1rem 5rem}
+  .header-title{display:none}
+  .progress-wrap{display:none}
+}
+.topic-section{margin-bottom:3.75rem;scroll-margin-top:calc(var(--header-h) + 18px);max-width:860px}
+.section-header{display:flex;align-items:center;gap:.9rem;margin-bottom:1.3rem;padding-bottom:.8rem;border-bottom:2px solid var(--border);flex-wrap:wrap}
+.section-num{font-size:1.5rem;font-weight:800;color:var(--accent);min-width:2.2rem;line-height:1}
+.section-title{font-size:1.3rem;font-weight:700;color:var(--text-strong);flex:1}
+.revised-check{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--text-muted);cursor:pointer;user-select:none;white-space:nowrap;margin-left:auto}
+.revised-check input{accent-color:var(--green);cursor:pointer;width:15px;height:15px}
+details.accordion{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.6rem;overflow:hidden;transition:border-color .15s}
+details.accordion[open]{border-color:var(--accent)}
+details.accordion>summary{display:flex;align-items:flex-start;gap:.65rem;padding:.82rem 1.05rem;cursor:pointer;list-style:none;color:var(--text-strong);font-weight:500;font-size:.91rem;transition:background .15s;user-select:none;line-height:1.45}
+details.accordion>summary::-webkit-details-marker{display:none}
+details.accordion>summary .q-text{flex:1;padding-top:.02rem}
+details.accordion>summary::after{content:'+';margin-left:.4rem;font-size:1.05rem;color:var(--text-muted);min-width:16px;text-align:center;flex-shrink:0;font-weight:400}
+details.accordion[open]>summary::after{content:'-'}
+details.accordion>summary:hover{background:var(--surface2)}
+.accordion-body{padding:1.1rem 1.35rem 1.3rem;border-top:1px solid var(--border)}
+.badge{display:inline-block;padding:.14rem .45rem;border-radius:4px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;margin-top:.12rem}
+.badge.fresher{background:rgba(81,207,102,.1);color:var(--green);border:1px solid rgba(81,207,102,.22)}
+.badge.mid{background:rgba(252,196,25,.1);color:var(--yellow);border:1px solid rgba(252,196,25,.22)}
+.badge.senior{background:rgba(255,107,107,.1);color:var(--red);border:1px solid rgba(255,107,107,.22)}
+.callout{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:.8rem 1rem;margin:.9rem 0;font-size:.86rem;line-height:1.65}
+.callout.warn{border-color:var(--yellow)}
+.callout.danger{border-color:var(--red)}
+.callout.success{border-color:var(--green)}
+.callout strong{display:block;color:var(--text-strong);margin-bottom:.22rem;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.code-wrap{position:relative;margin:.9rem 0}
+.code-lang{position:absolute;top:.48rem;left:.85rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);pointer-events:none;z-index:1}
+.copy-btn{position:absolute;top:.42rem;right:.52rem;padding:.18rem .52rem;font-size:.68rem;background:var(--surface3);border:1px solid var(--border);border-radius:4px;color:var(--text-muted);cursor:pointer;transition:background .15s,color .15s;font-family:var(--font);z-index:1}
+.copy-btn:hover{background:var(--border);color:var(--text-strong)}
+.copy-btn.copied{color:var(--green);border-color:var(--green)}
+pre.code-block{background:#0d0f12;border:1px solid var(--border);border-radius:var(--radius);padding:2.4rem 1.05rem .95rem;overflow-x:auto;font-family:var(--mono);font-size:.8rem;line-height:1.68;tab-size:4}
+[data-theme=light] pre.code-block{background:#f6f8fa}
+pre.code-block code{color:#abb2bf}
+.tok-kw{color:#c678dd}.tok-ty{color:#e5c07b}.tok-str{color:#98c379}.tok-cmt{color:#5c6370;font-style:italic}.tok-num{color:#d19a66}.tok-fn{color:#61afef}.tok-ann{color:#e06c75}
+[data-theme=light] pre.code-block code{color:#383a42}
+[data-theme=light] .tok-kw{color:#a626a4}[data-theme=light] .tok-ty{color:#c18401}[data-theme=light] .tok-str{color:#50a14f}[data-theme=light] .tok-cmt{color:#a0a1a7}[data-theme=light] .tok-num{color:#986801}[data-theme=light] .tok-fn{color:#4078f2}[data-theme=light] .tok-ann{color:#e45649}
+.table-wrap{overflow-x:auto;margin:.9rem 0;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{background:var(--surface2);color:var(--text-strong);font-weight:600;padding:.55rem .85rem;text-align:left;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+td{padding:.5rem .85rem;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:last-child,th:last-child{border-right:none}
+tr:nth-child(even) td{background:var(--surface2)}
+.accordion-body p{margin:.5rem 0}
+.accordion-body h4{color:var(--text-strong);margin:1rem 0 .4rem;font-size:.92rem;font-weight:600}
+.accordion-body ul,.accordion-body ol{padding-left:1.35rem;margin:.4rem 0}
+.accordion-body li{margin:.27rem 0}
+.accordion-body strong{color:var(--text-strong)}
+.accordion-body code{font-family:var(--mono);font-size:.82em;background:var(--surface2);padding:.1em .32em;border-radius:3px;color:var(--accent-light)}
+.no-results{text-align:center;padding:4rem 2rem;color:var(--text-muted);font-size:1rem;display:none}
+.puzzle-answer{display:none;margin-top:.7rem;padding:.75rem .95rem;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);font-size:.86rem}
+.reveal-btn{padding:.25rem .7rem;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);cursor:pointer;font-size:.79rem;margin-top:.45rem;transition:background .15s,color .15s;font-family:var(--font)}
+.reveal-btn:hover{background:var(--accent);color:#fff}
+.ascii-art{font-family:var(--mono);font-size:.73rem;line-height:1.4;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.15rem;color:var(--text-muted);white-space:pre;overflow-x:auto;margin:.85rem 0}
+.sidebar-toggle{display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);cursor:pointer;padding:.35rem .65rem;font-size:.85rem;font-family:var(--font)}
+@media(max-width:900px){.sidebar-toggle{display:block}}
+.cheat-head{font-size:.95rem;font-weight:700;color:var(--accent);margin:1.5rem 0 .55rem;padding-top:.5rem;border-top:1px solid var(--border)}
+.cheat-head:first-child{border-top:none;padding-top:0}
+.section-intro{margin-bottom:1.2rem;padding:.9rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:.87rem;color:var(--text-muted);line-height:1.65}
+@media print{
+  .sidebar,.header,.revised-check,.copy-btn,.reveal-btn,.sidebar-toggle{display:none!important}
+  .main{margin-left:0!important;padding:1cm!important;max-width:100%!important}
+  details.accordion .accordion-body{display:block!important}
+  details.accordion>summary::after{display:none}
+  pre.code-block{white-space:pre-wrap!important;word-break:break-word!important;background:#f5f5f5!important;color:#333!important;border-color:#ccc!important;font-size:8pt!important}
+  pre.code-block code{color:#333!important}
+  body{font-size:10.5pt;background:#fff!important;color:#000!important}
+  .callout{background:#f9f9f9!important}
+  .badge{background:#f0f0f0!important;color:#333!important;border-color:#ccc!important}
+  .tok-kw,.tok-ty,.tok-str,.tok-cmt,.tok-num,.tok-fn,.tok-ann{color:#333!important;font-style:normal!important}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <button class="sidebar-toggle btn-icon" onclick="toggleSidebar()">Menu</button>
+  <span class="header-title">OOP Interview Guide</span>
+  <div class="search-wrap">
+    <input type="text" id="search-input" class="search-input" placeholder="Search topics, questions, keywords...">
+  </div>
+  <div class="header-actions">
+    <div class="progress-wrap">
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar"></div></div>
+      <span id="progress-text">0/23 revised</span>
+    </div>
+    <button class="btn-icon" id="theme-btn" onclick="toggleTheme()">Light</button>
+  </div>
+</div>
+<div class="layout">
+<nav class="sidebar" id="sidebar">
+  <div class="nav-group">
+    <div class="nav-group-title">Core OOP</div>
+    <a class="nav-item" data-section="s1" href="#s1">1. Fundamentals</a>
+    <a class="nav-item" data-section="s2" href="#s2">2. Four Pillars</a>
+    <a class="nav-item" data-section="s3" href="#s3">3. Access Modifiers</a>
+    <a class="nav-item" data-section="s4" href="#s4">4. Constructors</a>
+    <a class="nav-item" data-section="s5" href="#s5">5. Destructors &amp; GC</a>
+    <a class="nav-item" data-section="s6" href="#s6">6. Inheritance</a>
+    <a class="nav-item" data-section="s7" href="#s7">7. Polymorphism</a>
+    <a class="nav-item" data-section="s8" href="#s8">8. Abstract vs Interface</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">Advanced Concepts</div>
+    <a class="nav-item" data-section="s9" href="#s9">9. Static Members</a>
+    <a class="nav-item" data-section="s10" href="#s10">10. Keywords</a>
+    <a class="nav-item" data-section="s11" href="#s11">11. Object Relationships</a>
+    <a class="nav-item" data-section="s12" href="#s12">12. Object Methods</a>
+    <a class="nav-item" data-section="s13" href="#s13">13. Immutability</a>
+    <a class="nav-item" data-section="s14" href="#s14">14. SOLID &amp; Principles</a>
+    <a class="nav-item" data-section="s15" href="#s15">15. Generics &amp; Templates</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">Patterns &amp; Practice</div>
+    <a class="nav-item" data-section="s16" href="#s16">16. Exception Handling</a>
+    <a class="nav-item" data-section="s17" href="#s17">17. Nested Classes</a>
+    <a class="nav-item" data-section="s18" href="#s18">18. Design Patterns</a>
+    <a class="nav-item" data-section="s19" href="#s19">19. Anti-patterns</a>
+    <a class="nav-item" data-section="s20" href="#s20">20. UML Diagrams</a>
+    <a class="nav-item" data-section="s21" href="#s21">21. Language Gotchas</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title">Interview Prep</div>
+    <a class="nav-item" data-section="s22" href="#s22">22. Rapid-Fire Q&amp;A</a>
+    <a class="nav-item" data-section="s23" href="#s23">23. Cheat Sheet</a>
+  </div>
+</nav>
+<main class="main">
+<div id="no-results" class="no-results">No matching topics found. Try a different keyword.</div>
+
+<section id="s1" class="topic-section">
+<div class="section-header">
+  <span class="section-num">1</span>
+  <h2 class="section-title">Fundamentals</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s1',this.checked)"> Mark as revised</label>
+</div>
+<div class="section-intro">The foundation of every OOP interview. Get these definitions crisp — interviewers use them as a filter in the first two minutes.</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What is the difference between a class and an object?</span></summary>
+<div class="accordion-body">
+<p>A <strong>class</strong> is a compile-time blueprint — a named type that defines the structure (fields) and behaviour (methods) of the entities it will represent. An <strong>object</strong> is a runtime entity: a specific instance of a class allocated in memory, with its own copy of instance state.</p>
+<p><strong>Why it matters:</strong> Every OOP construct (inheritance, polymorphism, encapsulation) depends on this distinction. Confusing static members with instance members is a direct consequence of blurring class vs object.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// CLASS — a compile-time blueprint
+class Car {
+    String model;   // instance field (state)
+    int speed;      // instance field (state)
+
+    void accelerate(int by) { speed += by; } // behaviour
+}
+
+// OBJECT — a runtime instance
+Car tesla  = new Car();  // 'tesla' holds a reference to an object on the heap
+Car toyota = new Car();  // separate object; different state
+
+tesla.model = "Model S";
+toyota.model = "Corolla";
+// tesla and toyota share the same CLASS but have independent state</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> Use the word "blueprint" or "template" for class, and "runtime entity" or "instance" for object. Mention that a class is a compile-time concept while an object exists at runtime on the heap.</div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Saying "a class is a group of objects." It is the opposite — a class defines what objects look like. Objects are instances of a class, not constituents of it.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What is state vs behaviour in OOP?</span></summary>
+<div class="accordion-body">
+<p><strong>State</strong> is the data an object holds at any given moment — its instance variables. <strong>Behaviour</strong> is what an object can do — its methods that may read or mutate that state.</p>
+<p>Separating what an object <em>knows</em> from what it <em>does</em> is the conceptual backbone of OOP design.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class BankAccount {
+    // --- STATE ---
+    private String owner;
+    private double balance;
+
+    BankAccount(String owner, double initial) {
+        this.owner   = owner;
+        this.balance = initial;
+    }
+
+    // --- BEHAVIOUR ---
+    void deposit(double amount) {
+        if (amount &lt;= 0) throw new IllegalArgumentException("Amount must be positive");
+        balance += amount;
+    }
+
+    boolean withdraw(double amount) {
+        if (amount &gt; balance) return false;
+        balance -= amount;
+        return true;
+    }
+
+    double getBalance() { return balance; }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What is instantiation? Walk me through what `new` does in Java.</span></summary>
+<div class="accordion-body">
+<p><strong>Instantiation</strong> is the process of creating an object from its class. In Java, <code>new</code> performs four steps:</p>
+<ol>
+<li>Allocates memory on the heap for the new object's fields.</li>
+<li>Initialises fields to default values (0, null, false).</li>
+<li>Executes any instance initialiser blocks in textual order.</li>
+<li>Calls the constructor body.</li>
+</ol>
+<p>The result is a <strong>reference</strong> (a managed pointer) to the newly created object.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>BankAccount acc = new BankAccount("Alice", 500.0);
+//                ^^^  heap allocation + constructor call
+// acc is a reference; the object lives on the heap
+// if acc is reassigned or goes out of scope, the GC may reclaim the object
+
+BankAccount ref2 = acc; // ref2 points to the SAME object, not a copy
+ref2.deposit(100.0);
+System.out.println(acc.getBalance()); // 600.0 — same object mutated</code></pre></div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Saying Java passes objects by reference. Java is strictly pass-by-value — the value passed is the reference (address). You cannot make the caller's variable point to a different object inside a method.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Compare OOP, procedural, and functional programming paradigms.</span></summary>
+<div class="accordion-body">
+<p>Each paradigm answers "what is the primary unit of composition?"</p>
+<div class="table-wrap"><table>
+<tr><th>Dimension</th><th>Procedural</th><th>Object-Oriented</th><th>Functional</th></tr>
+<tr><td>Primary unit</td><td>Procedure / function</td><td>Object (data + behaviour)</td><td>Pure function</td></tr>
+<tr><td>State</td><td>Shared mutable globals</td><td>Encapsulated per object</td><td>Immutable / avoided</td></tr>
+<tr><td>Control flow</td><td>Sequential + goto/loops</td><td>Message passing between objects</td><td>Recursion + higher-order fns</td></tr>
+<tr><td>Reuse</td><td>Procedure libraries</td><td>Inheritance + composition</td><td>Function composition</td></tr>
+<tr><td>Side effects</td><td>Prevalent</td><td>Encapsulated</td><td>Avoided (pure functions)</td></tr>
+<tr><td>Examples</td><td>C, Pascal, early BASIC</td><td>Java, C++, Python, C#</td><td>Haskell, Clojure, Erlang</td></tr>
+</table></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> Modern languages blend paradigms. Java (mostly OOP) added lambdas and streams (functional). Python supports all three. The answer should acknowledge this rather than drawing hard boundaries.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What is message passing, and why does OOP exist?</span></summary>
+<div class="accordion-body">
+<p><strong>Message passing</strong> means objects communicate by invoking methods on each other. The sending object does not need to know the receiving object's implementation — only its public interface. This is the mechanism behind polymorphism and loose coupling.</p>
+<p><strong>OOP exists</strong> to manage the complexity of large systems by:</p>
+<ul>
+<li><strong>Modularity:</strong> Objects are self-contained; changes in one rarely break others.</li>
+<li><strong>Reusability:</strong> Classes can be extended and composed.</li>
+<li><strong>Maintainability:</strong> Encapsulation hides implementation details behind stable interfaces.</li>
+<li><strong>Modelling:</strong> Code maps naturally to real-world entities and relationships.</li>
+</ul>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Logger {
+    void log(String msg) { System.out.println("[LOG] " + msg); }
+}
+
+class OrderService {
+    private Logger logger; // HAS-A relationship
+
+    OrderService(Logger logger) { this.logger = logger; }
+
+    void placeOrder(String item) {
+        // Message passing: sending the "log" message to the Logger object
+        // OrderService doesn't care HOW Logger logs — only that it can
+        logger.log("Order placed: " + item);
+    }
+}
+// Swap Logger for a FileLogger, DatabaseLogger, etc. — OrderService is unchanged</code></pre></div>
+</div></details>
+</section>
+
+<section id="s2" class="topic-section">
+<div class="section-header">
+  <span class="section-num">2</span>
+  <h2 class="section-title">The Four Pillars of OOP</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s2',this.checked)"> Mark as revised</label>
+</div>
+<div class="section-intro">Every OOP interview includes these. The trap is giving a one-line textbook definition. Demonstrate understanding with concrete consequences — what breaks when you violate each pillar.</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Explain encapsulation with an example.</span></summary>
+<div class="accordion-body">
+<p><strong>Definition:</strong> Encapsulation bundles data (fields) and the methods that operate on that data together in a single unit (class), and controls access to the internals using access modifiers. External code must go through a defined interface.</p>
+<p><strong>Why it matters:</strong> Prevents external code from placing an object in an invalid state. Changes to internal representation do not break callers.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>public class Circle {
+    private double radius; // HIDDEN — external code cannot set this directly
+
+    public Circle(double radius) {
+        setRadius(radius); // reuse validation
+    }
+
+    public double getRadius() { return radius; }
+
+    public void setRadius(double radius) {
+        if (radius &lt;= 0) throw new IllegalArgumentException("Radius must be &gt; 0");
+        this.radius = radius; // validated write
+    }
+
+    public double area() { return Math.PI * radius * radius; }
+}
+
+// Usage
+Circle c = new Circle(5);
+// c.radius = -3;  // compile error — field is private
+c.setRadius(-3);   // throws IllegalArgumentException — invariant enforced</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> "Controlled access to internal state" and "invariant enforcement." A bare getter/setter pair with no validation is technically encapsulation in structure but misses the <em>purpose</em>. Say so.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Explain abstraction with an example.</span></summary>
+<div class="accordion-body">
+<p><strong>Definition:</strong> Abstraction means exposing only the relevant interface of an object and hiding the complexity of its implementation. The user interacts with a simplified model, not the underlying machinery.</p>
+<p><strong>Why it matters:</strong> Reduces cognitive load. Allows implementations to evolve independently of callers.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Abstract interface — the public contract callers depend on
+interface PaymentGateway {
+    boolean processPayment(double amount, String currency);
+    boolean refund(String transactionId);
+}
+
+// Concrete implementation — hidden complexity
+class StripeGateway implements PaymentGateway {
+    @Override
+    public boolean processPayment(double amount, String currency) {
+        // Stripe REST calls, HMAC signing, retry logic, idempotency keys...
+        return true; // caller sees only success/failure
+    }
+    @Override
+    public boolean refund(String transactionId) { return true; }
+}
+
+// Caller knows nothing about Stripe internals
+void checkout(PaymentGateway gateway, double total) {
+    if (!gateway.processPayment(total, "USD")) throw new RuntimeException("Payment failed");
+}
+// Swap StripeGateway for PayPalGateway with zero changes to checkout()</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Explain inheritance with an example.</span></summary>
+<div class="accordion-body">
+<p><strong>Definition:</strong> Inheritance allows a subclass (child) to acquire the fields and methods of a superclass (parent), establishing an IS-A relationship. The subclass may specialise (override) inherited behaviour.</p>
+<p><strong>Why it matters:</strong> Enables code reuse and the open/closed principle — extend without modifying existing code.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Animal {
+    protected String name;
+    Animal(String name) { this.name = name; }
+    String speak() { return "..."; }          // default behaviour
+    void breathe() { System.out.println(name + " breathes."); } // inherited as-is
+}
+
+class Dog extends Animal {
+    Dog(String name) { super(name); }         // calls Animal constructor
+    @Override String speak() { return "Woof!"; } // specialises behaviour
+    void fetch() { System.out.println(name + " fetches!"); } // new behaviour
+}
+
+class Cat extends Animal {
+    Cat(String name) { super(name); }
+    @Override String speak() { return "Meow!"; }
+}
+
+// IS-A: a Dog IS AN Animal
+Animal a = new Dog("Rex");
+System.out.println(a.speak()); // "Woof!" — runtime polymorphism
+a.breathe();                   // inherited, not overridden</code></pre></div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Overusing inheritance for code reuse when composition is more appropriate. Prefer IS-A for inheritance, HAS-A for composition. "A Dog IS-AN Animal" is a genuine IS-A. "An Engine IS-A Car" is not.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Explain polymorphism with an example.</span></summary>
+<div class="accordion-body">
+<p><strong>Definition:</strong> Polymorphism (Greek: "many forms") allows a single interface to represent different underlying types. A superclass reference can point to any subclass object, and the correct method is selected at runtime based on the actual type.</p>
+<p><strong>Why it matters:</strong> Enables the open/closed principle and extensibility — add new types without modifying existing code that uses the interface.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>abstract class Shape {
+    abstract double area();
+    void describe() { System.out.println("Area = " + area()); }
+}
+
+class Circle extends Shape {
+    double r;
+    Circle(double r) { this.r = r; }
+    @Override double area() { return Math.PI * r * r; }
+}
+
+class Rectangle extends Shape {
+    double w, h;
+    Rectangle(double w, double h) { this.w = w; this.h = h; }
+    @Override double area() { return w * h; }
+}
+
+// Polymorphic usage — SAME code handles ALL Shape types
+Shape[] shapes = { new Circle(3), new Rectangle(4, 5), new Circle(7) };
+for (Shape s : shapes) {
+    s.describe(); // dispatch to Circle.area() or Rectangle.area() at runtime
+}
+// Adding Triangle only requires a new class; this loop is UNCHANGED</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What is the difference between abstraction and encapsulation? This trips up most candidates.</span></summary>
+<div class="accordion-body">
+<p>This is the single most commonly confused concept in OOP interviews. They are related but distinct:</p>
+<div class="table-wrap"><table>
+<tr><th>Dimension</th><th>Abstraction</th><th>Encapsulation</th></tr>
+<tr><td>What</td><td>Hiding complexity / exposing essentials</td><td>Hiding data / bundling data with methods</td></tr>
+<tr><td>Focus</td><td>Design level — WHAT the object does</td><td>Implementation level — HOW access is restricted</td></tr>
+<tr><td>Achieved via</td><td>Abstract classes, interfaces, APIs</td><td>Access modifiers (private, protected)</td></tr>
+<tr><td>Goal</td><td>Reduce cognitive complexity for callers</td><td>Maintain object invariants; hide internals</td></tr>
+<tr><td>Metaphor</td><td>Car steering wheel — you turn, it steers; you don't see the rack-and-pinion</td><td>Engine under the bonnet — panels prevent you touching live components</td></tr>
+</table></div>
+<p>The key insight: <strong>abstraction is achieved <em>through</em> encapsulation</strong>, but they are not the same thing. Encapsulation is the mechanism; abstraction is the design goal.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// ABSTRACTION: interface exposes only what callers need
+interface Stack&lt;T&gt; {
+    void push(T item);
+    T pop();
+    T peek();
+    boolean isEmpty();
+}
+
+// ENCAPSULATION: implementation hides internal representation
+class ArrayStack&lt;T&gt; implements Stack&lt;T&gt; {
+    private Object[] data;   // private — implementation detail
+    private int top = -1;    // private — callers cannot corrupt this
+
+    @SuppressWarnings("unchecked")
+    public ArrayStack(int capacity) { data = new Object[capacity]; }
+
+    @Override public void push(T item) { data[++top] = item; }
+    @Override public T pop()  { return (T) data[top--]; }
+    @Override public T peek() { return (T) data[top]; }
+    @Override public boolean isEmpty() { return top == -1; }
+}
+// A caller using Stack&lt;T&gt; is abstracted from BOTH the interface choice
+// AND the array-based representation inside ArrayStack</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> The phrase "abstraction is WHAT, encapsulation is HOW." Also: an interface provides abstraction but not encapsulation (the interface itself has no state to hide); the implementing class provides encapsulation.</div>
+</div></details>
+</section>
+
+<section id="s3" class="topic-section">
+<div class="section-header">
+  <span class="section-num">3</span>
+  <h2 class="section-title">Access Modifiers</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s3',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Explain public, private, protected, and package-private (default) in Java.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Modifier</th><th>Same class</th><th>Same package</th><th>Subclass (diff pkg)</th><th>World</th></tr>
+<tr><td><code>public</code></td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>protected</code></td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><td>(default)</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td><code>private</code></td><td>Yes</td><td>No</td><td>No</td><td>No</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>package com.example.base;
+
+public class Vehicle {
+    public    String brand;      // accessible everywhere
+    protected int    year;       // accessible in subclasses (any package)
+              double costPrice;  // package-private: only com.example.base
+    private   String secretKey;  // only within Vehicle
+
+    protected void service() { /* subclasses can call this */ }
+    private   void internalAudit() { /* only Vehicle */ }
+}
+
+package com.example.sport;
+import com.example.base.Vehicle;
+
+class SportsCar extends Vehicle {
+    void demo() {
+        brand     = "Ferrari"; // OK — public
+        year      = 2024;      // OK — protected, in subclass
+        // costPrice = 50000;  // ERROR — package-private, different package
+        // secretKey = "x";    // ERROR — private
+        service();             // OK — protected method
+    }
+}</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> Protected is often misunderstood — it grants access to subclasses in <em>any</em> package, but not to arbitrary code in the same package (that is default/package-private). State both parts.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What access modifier rules apply when overriding a method?</span></summary>
+<div class="accordion-body">
+<p>When overriding, the overriding method <strong>may not restrict visibility</strong> but <strong>may widen it</strong>. This preserves the Liskov Substitution Principle: a caller using the supertype must be able to call the method on any subtype.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Parent {
+    protected void display() { System.out.println("Parent"); }
+}
+
+class Child extends Parent {
+    @Override
+    public void display() { System.out.println("Child"); } // OK — widened to public
+
+    // @Override
+    // private void display() { }  // COMPILE ERROR — narrowed visibility
+}</code></pre></div>
+<p>Access modifier widening order (narrowest to broadest): <code>private</code> → default → <code>protected</code> → <code>public</code>. Overrides can only move rightward in this order.</p>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Why not make everything public? What is the principle at play?</span></summary>
+<div class="accordion-body">
+<p>Making everything public violates the <strong>Principle of Least Privilege</strong> and breaks encapsulation. The consequences:</p>
+<ul>
+<li><strong>Coupling:</strong> External code can reach into internals, making refactoring impossible without breaking callers.</li>
+<li><strong>Invariant violation:</strong> Any code anywhere can set a field to an invalid value.</li>
+<li><strong>API surface:</strong> Everything public becomes part of your API contract, which you must maintain forever.</li>
+</ul>
+<p>The guideline: start with <code>private</code> and widen only when required. Make fields private and expose controlled getters/setters or behaviour-rich methods.</p>
+<div class="callout warn">
+<strong>Common mistake:</strong> Thinking Java's <code>private</code> hides a field from the entire JVM. Private members of a class are accessible from other instances of the <em>same</em> class — this is why a copy constructor can read <code>other.privateField</code> directly.</div>
+</div></details>
+</section>
+
+<section id="s4" class="topic-section">
+<div class="section-header">
+  <span class="section-num">4</span>
+  <h2 class="section-title">Constructors</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s4',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Default vs parameterized constructor — what is the difference and what are the rules?</span></summary>
+<div class="accordion-body">
+<p>A <strong>default constructor</strong> takes no arguments. The compiler automatically provides one (with no body) <em>only if</em> you define <em>no</em> constructors. A <strong>parameterized constructor</strong> takes arguments to initialise fields at creation time.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Point {
+    int x, y;
+    // No constructor defined → compiler inserts: Point() { super(); }
+}
+
+class Point3D {
+    int x, y, z;
+
+    // Parameterized constructor
+    Point3D(int x, int y, int z) {
+        this.x = x; this.y = y; this.z = z;
+    }
+    // NOTE: compiler does NOT insert a default constructor now.
+    // Point3D p = new Point3D(); // COMPILE ERROR
+}
+
+class Point3DFull {
+    int x, y, z;
+    Point3DFull() { this(0, 0, 0); }            // explicit default — chains to parameterized
+    Point3DFull(int x, int y, int z) { this.x = x; this.y = y; this.z = z; }
+}</code></pre></div>
+<div class="callout warn">
+<strong>Common mistake:</strong> "The compiler always provides a default constructor." It provides one ONLY when you define no constructors at all. Define even one parameterized constructor and the no-arg default disappears.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Explain constructor chaining with this() and super(). What are the rules?</span></summary>
+<div class="accordion-body">
+<p><code>this(...)</code> calls another constructor in the <em>same</em> class. <code>super(...)</code> calls a constructor in the <em>parent</em> class. Both must be the <strong>first statement</strong> in the constructor body and they are mutually exclusive within a single constructor.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Employee {
+    String name;
+    int    id;
+    double salary;
+
+    Employee(String name, int id) { this(name, id, 50_000.0); } // chains to below
+    Employee(String name, int id, double salary) {
+        this.name   = name;
+        this.id     = id;
+        this.salary = salary;
+    }
+}
+
+class Manager extends Employee {
+    String department;
+
+    Manager(String name, int id, String dept) {
+        super(name, id, 90_000.0);  // MUST be first statement
+        this.department = dept;
+    }
+}</code></pre></div>
+<p><strong>Why it matters:</strong> Constructor chaining eliminates duplication by funneling all initialisation through a single canonical constructor. It is the Java equivalent of delegating constructors.</p>
+<div class="callout">
+<strong>Interviewers listen for:</strong> The fact that <code>super()</code> is implicitly inserted by the compiler as the first statement if you write neither <code>this()</code> nor <code>super()</code> explicitly — as long as the parent has a no-arg constructor. If the parent only has parameterized constructors, failing to call <code>super(...)</code> explicitly is a compile error.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What is a copy constructor? Java vs C++.</span></summary>
+<div class="accordion-body">
+<p>A <strong>copy constructor</strong> creates a new object as a copy of an existing object. In C++ the compiler auto-generates one (shallow copy); in Java you write it manually.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Address {
+    String city;
+    Address(String city) { this.city = city; }
+    Address(Address other) { this.city = other.city; } // copy constructor
+}
+
+class Person {
+    String  name;
+    Address address; // mutable object — needs deep copy
+
+    Person(String name, Address address) {
+        this.name    = name;
+        this.address = address;
+    }
+
+    // Copy constructor — deep copy to avoid aliasing
+    Person(Person other) {
+        this.name    = other.name;
+        this.address = new Address(other.address); // deep copy
+    }
+}
+
+Person p1 = new Person("Alice", new Address("London"));
+Person p2 = new Person(p1); // deep copy
+p2.address.city = "Paris";
+System.out.println(p1.address.city); // still "London"</code></pre></div>
+<div class="code-wrap"><span class="code-lang">C++</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="cpp"><code>class MyArray {
+    int* data;
+    int  size;
+public:
+    MyArray(int size) : size(size), data(new int[size]) {}
+    // Auto-generated copy constructor does SHALLOW copy (copies pointer, not array!)
+    // Rule of Three: if you define destructor, define copy constructor + copy assignment too
+    MyArray(const MyArray&amp; other) : size(other.size), data(new int[other.size]) {
+        std::copy(other.data, other.data + size, data); // deep copy
+    }
+    ~MyArray() { delete[] data; }
+};</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Explain initializer blocks, the full order of initialization, and why constructors cannot be virtual.</span></summary>
+<div class="accordion-body">
+<p>Java initialises an object in this exact order:</p>
+<ol>
+<li>Parent class is fully initialised first (recursively from Object down).</li>
+<li>Static fields and static initialiser blocks run <em>once per class load</em>, in textual order.</li>
+<li>Instance fields are set to defaults (0, null, false).</li>
+<li>Instance initialiser blocks and field initialisers run in textual order.</li>
+<li>Constructor body runs.</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Base {
+    static { System.out.println("1. Base static block"); }
+    { System.out.println("3. Base instance block"); }
+    Base() { System.out.println("4. Base constructor"); }
+}
+
+class Child extends Base {
+    static { System.out.println("2. Child static block"); }
+    { System.out.println("5. Child instance block"); }
+    Child() { System.out.println("6. Child constructor"); }
+}
+
+new Child(); // Output order: 1, 2, 3, 4, 5, 6</code></pre></div>
+<p><strong>Why can't constructors be virtual?</strong> Virtual dispatch requires a vtable pointer (vptr) to be set up, but the vptr is only initialised <em>during</em> construction. At the moment a constructor runs, the object's vtable is not yet finalised. Making constructors virtual would create a chicken-and-egg problem. In C++, calling a virtual method from a constructor resolves to the <em>base</em> class version, not the derived — for exactly this reason.</p>
+<div class="callout">
+<strong>Interviewers listen for (C++):</strong> "Why should destructors be virtual?" — because if you delete a derived object via a base pointer and the base destructor is not virtual, only the base destructor runs, leaking the derived part. Mark base class destructors <code>virtual</code> whenever polymorphism is used.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">What is a private constructor used for?</span></summary>
+<div class="accordion-body">
+<p>A private constructor prevents instantiation from outside the class. Primary uses:</p>
+<ol>
+<li><strong>Singleton pattern</strong> — only the class itself can create the single instance.</li>
+<li><strong>Utility/helper classes</strong> — classes with only static methods (e.g., <code>java.lang.Math</code>) use a private constructor to prevent meaningless instantiation.</li>
+<li><strong>Factory method pattern</strong> — force callers to use a named factory method instead of <code>new</code>.</li>
+<li><strong>Builder pattern</strong> — the product class may expose only a Builder for construction.</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Utility class — prevent instantiation
+public final class MathUtils {
+    private MathUtils() { throw new AssertionError("Utility class"); }
+    public static int square(int n) { return n * n; }
+}
+
+// Factory method forces named construction
+public class Color {
+    private final int r, g, b;
+    private Color(int r, int g, int b) { this.r = r; this.g = g; this.b = b; }
+
+    public static Color ofRGB(int r, int g, int b) {
+        if (r &lt; 0 || r &gt; 255) throw new IllegalArgumentException();
+        return new Color(r, g, b);
+    }
+    public static Color RED   = ofRGB(255, 0, 0);
+    public static Color GREEN = ofRGB(0, 255, 0);
+}</code></pre></div>
+</div></details>
+</section>
+
+<section id="s5" class="topic-section">
+<div class="section-header">
+  <span class="section-num">5</span>
+  <h2 class="section-title">Destructors, Finalizers, RAII &amp; Garbage Collection</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s5',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">C++ destructors vs Java finalizers — key differences.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>C++ Destructor</th><th>Java Finalizer (<code>finalize()</code>)</th></tr>
+<tr><td>Timing</td><td>Deterministic — called immediately when object goes out of scope or is deleted</td><td>Non-deterministic — called by GC at some unspecified future time (or never)</td></tr>
+<tr><td>Guarantee</td><td>Always called (barring abnormal termination)</td><td>No guarantee it will ever run</td></tr>
+<tr><td>Performance</td><td>Inlined by compiler, zero overhead</td><td>GC overhead; objects with finalizers require extra GC cycle</td></tr>
+<tr><td>Status</td><td>Core language feature</td><td>Deprecated in Java 9, removed from Object in Java 18+</td></tr>
+<tr><td>Replacement</td><td>RAII idiom</td><td>try-with-resources / <code>Cleaner</code> API</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">C++</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="cpp"><code>class FileHandle {
+    FILE* fp;
+public:
+    FileHandle(const char* path) : fp(fopen(path, "r")) {
+        if (!fp) throw std::runtime_error("Cannot open file");
+    }
+    ~FileHandle() { if (fp) fclose(fp); } // GUARANTEED to run — even if exception thrown
+    // This IS RAII: Resource Acquisition Is Initialisation
+};
+
+void process() {
+    FileHandle f("data.txt"); // resource acquired in constructor
+    // ... work ...
+} // f goes out of scope → destructor runs → file closed automatically</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Explain RAII and Java's equivalent: try-with-resources.</span></summary>
+<div class="accordion-body">
+<p><strong>RAII (Resource Acquisition Is Initialisation)</strong> is a C++ idiom: tie a resource's lifetime to an object's lifetime. Acquire in the constructor; release in the destructor. Since destructors run deterministically at scope exit, resources are always freed — even under exceptions.</p>
+<p><strong>Java's equivalent</strong> is <code>try-with-resources</code> (Java 7+), which calls <code>close()</code> on any <code>AutoCloseable</code> at block exit, in reverse declaration order.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// AutoCloseable resource
+class DBConnection implements AutoCloseable {
+    DBConnection(String url) { System.out.println("Connected: " + url); }
+    void query(String sql) { System.out.println("Query: " + sql); }
+    @Override public void close() { System.out.println("Connection closed"); }
+}
+
+// try-with-resources: close() called automatically at block exit
+try (DBConnection conn = new DBConnection("jdbc:mysql://localhost/db")) {
+    conn.query("SELECT * FROM users");
+} // conn.close() called here — guaranteed even if query() throws
+
+// Multiple resources — closed in REVERSE order (conn2 first, then conn1)
+try (DBConnection conn1 = new DBConnection("db1");
+     DBConnection conn2 = new DBConnection("db2")) {
+    // use both
+}</code></pre></div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Using <code>finally</code> instead of try-with-resources and forgetting that the close() itself might throw, masking the original exception. try-with-resources handles this correctly with suppressed exceptions.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Stack vs heap memory. How does Java's garbage collector work at a high level?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Stack</th><th>Heap</th></tr>
+<tr><td>Stores</td><td>Local variables, method frames, references, primitives</td><td>Objects, arrays, instance fields</td></tr>
+<tr><td>Allocation</td><td>LIFO — push/pop on method call/return</td><td>Dynamic — GC managed</td></tr>
+<tr><td>Size</td><td>Fixed, small (~256KB–8MB)</td><td>Large, configurable (-Xmx)</td></tr>
+<tr><td>Thread</td><td>Per-thread (each thread has its own stack)</td><td>Shared across all threads</td></tr>
+<tr><td>Speed</td><td>Very fast</td><td>Slower (allocation + GC overhead)</td></tr>
+<tr><td>Overflow</td><td>StackOverflowError (deep recursion)</td><td>OutOfMemoryError</td></tr>
+</table></div>
+<p><strong>Java GC (generational approach):</strong></p>
+<ol>
+<li><strong>Young generation:</strong> New objects go here. Minor GC is frequent and fast. Objects that survive several collections are promoted.</li>
+<li><strong>Old generation (tenured):</strong> Long-lived objects. Major GC (full GC) is less frequent but slower.</li>
+<li><strong>GC roots:</strong> The GC traces reachability from roots (stack frames, static fields, JNI references). Unreachable objects are collected.</li>
+</ol>
+<div class="callout">
+<strong>Interviewers listen for:</strong> The distinction between <em>reachability</em> (not reference count). Java uses a tracing collector, not reference counting, so circular references are handled correctly.</div>
+</div></details>
+</section>
+
+<section id="s6" class="topic-section">
+<div class="section-header">
+  <span class="section-num">6</span>
+  <h2 class="section-title">Inheritance</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s6',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What are the types of inheritance? Which does Java support?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Type</th><th>Description</th><th>Java?</th><th>C++?</th></tr>
+<tr><td>Single</td><td>One child, one parent</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Multilevel</td><td>A extends B extends C (chain)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Hierarchical</td><td>Multiple children from one parent</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Multiple</td><td>One child from multiple parents</td><td>No (classes) / Yes (interfaces)</td><td>Yes</td></tr>
+<tr><td>Hybrid</td><td>Combination of the above</td><td>Partial via interfaces</td><td>Yes</td></tr>
+</table></div>
+<p>Java avoids multiple class inheritance to eliminate the <strong>diamond problem</strong>. It allows implementing multiple <em>interfaces</em> instead, with rules to resolve conflicts.</p>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">IS-A vs HAS-A — when to use inheritance vs composition?</span></summary>
+<div class="accordion-body">
+<p><strong>IS-A</strong> (inheritance): use when a subclass genuinely is a specialised kind of the superclass. The subclass must be substitutable for the superclass (Liskov Substitution Principle).</p>
+<p><strong>HAS-A</strong> (composition): use when one class contains or uses another class as a component.</p>
+<div class="table-wrap"><table>
+<tr><th>Scenario</th><th>Correct relationship</th></tr>
+<tr><td>Dog is an Animal</td><td>IS-A (inheritance)</td></tr>
+<tr><td>Car has an Engine</td><td>HAS-A (composition)</td></tr>
+<tr><td>Stack is an ArrayList?</td><td>HAS-A — <code>java.util.Stack extends Vector</code> is a famous design mistake</td></tr>
+<tr><td>Logger needs a FileWriter</td><td>HAS-A (composition)</td></tr>
+</table></div>
+<p><strong>Prefer composition over inheritance</strong> (Effective Java, Item 18): inheritance exposes implementation details and creates tight coupling. Composition allows swapping implementations at runtime.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// BAD: inheritance breaks encapsulation — Stack should NOT extend Vector
+// java.util.Stack lets you call add(0, element) which violates stack semantics
+
+// GOOD: composition — Stack uses Deque as its storage
+class MyStack&lt;T&gt; {
+    private final Deque&lt;T&gt; deque = new ArrayDeque&lt;&gt;(); // HAS-A
+
+    public void push(T item) { deque.push(item); }
+    public T    pop()        { return deque.pop(); }
+    public T    peek()       { return deque.peek(); }
+    public boolean isEmpty() { return deque.isEmpty(); }
+    // Only stack operations exposed — no accidental access to queue methods
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">What is the diamond problem? How do Java and C++ each solve it?</span></summary>
+<div class="accordion-body">
+<p>The <strong>diamond problem</strong> arises in multiple inheritance when a class inherits from two classes that share a common ancestor. The question: which version of the ancestor's method/field should the descendant inherit?</p>
+<div class="ascii-art">      A (method: speak())
+     / \
+    B   C  (both override speak())
+     \ /
+      D  ← which speak() does D inherit?</div>
+<p><strong>Java's solution:</strong> Classes can only extend one class. Interfaces can be multiply implemented. If two interfaces provide conflicting <em>default</em> methods, the implementing class must override and explicitly choose.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>interface A { default String name() { return "A"; } }
+interface B extends A { default String name() { return "B"; } }
+interface C extends A { default String name() { return "C"; } }
+
+class D implements B, C {
+    // MUST override — ambiguity between B.name() and C.name()
+    @Override public String name() {
+        return B.super.name(); // explicitly select B's version
+    }
+}</code></pre></div>
+<p><strong>C++'s solution:</strong> Virtual inheritance. Without it, D has two copies of A (one via B, one via C). With virtual inheritance, only one shared copy of A exists.</p>
+<div class="code-wrap"><span class="code-lang">C++</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="cpp"><code>struct A { virtual void speak() { std::cout &lt;&lt; "A"; } };
+struct B : virtual A { void speak() override { std::cout &lt;&lt; "B"; } };
+struct C : virtual A { void speak() override { std::cout &lt;&lt; "C"; } };
+struct D : B, C {
+    void speak() override { B::speak(); } // disambiguate explicitly
+    // Without 'virtual' above, D would have TWO copies of A's data
+};</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Explain Python's MRO and the C3 linearization algorithm.</span></summary>
+<div class="accordion-body">
+<p>Python supports multiple inheritance. The <strong>Method Resolution Order (MRO)</strong> determines which class's method is called first. Python uses the <strong>C3 linearization algorithm</strong> (since Python 2.3) to compute a consistent, predictable linear order.</p>
+<p><strong>Rule of thumb:</strong> MRO follows a depth-first, left-to-right order, but never revisits a class until all its subclasses have been visited. The result is checked via <code>ClassName.__mro__</code>.</p>
+<div class="code-wrap"><span class="code-lang">Python</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="python"><code>class A:
+    def hello(self): return "A"
+
+class B(A):
+    def hello(self): return "B"
+
+class C(A):
+    def hello(self): return "C"
+
+class D(B, C): pass  # MRO: D → B → C → A → object
+
+print(D.__mro__)
+# (&lt;class 'D'&gt;, &lt;class 'B'&gt;, &lt;class 'C'&gt;, &lt;class 'A'&gt;, &lt;class 'object'&gt;)
+
+print(D().hello())  # "B" — first in MRO that defines hello()
+
+# super() follows MRO, enabling cooperative multiple inheritance
+class E(B, C):
+    def hello(self):
+        return "E-&gt;" + super().hello()  # calls B.hello() next in MRO</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> <code>super()</code> in Python does not mean "call the parent class" — it means "call the next class in the MRO." In cooperative multiple inheritance, every class should call <code>super()</code> for the chain to work correctly all the way up.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are final and sealed classes? When would you use them?</span></summary>
+<div class="accordion-body">
+<p>A <code>final</code> class (Java/C++) cannot be subclassed. A <strong>sealed class</strong> (Java 17+) restricts which classes can extend it.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// final — no subclassing allowed (e.g., java.lang.String, java.lang.Integer)
+public final class ImmutablePoint {
+    private final int x, y;
+    public ImmutablePoint(int x, int y) { this.x = x; this.y = y; }
+}
+
+// Sealed class — only listed subclasses permitted (Java 17+)
+public sealed class Shape permits Circle, Rectangle, Triangle { }
+
+public final class Circle    extends Shape { double radius; }
+public final class Rectangle extends Shape { double width, height; }
+public final class Triangle  extends Shape { double base, height; }
+// No other class can extend Shape — perfect for exhaustive pattern matching</code></pre></div>
+<p><strong>Use final:</strong> to prevent accidental subclassing, to enable immutability, and for performance (JIT can de-virtualise calls on final classes).</p>
+<p><strong>Use sealed:</strong> when you want a closed hierarchy for exhaustive switch expressions, modelling algebraic data types.</p>
+</div></details>
+</section>
+
+<section id="s7" class="topic-section">
+<div class="section-header">
+  <span class="section-num">7</span>
+  <h2 class="section-title">Polymorphism In Depth</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s7',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Compile-time polymorphism vs runtime polymorphism — what is each and how do you achieve them?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Type</th><th>Mechanism</th><th>Resolved at</th><th>Also called</th></tr>
+<tr><td>Compile-time</td><td>Method overloading, operator overloading, generics</td><td>Compile time (static binding)</td><td>Static polymorphism, early binding</td></tr>
+<tr><td>Runtime</td><td>Method overriding + supertype reference</td><td>Runtime (dynamic dispatch)</td><td>Dynamic polymorphism, late binding</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Printer {
+    // OVERLOADING — compile-time polymorphism
+    void print(int n)    { System.out.println("int: " + n); }
+    void print(double d) { System.out.println("double: " + d); }
+    void print(String s) { System.out.println("String: " + s); }
+    // Compiler picks the right print() at compile time based on argument type
+}
+
+class Animal { String sound() { return "..."; } }
+class Dog extends Animal { @Override String sound() { return "Woof"; } }
+class Cat extends Animal { @Override String sound() { return "Meow"; } }
+
+// OVERRIDING — runtime polymorphism
+Animal a = new Dog(); // reference type: Animal; object type: Dog
+System.out.println(a.sound()); // "Woof" — resolved at runtime</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Overloading vs overriding — full comparison. What are the exact rules?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Overloading</th><th>Overriding</th></tr>
+<tr><td>Definition</td><td>Same name, different parameter list</td><td>Same signature in subclass</td></tr>
+<tr><td>Binding</td><td>Compile-time (static)</td><td>Runtime (dynamic)</td></tr>
+<tr><td>Inheritance required?</td><td>No — can be in same class</td><td>Yes — must be in subclass</td></tr>
+<tr><td>Return type</td><td>Can differ freely</td><td>Same or covariant (subtype)</td></tr>
+<tr><td>Access modifier</td><td>Can differ freely</td><td>Cannot be more restrictive</td></tr>
+<tr><td>Exceptions</td><td>Can differ freely</td><td>Cannot add new checked exceptions</td></tr>
+<tr><td>static/private/final</td><td>Can be applied to overloaded methods</td><td>Cannot override static, private, or final methods</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Animal {
+    // These are OVERLOADS of feed()
+    void feed()           { System.out.println("feed nothing"); }
+    void feed(String food){ System.out.println("feed " + food); }
+
+    Number value() { return 42; }                  // return Number
+}
+
+class Dog extends Animal {
+    @Override
+    void feed(String food) {                       // OVERRIDE — same signature
+        System.out.println("Dog eats " + food);
+    }
+
+    @Override
+    Integer value() { return 7; }                 // COVARIANT return: Integer is-a Number — OK
+
+    // @Override void feed() throws Exception {}  // would be invalid: adds checked exception
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Can you override static, private, or final methods?</span></summary>
+<div class="accordion-body">
+<ul>
+<li><strong>Private methods:</strong> Cannot be overridden — they are invisible to subclasses. A subclass can define a method with the same name but it is a new method, not an override.</li>
+<li><strong>Static methods:</strong> Cannot be overridden — they belong to the class, not the object. A subclass can re-declare a static method with the same signature (<em>method hiding</em>), but it is selected by the <em>reference type</em>, not the runtime type.</li>
+<li><strong>Final methods:</strong> Cannot be overridden — it is a compile error to attempt this.</li>
+</ul>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Parent {
+    static void staticMethod() { System.out.println("Parent static"); }
+    void instanceMethod()      { System.out.println("Parent instance"); }
+}
+
+class Child extends Parent {
+    // METHOD HIDING — not overriding
+    static void staticMethod() { System.out.println("Child static"); }
+    @Override void instanceMethod() { System.out.println("Child instance"); }
+}
+
+Parent p = new Child();
+p.staticMethod();   // "Parent static"  — resolved by reference TYPE (hiding)
+p.instanceMethod(); // "Child instance" — resolved by runtime TYPE (overriding)</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">How does the JVM implement runtime polymorphism? Explain vtable and dynamic dispatch.</span></summary>
+<div class="accordion-body">
+<p>The JVM (and C++) implement dynamic dispatch using a <strong>virtual method table (vtable)</strong>:</p>
+<ol>
+<li>Each class has a vtable — an array of pointers to its virtual method implementations.</li>
+<li>Each object has a hidden <em>vptr</em> (virtual pointer) pointing to its class's vtable.</li>
+<li>When you call a virtual method on an object reference, the JVM follows the vptr → vtable → method pointer, then calls that method. This is one pointer indirection.</li>
+</ol>
+<div class="ascii-art">Object in heap:
+  ┌──────────────────┐
+  │  vptr ──────────►│Dog vtable
+  │  name = "Rex"    │  [0] breathe → Animal::breathe
+  │  speed = 10      │  [1] speak   → Dog::speak ← overridden
+  └──────────────────┘  [2] fetch   → Dog::fetch
+
+Animal ref  = new Dog("Rex");
+ref.speak() → vptr → vtable[1] → Dog::speak() → "Woof"</div>
+<p><strong>JIT optimisation:</strong> The JVM's JIT compiler can devirtualise calls when it can prove only one implementation exists (monomorphic call site), turning the virtual dispatch into a direct call — eliminating the overhead entirely.</p>
+</div></details>
+</section>
+
+<section id="s8" class="topic-section">
+<div class="section-header">
+  <span class="section-num">8</span>
+  <h2 class="section-title">Abstract Classes vs Interfaces</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s8',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Compare abstract classes and interfaces in Java.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Abstract Class</th><th>Interface</th></tr>
+<tr><td>Instantiable?</td><td>No</td><td>No</td></tr>
+<tr><td>Multiple inheritance</td><td>No (single extends)</td><td>Yes (multiple implements)</td></tr>
+<tr><td>Fields</td><td>Instance fields (any modifier)</td><td>Only <code>public static final</code> constants</td></tr>
+<tr><td>Constructors</td><td>Yes (called via super())</td><td>No</td></tr>
+<tr><td>Methods</td><td>Abstract + concrete</td><td>Abstract, default, static, private (Java 8+/9+)</td></tr>
+<tr><td>State</td><td>Can hold state</td><td>Stateless (no instance fields)</td></tr>
+<tr><td>Use case</td><td>Shared implementation + partial abstraction</td><td>Capability contract / multiple type</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Abstract class: template method pattern — shared steps, variable hook
+abstract class DataProcessor {
+    final void process() {       // template method (non-overridable)
+        readData();
+        processData();           // abstract — subclass provides this
+        writeData();
+    }
+    private void readData()  { System.out.println("Reading..."); }
+    private void writeData() { System.out.println("Writing..."); }
+    protected abstract void processData();
+}
+
+// Interface: capability contract — anything that can be sorted
+interface Sortable {
+    int compareTo(Object other); // contract
+    default boolean isLessThan(Object o) { return compareTo(o) &lt; 0; } // Java 8+
+}
+
+class CsvProcessor extends DataProcessor implements Sortable {
+    @Override protected void processData() { System.out.println("CSV transform"); }
+    @Override public int compareTo(Object o) { return 0; }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">When do you choose an abstract class over an interface, and vice versa?</span></summary>
+<div class="accordion-body">
+<p><strong>Choose an abstract class when:</strong></p>
+<ul>
+<li>You want to share code (implementation) among closely related classes.</li>
+<li>Subclasses need common non-public state (private/protected fields).</li>
+<li>You expect future versions to add methods without breaking existing subclasses (via concrete methods).</li>
+<li>You need constructors for initialisation logic.</li>
+</ul>
+<p><strong>Choose an interface when:</strong></p>
+<ul>
+<li>Unrelated classes need to implement the same capability (e.g., <code>Comparable</code>, <code>Serializable</code>).</li>
+<li>You want to support multiple type inheritance.</li>
+<li>You are defining a pure contract with no implementation sharing.</li>
+<li>You want API stability with the ability to add <code>default</code> methods later without breaking existing implementors.</li>
+</ul>
+<div class="callout">
+<strong>Real-world example:</strong> <code>AbstractList</code> (abstract class) provides skeletal implementation of <code>List</code> (interface). Custom list implementations extend <code>AbstractList</code> to get most list behaviour for free, implementing only <code>get()</code> and <code>size()</code>. This is the Template Method + Interface combination.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are default methods in interfaces (Java 8+) and how do you resolve conflicts?</span></summary>
+<div class="accordion-body">
+<p>Java 8 added <code>default</code> methods to interfaces to allow interface evolution without breaking existing implementations. They have a body and are inherited by implementing classes.</p>
+<p><strong>Conflict resolution rules (3 rules, in priority order):</strong></p>
+<ol>
+<li><strong>Class wins:</strong> If a class (or superclass) provides a concrete implementation, it wins over any interface default.</li>
+<li><strong>More specific interface wins:</strong> If interface B extends interface A and both provide a default, B's version wins.</li>
+<li><strong>Must override:</strong> If neither rule above resolves the conflict, the implementing class must explicitly override and choose.</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>interface Flyable  { default String move() { return "fly";  } }
+interface Swimmable{ default String move() { return "swim"; } }
+
+class Duck implements Flyable, Swimmable {
+    // MUST override — ambiguous between Flyable.move() and Swimmable.move()
+    @Override public String move() {
+        return Flyable.super.move() + "/" + Swimmable.super.move(); // "fly/swim"
+    }
+}
+
+// Java 9: private interface methods for internal code sharing among defaults
+interface Formatter {
+    private String stripSpaces(String s) { return s.trim(); } // helper
+    default String format(String s) { return stripSpaces(s).toUpperCase(); }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are marker interfaces? Are they still used?</span></summary>
+<div class="accordion-body">
+<p>A <strong>marker interface</strong> is an interface with no methods — it exists purely to tag a class with a type. The JVM or frameworks then treat objects of that type specially.</p>
+<div class="table-wrap"><table>
+<tr><th>Marker Interface</th><th>Effect</th></tr>
+<tr><td><code>java.io.Serializable</code></td><td>ObjectOutputStream can serialise the object</td></tr>
+<tr><td><code>java.lang.Cloneable</code></td><td>Object.clone() will not throw CloneNotSupportedException</td></tr>
+<tr><td><code>java.util.RandomAccess</code></td><td>Collections algorithms can use O(1) indexed access</td></tr>
+</table></div>
+<p><strong>Modern alternative:</strong> Annotations (e.g., <code>@Serializable</code>) are generally preferred for new APIs since they can carry metadata and are checked at compile time with annotation processors. Marker interfaces are still appropriate when you need to use the type in a generic bound: <code>&lt;T extends Serializable&gt;</code>.</p>
+</div></details>
+</section>
+
+<section id="s9" class="topic-section">
+<div class="section-header">
+  <span class="section-num">9</span>
+  <h2 class="section-title">Static Members</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s9',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">What are static variables and static methods? What do they share?</span></summary>
+<div class="accordion-body">
+<p><strong>Static members</strong> belong to the <em>class</em>, not to any particular object. All instances share one copy of a static variable; calling a static method does not require an instance.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Counter {
+    private static int instanceCount = 0; // shared across ALL instances
+    private final int id;
+
+    Counter() {
+        instanceCount++;
+        this.id = instanceCount;
+    }
+
+    static int getCount() { return instanceCount; } // no 'this' needed
+    int getId()           { return id; }
+}
+
+Counter a = new Counter(); // instanceCount = 1
+Counter b = new Counter(); // instanceCount = 2
+System.out.println(Counter.getCount()); // 2 — called on the CLASS
+System.out.println(a.getId());          // 1 — instance-specific</code></pre></div>
+<p><strong>Common use cases:</strong> constants (<code>static final</code>), utility methods (no state needed), factory methods, shared counters/caches.</p>
+<div class="callout warn">
+<strong>Common mistake:</strong> Referring to instance fields or <code>this</code> from a static method — compile error. Static methods cannot access instance state because they may be called without any object existing.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Static binding vs dynamic binding — explain with examples.</span></summary>
+<div class="accordion-body">
+<p><strong>Static binding</strong> (early binding): the compiler resolves the method call at compile time using the <em>reference type</em>. Applies to <code>static</code>, <code>private</code>, and <code>final</code> methods, and to overloaded methods.</p>
+<p><strong>Dynamic binding</strong> (late binding): the JVM resolves the call at runtime using the <em>runtime type</em> (actual object type). Applies to overridden instance methods.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Parent {
+    static void staticM() { System.out.println("Parent.static"); }
+    void         dynM()   { System.out.println("Parent.dynamic"); }
+}
+class Child extends Parent {
+    static void staticM() { System.out.println("Child.static"); }  // hiding
+    @Override void dynM() { System.out.println("Child.dynamic"); } // overriding
+}
+
+Parent p = new Child();  // reference: Parent, runtime: Child
+
+// STATIC BINDING — resolved by reference type (Parent)
+p.staticM();  // "Parent.static"
+
+// DYNAMIC BINDING — resolved by runtime type (Child)
+p.dynM();     // "Child.dynamic"</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Why can't static methods use `this` or be overridden?</span></summary>
+<div class="accordion-body">
+<p><code>this</code> is a reference to the current object. Static methods belong to the class, not an object — there is no "current object" in a static context, so <code>this</code> is meaningless.</p>
+<p>Static methods can be <em>hidden</em> (re-declared in a subclass) but not <em>overridden</em> because override implies runtime dispatch via the vtable, which requires an object. Static methods are resolved via the class reference at compile time — they bypass the vtable entirely.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Util {
+    static int square(int n) {
+        // this.something would be: ERROR — 'this' in static context
+        return n * n;
+    }
+}
+// @Override on a static method = COMPILE ERROR
+// static methods are not part of the virtual dispatch mechanism</code></pre></div>
+</div></details>
+</section>
+
+<section id="s10" class="topic-section">
+<div class="section-header">
+  <span class="section-num">10</span>
+  <h2 class="section-title">OOP Keywords</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s10',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">When and why do you use `this` vs `super`?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Refers to</th><th>Use cases</th></tr>
+<tr><td><code>this</code></td><td>Current object instance</td><td>Disambiguate field vs parameter; chain constructors (this()); pass self as argument; return self (fluent API)</td></tr>
+<tr><td><code>super</code></td><td>Superclass portion of this object</td><td>Call overridden method in parent; call parent constructor (super()); access hidden parent field</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Vehicle {
+    protected String model;
+    Vehicle(String model) { this.model = model; }
+    String describe() { return "Vehicle: " + model; }
+}
+
+class Car extends Vehicle {
+    private int seats;
+
+    Car(String model, int seats) {
+        super(model);   // calls Vehicle(String)
+        this.seats = seats; // 'this' disambiguates from parameter
+    }
+
+    @Override String describe() {
+        return super.describe() + ", seats=" + seats; // augment parent version
+    }
+
+    // Fluent API — return this for method chaining
+    Car setSeats(int s) { this.seats = s; return this; }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What does `final` mean when applied to a variable, method, and class?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Applied to</th><th>Meaning</th><th>Notes</th></tr>
+<tr><td>Variable (primitive)</td><td>Value cannot change after assignment</td><td>Must be assigned exactly once (at declaration, initialiser block, or constructor)</td></tr>
+<tr><td>Variable (reference)</td><td>Reference cannot be reassigned</td><td>The object it points to can still be mutated</td></tr>
+<tr><td>Method</td><td>Cannot be overridden by subclasses</td><td>JIT can inline/devirtualise calls for performance</td></tr>
+<tr><td>Class</td><td>Cannot be subclassed</td><td>Enables immutability (String, Integer); improves security</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>final int MAX = 100;
+// MAX = 200; // COMPILE ERROR
+
+final List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("hello");  // OK — list contents can change
+// list = new ArrayList&lt;&gt;(); // COMPILE ERROR — reference is final
+
+class Parent {
+    final void doSomething() { System.out.println("can't override this"); }
+}
+class Child extends Parent {
+    // @Override void doSomething() {} // COMPILE ERROR
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Explain `instanceof` and pattern matching with instanceof (Java 16+).</span></summary>
+<div class="accordion-body">
+<p><code>instanceof</code> tests whether an object is an instance of a given type at runtime. Java 16 introduced <strong>pattern matching</strong>: if the check passes, the object is automatically cast to a local variable.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Classic instanceof + cast (verbose, error-prone)
+if (obj instanceof String) {
+    String s = (String) obj;
+    System.out.println(s.length());
+}
+
+// Pattern matching instanceof (Java 16+)
+if (obj instanceof String s) {          // s is bound and cast automatically
+    System.out.println(s.length());     // s is only in scope when test passes
+}
+
+// With guards (Java 21 switch patterns)
+switch (obj) {
+    case Integer i when i &gt; 0 -&gt; System.out.println("positive int: " + i);
+    case String s               -&gt; System.out.println("string: " + s);
+    default                     -&gt; System.out.println("other");
+}
+
+// NOTE: instanceof returns false for null — always safe
+Object o = null;
+System.out.println(o instanceof String); // false — no NullPointerException</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">C++: explain virtual, override, friend, and name mangling.</span></summary>
+<div class="accordion-body">
+<p><strong><code>virtual</code>:</strong> Marks a method as dynamically dispatched. Without it, calling a method on a base pointer always calls the base version (static binding).</p>
+<p><strong><code>override</code>:</strong> (C++11) Tells the compiler the function is intended to override a virtual. The compiler errors if no matching virtual exists in the base class — catching typo-induced bugs.</p>
+<p><strong><code>friend</code>:</strong> Grants a function or class access to private/protected members of another class. Breaks encapsulation deliberately — use sparingly (e.g., operator overloading, unit tests).</p>
+<p><strong>Name mangling:</strong> C++ compilers encode function signatures into the symbol name to support overloading (e.g., <code>_ZN3Foo3barEi</code>). This makes C++ symbols incompatible with C. Use <code>extern "C"</code> to disable mangling for interoperability.</p>
+<div class="code-wrap"><span class="code-lang">C++</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="cpp"><code>class Animal {
+public:
+    virtual std::string speak() { return "..."; }
+    virtual ~Animal() {}       // virtual destructor — ALWAYS when using polymorphism
+};
+
+class Dog : public Animal {
+public:
+    std::string speak() override { return "Woof"; } // 'override' catches errors
+    // std::string spak() override {}  // COMPILE ERROR — no virtual 'spak' in Animal
+};
+
+class Auditor {
+    friend class BankAccount;  // Auditor can access BankAccount's private members
+};
+
+extern "C" void myFunc(int x); // no name mangling — compatible with C linker</code></pre></div>
+</div></details>
+</section>
+
+<section id="s11" class="topic-section">
+<div class="section-header">
+  <span class="section-num">11</span>
+  <h2 class="section-title">Object Relationships</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s11',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Explain the four types of object relationships with examples.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Relationship</th><th>Coupling</th><th>Ownership</th><th>Lifecycle</th><th>Example</th></tr>
+<tr><td><strong>Dependency</strong></td><td>Weakest</td><td>None</td><td>Independent</td><td>OrderService <em>uses</em> TaxCalculator in a method</td></tr>
+<tr><td><strong>Association</strong></td><td>Weak</td><td>None</td><td>Independent</td><td>Student <em>has</em> a Teacher (navigable link)</td></tr>
+<tr><td><strong>Aggregation</strong></td><td>Medium</td><td>Shared</td><td>Child survives parent</td><td>Department <em>has</em> Employees (employees exist without dept)</td></tr>
+<tr><td><strong>Composition</strong></td><td>Strong</td><td>Exclusive</td><td>Child dies with parent</td><td>House <em>has</em> Rooms (rooms can't exist without House)</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// DEPENDENCY — uses as parameter/local, no field
+class OrderService {
+    double calculateTotal(Cart cart, TaxCalculator calc) {  // 'calc' is a dependency
+        return cart.subtotal() + calc.calculate(cart.subtotal());
+    }
+}
+
+// AGGREGATION — HAS-A but child can exist independently
+class Department {
+    private List&lt;Employee&gt; employees; // employees were created externally
+    Department(List&lt;Employee&gt; employees) { this.employees = employees; }
+}
+
+// COMPOSITION — HAS-A, owner creates and owns the child
+class House {
+    private final List&lt;Room&gt; rooms; // House creates rooms; rooms die with House
+    House(int numRooms) {
+        rooms = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; numRooms; i++) rooms.add(new Room());
+    }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Aggregation vs Composition — what is the key practical difference?</span></summary>
+<div class="accordion-body">
+<p>The key differences are <strong>ownership</strong> and <strong>lifecycle</strong>:</p>
+<ul>
+<li><strong>Aggregation:</strong> The contained object is created outside and passed in. It can be shared (multiple containers may reference it) and continues to exist after the container is destroyed.</li>
+<li><strong>Composition:</strong> The container creates and owns the part. The part is not shared, and when the container is destroyed, the part is too.</li>
+</ul>
+<p>In UML: aggregation uses a hollow diamond on the owner end; composition uses a filled diamond.</p>
+<div class="callout">
+<strong>Interviewers listen for:</strong> The lifecycle test. Ask yourself "if the container object is deleted, does the contained object cease to make sense?" If yes: composition. If no: aggregation.</div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Conflating "aggregation" with "any HAS-A relationship." Composition IS-also-a HAS-A, but with ownership semantics. Not all HAS-A relationships are composition.</div>
+</div></details>
+</section>
+
+<section id="s12" class="topic-section">
+<div class="section-header">
+  <span class="section-num">12</span>
+  <h2 class="section-title">Object Methods &amp; Contracts</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s12',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Explain the equals/hashCode contract and common violations.</span></summary>
+<div class="accordion-body">
+<p>The <strong>contract</strong> (from java.lang.Object Javadoc):</p>
+<ol>
+<li><strong>Consistent with equals:</strong> If <code>a.equals(b)</code> is true, then <code>a.hashCode() == b.hashCode()</code>.</li>
+<li><strong>Reflexive:</strong> <code>a.equals(a)</code> must be true.</li>
+<li><strong>Symmetric:</strong> <code>a.equals(b) == b.equals(a)</code>.</li>
+<li><strong>Transitive:</strong> <code>a.equals(b) &amp;&amp; b.equals(c)</code> implies <code>a.equals(c)</code>.</li>
+<li><strong>hashCode stability:</strong> Must return the same value on multiple calls during one JVM run (fields used must not change).</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Point {
+    final int x, y;
+    Point(int x, int y) { this.x = x; this.y = y; }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;            // optimisation
+        if (!(o instanceof Point)) return false; // null-safe, type-safe
+        Point p = (Point) o;
+        return x == p.x &amp;&amp; y == p.y;
+    }
+
+    @Override public int hashCode() {
+        return 31 * x + y;  // same fields as equals — contract satisfied
+    }
+}
+
+// VIOLATION — override equals but NOT hashCode:
+// Map&lt;Point, String&gt; map = new HashMap&lt;&gt;();
+// map.put(new Point(1, 2), "A");
+// map.get(new Point(1, 2)); // returns null! Different hashCode → different bucket</code></pre></div>
+<div class="callout danger">
+<strong>Danger:</strong> Using a mutable object as a HashMap key. If the object is mutated after insertion, its hashCode changes, and the map can no longer find it. Prefer immutable keys or keys based on immutable fields.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">== vs .equals() in Java — what is the difference?</span></summary>
+<div class="accordion-body">
+<p><code>==</code> compares <strong>references</strong> (memory addresses) for objects. It compares <strong>values</strong> for primitives.</p>
+<p><code>.equals()</code> compares <strong>logical equality</strong> as defined by the class. By default (Object's version), it behaves like <code>==</code>; override it for value-based equality.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>String s1 = new String("hello");
+String s2 = new String("hello");
+
+System.out.println(s1 == s2);        // false — different objects in memory
+System.out.println(s1.equals(s2));   // true  — same character content
+
+// String pool optimisation: string literals are interned
+String s3 = "hello";
+String s4 = "hello";
+System.out.println(s3 == s4);        // true  — same pool reference (JVM detail)
+
+Integer a = 127, b = 127;
+System.out.println(a == b);          // true  — Integer cache: -128 to 127
+Integer c = 128, d = 128;
+System.out.println(c == d);          // false — outside cache range, new objects</code></pre></div>
+<div class="callout warn">
+<strong>Common mistake:</strong> Using <code>==</code> to compare <code>String</code>, <code>Integer</code>, or other wrapper types. Always use <code>.equals()</code> for object equality. The integer cache makes <code>==</code> work for small values (luring developers into a trap).</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Comparable vs Comparator. When do you use each?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Comparable&lt;T&gt;</th><th>Comparator&lt;T&gt;</th></tr>
+<tr><td>Location</td><td>Implemented by the class itself</td><td>External class or lambda</td></tr>
+<tr><td>Method</td><td><code>int compareTo(T other)</code></td><td><code>int compare(T a, T b)</code></td></tr>
+<tr><td>Ordering</td><td>Natural ordering (one canonical)</td><td>Custom ordering (many possible)</td></tr>
+<tr><td>Modifiable?</td><td>No (must change the class)</td><td>Yes (pass any comparator)</td></tr>
+<tr><td>Use case</td><td>Value types with a clear natural order (String, Integer, Date)</td><td>Sorting by multiple criteria at runtime</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Employee implements Comparable&lt;Employee&gt; {
+    String name;
+    double salary;
+
+    @Override public int compareTo(Employee other) {
+        return Double.compare(this.salary, other.salary); // natural: by salary
+    }
+}
+
+// External comparators for different sort criteria
+Comparator&lt;Employee&gt; byName   = Comparator.comparing(e -&gt; e.name);
+Comparator&lt;Employee&gt; bySalary = Comparator.comparingDouble(e -&gt; e.salary);
+Comparator&lt;Employee&gt; complex  = Comparator.comparing((Employee e) -&gt; e.name)
+                                           .thenComparingDouble(e -&gt; e.salary);
+
+List&lt;Employee&gt; staff = new ArrayList&lt;&gt;();
+staff.sort(byName);   // sort by name
+staff.sort(complex);  // sort by name, then salary</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Explain object cloning — shallow vs deep copy.</span></summary>
+<div class="accordion-body">
+<p><strong>Shallow copy:</strong> Copies the object's immediate fields. Primitive fields are duplicated; reference fields share the same pointed-to objects.</p>
+<p><strong>Deep copy:</strong> Recursively copies all referenced objects too — the cloned object is completely independent.</p>
+<p>Java's <code>Object.clone()</code> does a shallow copy and requires implementing <code>Cloneable</code>. It is generally discouraged (Effective Java, Item 13); prefer copy constructors or static factory methods instead.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Address implements Cloneable {
+    String city;
+    @Override protected Address clone() throws CloneNotSupportedException {
+        return (Address) super.clone(); // shallow ok — String is immutable
+    }
+}
+
+class Person implements Cloneable {
+    String  name;
+    Address address;   // mutable — shallow clone would share Address!
+
+    @Override protected Person clone() throws CloneNotSupportedException {
+        Person copy = (Person) super.clone(); // copies name ref + address ref
+        copy.address = address.clone();       // deep clone the mutable part
+        return copy;
+    }
+}
+// Better alternative: copy constructor (Section 4) avoids Cloneable's issues</code></pre></div>
+</div></details>
+</section>
+
+<section id="s13" class="topic-section">
+<div class="section-header">
+  <span class="section-num">13</span>
+  <h2 class="section-title">Immutability &amp; Value Objects</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s13',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">How do you write a truly immutable class in Java? Walk me through the recipe.</span></summary>
+<div class="accordion-body">
+<p>An immutable object's state cannot change after construction. The recipe (6 rules):</p>
+<ol>
+<li>Declare the class <code>final</code> (prevent subclassing from adding mutable state).</li>
+<li>Make all fields <code>private final</code>.</li>
+<li>No setter methods.</li>
+<li>Initialise all fields in the constructor.</li>
+<li><strong>Defensive copy</strong> mutable objects on the way in (constructor) and out (getters).</li>
+<li>If the class extends another class: the superclass must also be immutable or use composition.</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>import java.util.Date;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+public final class ImmutableOrder {          // Rule 1: final class
+    private final String   id;               // Rule 2: private final
+    private final Date     createdAt;        // mutable! must copy
+    private final List&lt;String&gt; items;       // mutable! must copy
+
+    public ImmutableOrder(String id, Date createdAt, List&lt;String&gt; items) {
+        this.id        = id;
+        this.createdAt = new Date(createdAt.getTime()); // Rule 5: defensive copy IN
+        this.items     = Collections.unmodifiableList(new ArrayList&lt;&gt;(items)); // copy IN
+    }
+
+    public String getId()           { return id; }
+    public Date   getCreatedAt()    { return new Date(createdAt.getTime()); } // copy OUT
+    public List&lt;String&gt; getItems() { return items; } // unmodifiable view — safe
+}
+// Alternative: use Java 16+ records (below), or java.time.LocalDate (inherently immutable)</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are Java records? How do they enforce immutability?</span></summary>
+<div class="accordion-body">
+<p><strong>Records</strong> (Java 16+) are a concise way to declare immutable data carriers. The compiler auto-generates: private final fields, a canonical constructor, accessors, <code>equals</code>, <code>hashCode</code>, and <code>toString</code>.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Equivalent to ~30 lines of boilerplate:
+record Point(int x, int y) { }
+
+// Usage
+Point p = new Point(3, 4);
+System.out.println(p.x());       // accessor (not getX()!)
+System.out.println(p);           // "Point[x=3, y=4]"
+Point p2 = new Point(3, 4);
+System.out.println(p.equals(p2)); // true — value-based equality
+
+// Compact canonical constructor for validation
+record Range(int lo, int hi) {
+    Range {  // compact constructor — parameters same as components
+        if (lo &gt; hi) throw new IllegalArgumentException(lo + " &gt; " + hi);
+    }
+}
+
+// Records are implicitly final; cannot extend other classes
+// But CAN implement interfaces</code></pre></div>
+<div class="callout">
+<strong>Interviewers listen for:</strong> Records are not just syntactic sugar — they declare a new kind of Java type (a nominal tuple). They are ideal for DTOs, method return types with multiple values, and pattern matching.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Why is immutability important? What are its benefits and costs?</span></summary>
+<div class="accordion-body">
+<p><strong>Benefits:</strong></p>
+<ul>
+<li><strong>Thread safety:</strong> Immutable objects can be shared freely across threads — no synchronisation needed.</li>
+<li><strong>Cache keys / HashMap keys:</strong> hashCode cannot change, so the object is safe as a key.</li>
+<li><strong>Failure atomicity:</strong> An object either gets constructed successfully or not at all — no partially-constructed state visible.</li>
+<li><strong>Simple reasoning:</strong> No surprise mutations; easier to track state changes.</li>
+</ul>
+<p><strong>Costs:</strong></p>
+<ul>
+<li>Creating a new object for every change (e.g., <code>String</code> concatenation in a loop). Use <code>StringBuilder</code> for repeated mutations.</li>
+<li>GC pressure: more short-lived objects.</li>
+</ul>
+</div></details>
+</section>
+
+<section id="s14" class="topic-section">
+<div class="section-header">
+  <span class="section-num">14</span>
+  <h2 class="section-title">SOLID &amp; Design Principles</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s14',this.checked)"> Mark as revised</label>
+</div>
+<div class="section-intro">SOLID questions appear in almost every mid-to-senior Java interview. Don't just define the principles — show code that violates them and code that fixes the violation.</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What is coupling and cohesion? What is ideal?</span></summary>
+<div class="accordion-body">
+<p><strong>Cohesion:</strong> How focused a module/class is on doing one thing well. <em>High cohesion</em> = class has a single, well-defined purpose.</p>
+<p><strong>Coupling:</strong> How dependent modules are on each other's internals. <em>Low coupling</em> = changing one module doesn't force changes in others.</p>
+<p><strong>Ideal: high cohesion + low coupling.</strong> High cohesion makes classes maintainable; low coupling makes the system modular and testable.</p>
+<div class="table-wrap"><table>
+<tr><th>Scenario</th><th>Cohesion</th><th>Coupling</th><th>Verdict</th></tr>
+<tr><td>UserService does authentication + email + billing</td><td>Low (God class)</td><td>High</td><td>Bad</td></tr>
+<tr><td>EmailService sends emails only, uses interface for SMTP</td><td>High</td><td>Low</td><td>Good</td></tr>
+</table></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">S — Single Responsibility Principle (SRP). Show a violation and a fix.</span></summary>
+<div class="accordion-body">
+<p><strong>Principle:</strong> A class should have only one reason to change. It should be responsible for one actor.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// VIOLATION: Report does THREE things — mixed responsibilities
+class Report {
+    String generateContent() { return "Revenue: $1M"; }  // business logic
+    void saveToFile(String path) { /* file I/O */ }       // persistence
+    void sendByEmail(String to)  { /* SMTP calls */ }     // email
+}
+
+// FIX: Split into focused classes — each has ONE reason to change
+class ReportGenerator {
+    String generateContent() { return "Revenue: $1M"; }
+}
+class ReportExporter {
+    void saveToFile(ReportGenerator gen, String path) { /* file I/O */ }
+}
+class ReportMailer {
+    void send(ReportGenerator gen, String to) { /* SMTP */ }
+}
+// Now email changes don't affect ReportGenerator; DB changes don't affect mailer</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">O — Open/Closed Principle (OCP). Show a violation and a fix.</span></summary>
+<div class="accordion-body">
+<p><strong>Principle:</strong> Software entities should be <em>open for extension</em> but <em>closed for modification</em>. Add new behaviour by adding new code, not by changing existing code.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// VIOLATION: every new discount type requires modifying DiscountCalculator
+class DiscountCalculator {
+    double calculate(String type, double price) {
+        if (type.equals("SEASONAL")) return price * 0.9;
+        if (type.equals("CLEARANCE")) return price * 0.5;
+        // Adding LOYALTY requires editing this class — violates OCP
+        return price;
+    }
+}
+
+// FIX: closed for modification; open for extension via polymorphism
+interface DiscountStrategy {
+    double apply(double price);
+}
+class SeasonalDiscount  implements DiscountStrategy { public double apply(double p){ return p * 0.9; } }
+class ClearanceDiscount implements DiscountStrategy { public double apply(double p){ return p * 0.5; } }
+class LoyaltyDiscount   implements DiscountStrategy { public double apply(double p){ return p * 0.85;} }
+
+class PricingEngine {
+    double calculate(double price, DiscountStrategy strategy) {
+        return strategy.apply(price); // adding a new discount = new class, zero edits here
+    }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">L — Liskov Substitution Principle (LSP). What makes it tricky?</span></summary>
+<div class="accordion-body">
+<p><strong>Principle:</strong> Objects of a supertype must be replaceable with objects of any subtype without altering the correctness of the program. Subtypes must honour the contract of the supertype.</p>
+<p>The classic violation: <code>Square extends Rectangle</code> — setting width and height independently is valid for Rectangle but breaks Square's invariant.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// VIOLATION: Square IS-A Rectangle? Mathematically yes; behaviourally NO
+class Rectangle {
+    int width, height;
+    void setWidth(int w)  { this.width  = w; }
+    void setHeight(int h) { this.height = h; }
+    int area() { return width * height; }
+}
+class Square extends Rectangle {
+    @Override void setWidth(int w)  { this.width = this.height = w; } // breaks LSP!
+    @Override void setHeight(int h) { this.width = this.height = h; }
+}
+
+// Client code that works for Rectangle but NOT for Square:
+void resize(Rectangle r) {
+    r.setWidth(4); r.setHeight(5);
+    assert r.area() == 20; // fails for Square (area = 25)
+}
+
+// FIX: don't inherit — use a common interface or separate hierarchy
+interface Shape2D { int area(); }
+class Rectangle2 implements Shape2D { int w, h; public int area(){return w*h;} }
+class Square2     implements Shape2D { int s;    public int area(){return s*s;} }</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">I — Interface Segregation Principle (ISP) and D — Dependency Inversion Principle (DIP).</span></summary>
+<div class="accordion-body">
+<p><strong>ISP:</strong> Clients should not be forced to depend on methods they don't use. Fat interfaces cause unnecessary coupling — split them into focused interfaces.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// ISP VIOLATION: not all devices can fax
+interface MultiFunctionDevice { void print(); void scan(); void fax(); }
+class OldPrinter implements MultiFunctionDevice {
+    public void print() { /* ok */ }
+    public void scan()  { /* ok */ }
+    public void fax()   { throw new UnsupportedOperationException(); } // forced!
+}
+
+// ISP FIX: segregated interfaces
+interface Printer { void print(); }
+interface Scanner { void scan();  }
+interface Faxer   { void fax();   }
+class BasicPrinter implements Printer { public void print() { /* ok */ } }
+class AllInOne     implements Printer, Scanner, Faxer { /* all three */ }</code></pre></div>
+<p><strong>DIP:</strong> High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// DIP VIOLATION: high-level UserService directly depends on low-level MySQLDatabase
+class UserService {
+    private MySQLDatabase db = new MySQLDatabase(); // tightly coupled to MySQL!
+    User findUser(int id) { return db.query("SELECT..."); }
+}
+
+// DIP FIX: depend on abstraction; inject the implementation
+interface UserRepository { User findById(int id); }
+class MySQLUserRepo  implements UserRepository { public User findById(int id) { return null;} }
+class InMemoryRepo   implements UserRepository { public User findById(int id) { return null;} }
+
+class UserService2 {
+    private final UserRepository repo; // depends on ABSTRACTION
+    UserService2(UserRepository repo) { this.repo = repo; } // injected
+    User findUser(int id) { return repo.findById(id); }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">DRY, KISS, YAGNI, and the Law of Demeter — quick summary.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Principle</th><th>Full name</th><th>What it says</th><th>Violation example</th></tr>
+<tr><td>DRY</td><td>Don't Repeat Yourself</td><td>Every piece of knowledge must have a single, authoritative representation</td><td>Copy-pasting validation logic across 5 controllers</td></tr>
+<tr><td>KISS</td><td>Keep It Simple, Stupid</td><td>Prefer the simplest solution that works</td><td>Writing a generic framework when a 10-line function suffices</td></tr>
+<tr><td>YAGNI</td><td>You Aren't Gonna Need It</td><td>Don't add functionality until it is actually needed</td><td>Writing plugin architecture for a 3-screen app</td></tr>
+<tr><td>LoD</td><td>Law of Demeter</td><td>A method should only talk to its immediate collaborators (don't chain)</td><td><code>customer.getOrder().getItem().getPrice()</code></td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// LAW OF DEMETER VIOLATION: chaining through object internals
+double price = customer.getOrder().getItem().getPrice(); // knows too much
+
+// FIX: ask the customer, let it delegate internally
+double price = customer.getOrderedItemPrice(); // customer owns its sub-objects</code></pre></div>
+</div></details>
+</section>
+
+<section id="s15" class="topic-section">
+<div class="section-header">
+  <span class="section-num">15</span>
+  <h2 class="section-title">Generics &amp; Templates</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s15',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are generics? Explain bounded type parameters.</span></summary>
+<div class="accordion-body">
+<p>Generics allow classes and methods to operate on types specified as parameters, providing compile-time type safety without casting.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Generic class
+class Box&lt;T&gt; {
+    private T value;
+    Box(T value) { this.value = value; }
+    T get() { return value; }
+}
+
+Box&lt;String&gt;  strBox = new Box&lt;&gt;("hello");
+Box&lt;Integer&gt; intBox = new Box&lt;&gt;(42);
+// strBox.get().length()  → OK — no cast needed
+// intBox.get().length()  → COMPILE ERROR — Integer has no length()
+
+// Bounded type parameter
+&lt;T extends Comparable&lt;T&gt;&gt; T max(T a, T b) {
+    return a.compareTo(b) &gt;= 0 ? a : b;
+}
+// max("apple", "banana") → "banana"
+// max(3, 7)              → 7
+// max(new Object(), ...) → COMPILE ERROR — Object doesn't extend Comparable</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">What is type erasure? What are its practical consequences?</span></summary>
+<div class="accordion-body">
+<p>Java generics are implemented via <strong>type erasure</strong>: type parameters are erased at compile time, replaced with their upper bounds (<code>Object</code> if unbounded). At runtime, no generic type information exists in the bytecode.</p>
+<p><strong>Consequences:</strong></p>
+<ol>
+<li><code>List&lt;String&gt;</code> and <code>List&lt;Integer&gt;</code> are the same class at runtime (<code>List</code>).</li>
+<li>Cannot use <code>instanceof</code> with parameterized types: <code>obj instanceof List&lt;String&gt;</code> is illegal.</li>
+<li>Cannot create generic arrays: <code>new T[10]</code> is illegal.</li>
+<li>Cannot create instances of type parameters: <code>new T()</code> is illegal.</li>
+<li>No overloading based solely on type parameter: <code>void foo(List&lt;String&gt; l)</code> and <code>void foo(List&lt;Integer&gt; l)</code> is a compile error — same erasure.</li>
+</ol>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// At runtime, these are the SAME type:
+List&lt;String&gt;  ls = new ArrayList&lt;&gt;();
+List&lt;Integer&gt; li = new ArrayList&lt;&gt;();
+System.out.println(ls.getClass() == li.getClass()); // true
+
+// Workaround: pass Class&lt;T&gt; token
+class TypedRepo&lt;T&gt; {
+    private final Class&lt;T&gt; type;
+    TypedRepo(Class&lt;T&gt; type) { this.type = type; }
+    T create() throws Exception { return type.getDeclaredConstructor().newInstance(); }
+}
+TypedRepo&lt;User&gt; repo = new TypedRepo&lt;&gt;(User.class);</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Covariance, contravariance, and invariance. Explain wildcards.</span></summary>
+<div class="accordion-body">
+<p><strong>Invariant:</strong> <code>List&lt;Cat&gt;</code> is NOT a subtype of <code>List&lt;Animal&gt;</code> — generics are invariant by default.</p>
+<p><strong>Covariant:</strong> <code>? extends T</code> — accepts T and any subtype. Read-only (producer). Arrays are covariant (<code>Cat[] is-a Animal[]</code>) — this can cause <code>ArrayStoreException</code> at runtime.</p>
+<p><strong>Contravariant:</strong> <code>? super T</code> — accepts T and any supertype. Write-only (consumer).</p>
+<p>Mnemonic: <strong>PECS</strong> — Producer Extends, Consumer Super.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// copy elements from src (producer) into dst (consumer)
+static &lt;T&gt; void copy(List&lt;? extends T&gt; src, List&lt;? super T&gt; dst) {
+    for (T t : src) dst.add(t);
+}
+
+List&lt;Cat&gt;    cats = List.of(new Cat());
+List&lt;Animal&gt; zoo  = new ArrayList&lt;&gt;();
+copy(cats, zoo);  // Cat extends Animal: src=? extends Animal, dst=? super Cat → OK
+
+// Without wildcards you'd need:
+// copy(List&lt;T&gt; src, List&lt;T&gt; dst) — cannot pass List&lt;Cat&gt; where List&lt;Animal&gt; expected</code></pre></div>
+</div></details>
+</section>
+
+<section id="s16" class="topic-section">
+<div class="section-header">
+  <span class="section-num">16</span>
+  <h2 class="section-title">Exception Handling</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s16',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Java exception hierarchy — checked vs unchecked. When should you use each?</span></summary>
+<div class="accordion-body">
+<div class="ascii-art">Throwable
+├── Error (don't catch — JVM/system errors)
+│   ├── OutOfMemoryError
+│   ├── StackOverflowError
+│   └── AssertionError
+└── Exception
+    ├── RuntimeException  ← UNCHECKED (don't need to declare/catch)
+    │   ├── NullPointerException
+    │   ├── IllegalArgumentException
+    │   ├── IndexOutOfBoundsException
+    │   └── ClassCastException
+    └── (others)          ← CHECKED (must declare throws or catch)
+        ├── IOException
+        ├── SQLException
+        └── ParseException</div>
+<p><strong>Checked exceptions:</strong> Use when the caller <em>can reasonably recover</em> from the error and it is part of the API contract (e.g., file not found — caller can prompt user to choose another file).</p>
+<p><strong>Unchecked (RuntimeException):</strong> Use for programming errors and unrecoverable conditions (null where not expected, invalid argument, logic errors). They signal bugs, not expected conditions.</p>
+<div class="callout">
+<strong>Interviewers listen for:</strong> "Checked exceptions are for recoverable conditions; unchecked for programming errors." Also worth mentioning: the trend in modern Java/frameworks (Spring, Jakarta) is to prefer unchecked exceptions — wrapping checked exceptions reduces boilerplate without sacrificing error handling.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What are the rules for overriding methods that throw exceptions?</span></summary>
+<div class="accordion-body">
+<p>The overriding method can:</p>
+<ul>
+<li>Throw fewer or narrower checked exceptions than the overridden method.</li>
+<li>Throw no checked exceptions.</li>
+<li>Throw unchecked exceptions freely.</li>
+</ul>
+<p>It CANNOT throw broader or new checked exceptions not declared by the overridden method. This preserves the Liskov Substitution Principle: callers that catch the parent's exceptions will still have their catches satisfied.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Parent {
+    void readFile() throws IOException, ParseException { }
+}
+class Child extends Parent {
+    @Override void readFile() throws IOException { }    // OK: narrower (dropped ParseException)
+    // @Override void readFile() throws Exception { }  // ILLEGAL: broader (Exception ⊃ IOException)
+    // @Override void readFile() throws SQLException {} // ILLEGAL: new checked exception
+    // @Override void readFile() throws RuntimeException {} // OK: unchecked, always allowed
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">How does try-with-resources handle suppressed exceptions?</span></summary>
+<div class="accordion-body">
+<p>If an exception is thrown in the <code>try</code> block AND another exception is thrown by <code>close()</code>, the <code>close()</code> exception is added as a <em>suppressed exception</em> on the primary exception. It is not swallowed, and it does not replace the primary exception.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class NoisyResource implements AutoCloseable {
+    @Override public void close() throws Exception {
+        throw new Exception("close failed");
+    }
+}
+
+try (NoisyResource r = new NoisyResource()) {
+    throw new RuntimeException("try body failed"); // primary
+} catch (RuntimeException e) {
+    System.out.println(e.getMessage());             // "try body failed"
+    Throwable[] suppressed = e.getSuppressed();
+    System.out.println(suppressed[0].getMessage()); // "close failed" — preserved!
+}
+
+// Old-school finally: if both try-body and finally throw, the try-body exception
+// is LOST — you only see the finally exception. try-with-resources is strictly better.</code></pre></div>
+</div></details>
+</section>
+
+<section id="s17" class="topic-section">
+<div class="section-header">
+  <span class="section-num">17</span>
+  <h2 class="section-title">Nested &amp; Inner Classes</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s17',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Explain the four types of nested classes in Java.</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Type</th><th>Declaration</th><th>Outer instance needed?</th><th>Access to outer state</th></tr>
+<tr><td>Non-static inner class</td><td><code>class Outer { class Inner { } }</code></td><td>Yes</td><td>Full (all members)</td></tr>
+<tr><td>Static nested class</td><td><code>class Outer { static class Nested { } }</code></td><td>No</td><td>Only static members</td></tr>
+<tr><td>Local class</td><td>Inside a method body</td><td>—</td><td>Effectively final locals</td></tr>
+<tr><td>Anonymous class</td><td><code>new Interface() { ... }</code></td><td>Depends on location</td><td>Effectively final locals</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Outer {
+    private int x = 10;
+    static int y = 20;
+
+    // Non-static inner — holds implicit reference to Outer instance
+    class Inner {
+        void show() { System.out.println(x); } // accesses outer instance field
+    }
+
+    // Static nested — no outer instance
+    static class Nested {
+        void show() { System.out.println(y); }   // static only
+        // System.out.println(x);               // COMPILE ERROR — no outer instance
+    }
+}
+
+Outer o      = new Outer();
+Outer.Inner  i = o.new Inner();   // requires outer instance
+Outer.Nested n = new Outer.Nested(); // no outer instance needed</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Anonymous class vs lambda — when should you use each?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Anonymous Class</th><th>Lambda</th></tr>
+<tr><td>Interface requirement</td><td>Any interface or abstract class</td><td>Functional interface only (1 abstract method)</td></tr>
+<tr><td><code>this</code> refers to</td><td>The anonymous class instance</td><td>The enclosing class instance</td></tr>
+<tr><td>State</td><td>Can have fields</td><td>No fields (captures variables)</td></tr>
+<tr><td>Verbosity</td><td>Verbose</td><td>Concise</td></tr>
+<tr><td>Type</td><td>Creates a named type (visible in stack traces)</td><td>Invokedynamic — no distinct class</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// Anonymous class needed: implementing abstract class or multi-method interface
+Comparator&lt;String&gt; oldStyle = new Comparator&lt;String&gt;() {
+    @Override public int compare(String a, String b) { return a.compareTo(b); }
+    // can add state/fields here if needed
+};
+
+// Lambda preferred: functional interface, concise
+Comparator&lt;String&gt; byLength = (a, b) -&gt; a.length() - b.length();
+// this inside lambda = enclosing class (not the "comparator")
+
+// Anonymous class required when:
+// 1. Extending an abstract class  2. Multiple methods  3. Needing 'this' = self
+Runnable task = new Runnable() {
+    private int count = 0; // has state
+    @Override public void run() { System.out.println("run #" + (++count)); }
+};</code></pre></div>
+</div></details>
+</section>
+
+<section id="s18" class="topic-section">
+<div class="section-header">
+  <span class="section-num">18</span>
+  <h2 class="section-title">Design Patterns</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s18',this.checked)"> Mark as revised</label>
+</div>
+<div class="section-intro">Know intent + structure + concrete use-case for each. Interviewers often show code and ask "which pattern is this?" or ask you to implement one live.</div>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Singleton pattern — all implementation variants and pitfalls.</span></summary>
+<div class="accordion-body">
+<p>Singleton ensures a class has exactly one instance. Multiple implementation variants — each solves different problems:</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// 1. EAGER: simple, thread-safe; instance created even if never used
+class EagerSingleton {
+    private static final EagerSingleton INSTANCE = new EagerSingleton();
+    private EagerSingleton() {}
+    public static EagerSingleton getInstance() { return INSTANCE; }
+}
+
+// 2. LAZY + DOUBLE-CHECKED LOCKING: thread-safe, lazy, fast after init
+class DCLSingleton {
+    private static volatile DCLSingleton instance; // volatile is REQUIRED
+    private DCLSingleton() {}
+    public static DCLSingleton getInstance() {
+        if (instance == null) {                    // first check (unsynchronised)
+            synchronized (DCLSingleton.class) {
+                if (instance == null) {            // second check (inside lock)
+                    instance = new DCLSingleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+// 3. ENUM: best practice (Bloch) — serialization-safe, reflection-safe
+enum EnumSingleton {
+    INSTANCE;
+    public void doWork() { System.out.println("Working..."); }
+}
+EnumSingleton.INSTANCE.doWork();
+
+// 4. INITIALIZATION-ON-DEMAND HOLDER: thread-safe without volatile/sync
+class HolderSingleton {
+    private HolderSingleton() {}
+    private static class Holder {
+        static final HolderSingleton INSTANCE = new HolderSingleton();
+    }
+    public static HolderSingleton getInstance() { return Holder.INSTANCE; }
+    // Class loaded lazily on first call to getInstance(); JVM guarantees thread-safety
+}</code></pre></div>
+<div class="callout warn">
+<strong>Pitfalls:</strong> Without <code>volatile</code>, DCL is broken (memory model). Reflection can break Singleton by calling private constructor (enum prevents this). Serialization creates a new instance unless you add <code>readResolve()</code>.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Factory Method vs Abstract Factory — when do you use each?</span></summary>
+<div class="accordion-body">
+<p><strong>Factory Method:</strong> Defines an interface for creating one product; subclasses decide which class to instantiate. One product type, multiple implementations.</p>
+<p><strong>Abstract Factory:</strong> Creates families of related products. Ensures that products from one factory are compatible with each other.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// FACTORY METHOD
+interface Button { void render(); }
+class WindowsButton implements Button { public void render(){ System.out.println("Win button"); } }
+class MacButton     implements Button { public void render(){ System.out.println("Mac button"); } }
+
+abstract class Dialog {
+    abstract Button createButton(); // factory method
+    void render() { createButton().render(); }
+}
+class WindowsDialog extends Dialog { Button createButton(){ return new WindowsButton(); } }
+class MacDialog     extends Dialog { Button createButton(){ return new MacButton();     } }
+
+// ABSTRACT FACTORY — creates families (Button + TextField together)
+interface GUIFactory {
+    Button    createButton();
+    TextField createTextField();
+}
+class WindowsFactory implements GUIFactory {
+    public Button    createButton()    { return new WindowsButton(); }
+    public TextField createTextField() { return new WindowsTextField(); }
+}
+// All products from WindowsFactory are Windows-themed — visual consistency guaranteed</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Builder pattern — when and how to implement it.</span></summary>
+<div class="accordion-body">
+<p>Builder constructs complex objects step by step, separating construction from representation. Ideal when: object has many optional parameters, construction logic is complex, or you want to enforce immutability.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>public final class HttpRequest {
+    private final String url;        // required
+    private final String method;     // required
+    private final Map&lt;String,String&gt; headers;
+    private final String body;
+    private final int timeoutMs;
+
+    private HttpRequest(Builder b) {
+        this.url       = b.url;
+        this.method    = b.method;
+        this.headers   = Collections.unmodifiableMap(b.headers);
+        this.body      = b.body;
+        this.timeoutMs = b.timeoutMs;
+    }
+
+    public static class Builder {
+        private final String url;
+        private String method = "GET";
+        private Map&lt;String,String&gt; headers = new HashMap&lt;&gt;();
+        private String body;
+        private int timeoutMs = 5000;
+
+        public Builder(String url) { this.url = url; }
+        public Builder method(String m)  { this.method    = m;    return this; }
+        public Builder header(String k, String v) { headers.put(k,v); return this; }
+        public Builder body(String b)    { this.body      = b;    return this; }
+        public Builder timeout(int ms)   { this.timeoutMs = ms;   return this; }
+        public HttpRequest build()       { return new HttpRequest(this); }
+    }
+}
+
+// Usage: readable, self-documenting, immutable
+HttpRequest req = new HttpRequest.Builder("https://api.example.com/users")
+    .method("POST")
+    .header("Content-Type", "application/json")
+    .body("{"name":"Alice"}")
+    .timeout(3000)
+    .build();</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Adapter, Decorator, Proxy, Facade — what problem does each solve?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Pattern</th><th>Intent</th><th>Wraps?</th><th>Real example</th></tr>
+<tr><td>Adapter</td><td>Convert incompatible interface to expected interface</td><td>Yes</td><td><code>Arrays.asList()</code> wraps array as List; InputStreamReader wraps InputStream</td></tr>
+<tr><td>Decorator</td><td>Add behaviour to object at runtime without subclassing</td><td>Yes (same interface)</td><td>Java I/O streams: BufferedReader wraps FileReader; logging decorator</td></tr>
+<tr><td>Proxy</td><td>Control access to an object (lazy init, access control, caching)</td><td>Yes (same interface)</td><td>Spring @Transactional proxy; Java dynamic proxies; virtual proxy</td></tr>
+<tr><td>Facade</td><td>Provide simplified interface to a complex subsystem</td><td>No (composes)</td><td>SLF4J (facade over Log4j/Logback); JDBC (facade over DB drivers)</td></tr>
+</table></div>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// DECORATOR: add logging to any function transparently
+interface DataService { String fetchData(String id); }
+
+class RealDataService implements DataService {
+    public String fetchData(String id) { return "data:" + id; }
+}
+
+class LoggingDecorator implements DataService {
+    private final DataService wrapped;
+    LoggingDecorator(DataService ds) { this.wrapped = ds; }
+    public String fetchData(String id) {
+        System.out.println("Fetching: " + id);
+        String result = wrapped.fetchData(id);
+        System.out.println("Done: " + result);
+        return result;
+    }
+}
+// Can layer: new CachingDecorator(new LoggingDecorator(new RealDataService()))</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Observer and Strategy patterns — implement each.</span></summary>
+<div class="accordion-body">
+<p><strong>Observer:</strong> Define a one-to-many dependency so when one object changes state, all dependents are notified automatically.</p>
+<p><strong>Strategy:</strong> Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// OBSERVER
+interface EventListener&lt;T&gt; { void onEvent(T event); }
+
+class EventBus&lt;T&gt; {
+    private final List&lt;EventListener&lt;T&gt;&gt; listeners = new ArrayList&lt;&gt;();
+    void subscribe(EventListener&lt;T&gt; l) { listeners.add(l); }
+    void publish(T event)              { listeners.forEach(l -&gt; l.onEvent(event)); }
+}
+
+EventBus&lt;String&gt; bus = new EventBus&lt;&gt;();
+bus.subscribe(msg -&gt; System.out.println("Email: " + msg));
+bus.subscribe(msg -&gt; System.out.println("SMS: "   + msg));
+bus.publish("Order shipped!"); // both listeners notified
+
+// STRATEGY
+interface SortStrategy { void sort(int[] arr); }
+class BubbleSort  implements SortStrategy { public void sort(int[] a){ /* bubble */ } }
+class QuickSort   implements SortStrategy { public void sort(int[] a){ /* quick  */ } }
+
+class Sorter {
+    private SortStrategy strategy;
+    Sorter(SortStrategy s) { this.strategy = s; }
+    void setStrategy(SortStrategy s) { this.strategy = s; }
+    void sort(int[] arr) { strategy.sort(arr); }
+}
+Sorter sorter = new Sorter(new QuickSort());
+sorter.sort(new int[]{3,1,4,1,5});
+sorter.setStrategy(new BubbleSort()); // swap algorithm at runtime</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Template Method, Command, and Chain of Responsibility patterns.</span></summary>
+<div class="accordion-body">
+<p><strong>Template Method:</strong> Define the skeleton of an algorithm in a base class; defer some steps to subclasses.</p>
+<p><strong>Command:</strong> Encapsulate a request as an object, supporting undo/redo, queuing, and logging.</p>
+<p><strong>Chain of Responsibility:</strong> Pass a request along a chain of handlers until one handles it.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// TEMPLATE METHOD
+abstract class OAuth2Flow {
+    final String authenticate(String credentials) { // sealed template
+        String token   = obtainToken(credentials);   // step 1 (hook)
+        boolean valid  = validateToken(token);       // step 2 (hook)
+        return valid ? fetchUser(token) : null;      // step 3 (hook)
+    }
+    protected abstract String  obtainToken(String c);
+    protected abstract boolean validateToken(String t);
+    protected abstract String  fetchUser(String t);
+}
+
+// COMMAND — supports undo
+interface Command { void execute(); void undo(); }
+class TextEditor {
+    private StringBuilder text = new StringBuilder();
+    Deque&lt;Command&gt; history = new ArrayDeque&lt;&gt;();
+
+    void executeCommand(Command cmd) { cmd.execute(); history.push(cmd); }
+    void undoLast() { if (!history.isEmpty()) history.pop().undo(); }
+
+    class InsertCommand implements Command {
+        String str; int pos;
+        InsertCommand(String s, int p) { str=s; pos=p; }
+        public void execute() { text.insert(pos, str); }
+        public void undo()    { text.delete(pos, pos+str.length()); }
+    }
+}
+
+// CHAIN OF RESPONSIBILITY — middleware/filter pipeline
+abstract class AuthHandler {
+    protected AuthHandler next;
+    AuthHandler setNext(AuthHandler n) { next = n; return n; }
+    abstract boolean handle(Request req);
+}
+class ApiKeyHandler extends AuthHandler {
+    boolean handle(Request req) {
+        if (req.hasApiKey()) return true;
+        return next != null &amp;&amp; next.handle(req);
+    }
+}</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">MVC, MVP, and MVVM — what is each and how do they differ?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Pattern</th><th>Components</th><th>Who drives UI?</th><th>Testability</th><th>Used in</th></tr>
+<tr><td>MVC</td><td>Model, View, Controller</td><td>Controller handles input; View observes Model</td><td>Medium — Controller hard to test if coupled to View</td><td>Spring MVC, Ruby on Rails, ASP.NET MVC</td></tr>
+<tr><td>MVP</td><td>Model, View, Presenter</td><td>Presenter drives View via interface</td><td>High — Presenter is pure Java, View is mocked</td><td>Android (classic), GWT</td></tr>
+<tr><td>MVVM</td><td>Model, View, ViewModel</td><td>View binds to ViewModel via data binding</td><td>High — ViewModel has no View reference</td><td>Android Jetpack, WPF, Vue.js, Angular</td></tr>
+</table></div>
+<p>Key distinctions: In <strong>MVC</strong>, the View may directly observe the Model. In <strong>MVP</strong>, the Presenter is the bridge — the View knows nothing of the Model. In <strong>MVVM</strong>, the ViewModel exposes observables; the View binds to them declaratively.</p>
+</div></details>
+</section>
+
+<section id="s19" class="topic-section">
+<div class="section-header">
+  <span class="section-num">19</span>
+  <h2 class="section-title">Anti-Patterns</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s19',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">God Object, Spaghetti Inheritance, and Yo-Yo Problem.</span></summary>
+<div class="accordion-body">
+<p><strong>God Object (God Class):</strong> A single class that knows too much and does too much — low cohesion, high coupling. Symptoms: hundreds of fields and methods, imports everything, impossible to test in isolation.</p>
+<p><em>Fix:</em> Apply SRP. Extract cohesive clusters into focused classes.</p>
+<p><strong>Spaghetti Inheritance:</strong> Deep, tangled inheritance hierarchies (e.g., 8-level chains) that are impossible to reason about. Overriding methods at random depths causes unexpected behaviour. Every change in the hierarchy ripples unpredictably.</p>
+<p><em>Fix:</em> Flatten hierarchies. Prefer composition. Cap inheritance depth at 2-3 for application code.</p>
+<p><strong>Yo-Yo Problem:</strong> Understanding a method's behaviour requires constantly jumping ("yo-yoing") up and down a deep inheritance chain. You can't understand a method without reading 5 ancestors.</p>
+<p><em>Fix:</em> Composition + explicit delegation. Keep behaviour visible in the class where it's used.</p>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Fragile Base Class, Singleton Overuse, and Tight Coupling.</span></summary>
+<div class="accordion-body">
+<p><strong>Fragile Base Class:</strong> A superclass that breaks subclasses when modified, even if the modification seems safe. Caused by exposing too much in the base class that subclasses depend on.</p>
+<p><em>Fix:</em> Design for extension or prohibit it (make class/method <code>final</code>). Document what subclasses may and may not override. Prefer composition.</p>
+<p><strong>Singleton Overuse:</strong> Using Singleton as a global variable dressed up in a pattern. Problems: hidden dependencies, impossible to unit test (can't mock), threading issues, violates SRP.</p>
+<p><em>Fix:</em> Inject dependencies explicitly (DIP). Use frameworks (Spring, CDI) for lifecycle management instead of manual Singletons.</p>
+<p><strong>Tight Coupling:</strong> Classes depend on concrete implementations rather than abstractions. Changing one class requires changing many others.</p>
+<p><em>Fix:</em> Program to interfaces. Use dependency injection. Apply DIP.</p>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Primitive Obsession and Feature Envy.</span></summary>
+<div class="accordion-body">
+<p><strong>Primitive Obsession:</strong> Using primitives/strings where a dedicated class would be clearer. E.g., storing a phone number as <code>String</code>, a monetary value as <code>double</code>, or user role as <code>int</code>.</p>
+<p><em>Fix:</em> Extract dedicated value objects: <code>PhoneNumber</code>, <code>Money</code>, <code>UserRole</code> enum. These encapsulate validation and domain logic.</p>
+<p><strong>Feature Envy:</strong> A method that seems more interested in data from another class than its own. It calls many methods of another class to do its work.</p>
+<p><em>Fix:</em> Move the method to the class whose data it uses. Follow the Law of Demeter.</p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// FEATURE ENVY VIOLATION: orderReport() lives in Report but accesses Order internals
+class Report {
+    double calculateOrderTotal(Order order) {
+        double total = 0;
+        for (Item i : order.getItems())
+            total += i.getPrice() * i.getQuantity();
+        total *= (1 - order.getDiscount());  // report is envious of Order's data
+        return total;
+    }
+}
+// FIX: move to Order
+class Order {
+    double calculateTotal() { /* naturally lives here */ return 0; }
+}</code></pre></div>
+</div></details>
+</section>
+
+<section id="s20" class="topic-section">
+<div class="section-header">
+  <span class="section-num">20</span>
+  <h2 class="section-title">UML Class Diagrams</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s20',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">What do UML class diagram notations mean?</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>UML Symbol</th><th>Relationship</th><th>Example</th></tr>
+<tr><td>──────▷ (open arrow)</td><td>Inheritance / Extension</td><td>Dog ──▷ Animal</td></tr>
+<tr><td>- - - -▷ (dashed open)</td><td>Interface implementation</td><td>Circle - - ▷ Shape</td></tr>
+<tr><td>──────── (plain line)</td><td>Association</td><td>Student ─── Teacher</td></tr>
+<tr><td>◇──────── (hollow diamond)</td><td>Aggregation (HAS-A, shared)</td><td>Department ◇── Employee</td></tr>
+<tr><td>◆──────── (filled diamond)</td><td>Composition (HAS-A, owned)</td><td>House ◆── Room</td></tr>
+<tr><td>- - - -&gt; (dashed arrow)</td><td>Dependency (uses)</td><td>OrderService - - &gt; TaxCalc</td></tr>
+</table></div>
+<div class="ascii-art">    ┌──────────────┐         ┌──────────────┐
+    │  &lt;&lt;interface&gt;&gt; │         │    Animal    │
+    │    Shape     │         │─────────────│
+    │──────────────│         │ -name:String │
+    │ +area():dbl  │         │─────────────│
+    │ +perimeter() │         │ +speak():Str │
+    └──────┬───────┘         └──────┬───────┘
+           △ (implements)           △ (extends)
+    ┌──────┴───────┐         ┌──────┴───────┐
+    │    Circle    │         │     Dog      │
+    │──────────────│         │──────────────│
+    │ -radius:dbl  │         │              │
+    │──────────────│         │ +speak():Str │
+    │ +area():dbl  │         │ +fetch():void│
+    └──────────────┘         └──────────────┘
+
+Multiplicity notation:
+  1    — exactly one
+  0..1 — zero or one (optional)
+  *    — zero or more
+  1..* — one or more
+  1..5 — one to five</div>
+</div></details>
+</section>
+
+<section id="s21" class="topic-section">
+<div class="section-header">
+  <span class="section-num">21</span>
+  <h2 class="section-title">Language-Specific Gotchas</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s21',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Java OOP gotchas every senior dev must know.</span></summary>
+<div class="accordion-body">
+<ul>
+<li><strong>Calling overridden methods from a constructor:</strong> During construction, the vtable points to the <em>subclass</em> method even though the subclass hasn't been initialised yet. This can cause NullPointerExceptions or incorrect initial state.</li>
+<li><strong>equals() with null:</strong> <code>null.equals(x)</code> throws NPE; <code>"string".equals(null)</code> is safe and returns false. Always put the known non-null value first.</li>
+<li><strong>Autoboxing in collections:</strong> <code>Map&lt;Integer,Integer&gt; m; m.remove(key)</code> where key is <code>int</code> calls <code>remove(int index)</code> not <code>remove(Object key)</code> on certain collections. Cast explicitly.</li>
+<li><strong>Covariant arrays:</strong> <code>Integer[] ints = new Integer[3]; Object[] objs = ints; objs[0] = "hello";</code> compiles but throws <code>ArrayStoreException</code> at runtime.</li>
+</ul>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>// CALLING OVERRIDDEN METHOD FROM CONSTRUCTOR — dangerous!
+class Base {
+    Base() { init(); }       // 'init' is overridden...
+    void init() { System.out.println("Base.init"); }
+}
+class Derived extends Base {
+    private int value = 10;  // not yet assigned when Base() calls init()
+    @Override void init() { System.out.println("value = " + value); } // prints 0!
+    // Java default-initialises int fields to 0 BEFORE running constructors
+}
+new Derived(); // prints "value = 0", not "value = 10" — a common trap</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">C++ OOP gotchas — the rule of three/five/zero.</span></summary>
+<div class="accordion-body">
+<p><strong>Rule of Three:</strong> If you define any of destructor, copy constructor, copy assignment operator — define all three. Managing raw resources in one implies you need to manage them in all.</p>
+<p><strong>Rule of Five:</strong> Rule of Three + move constructor + move assignment operator. Modern C++11+ adds move semantics.</p>
+<p><strong>Rule of Zero:</strong> Best practice — avoid managing resources directly; use smart pointers (<code>unique_ptr</code>, <code>shared_ptr</code>) so the compiler-generated defaults work correctly and you need none of the five.</p>
+<div class="code-wrap"><span class="code-lang">C++</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="cpp"><code>// Rule of Zero — prefer this
+class SafeArray {
+    std::unique_ptr&lt;int[]&gt; data;
+    int size;
+public:
+    SafeArray(int n) : data(std::make_unique&lt;int[]&gt;(n)), size(n) {}
+    // Compiler generates correct copy/move/destructor automatically
+    // No resource management needed in this class at all
+};
+
+// GOTCHA: slicing — assigning derived to base object (not reference/pointer)
+Dog dog("Rex");
+Animal a = dog; // SLICING! Dog's extra data/vtable lost — a is purely Animal
+// Fix: always use pointers or references for polymorphism
+Animal* ap = &amp;dog; // OK — virtual dispatch works</code></pre></div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Python OOP gotchas — mutable default arguments and class variables.</span></summary>
+<div class="accordion-body">
+<div class="code-wrap"><span class="code-lang">Python</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="python"><code># GOTCHA 1: mutable default argument shared across calls
+def append_to(item, lst=[]):      # 'lst' created ONCE at function definition
+    lst.append(item)
+    return lst
+
+append_to(1)  # [1]
+append_to(2)  # [1, 2] — not [2]! Shared mutable default!
+# Fix: use None as default and create inside
+def append_to_fixed(item, lst=None):
+    if lst is None: lst = []
+    lst.append(item); return lst
+
+# GOTCHA 2: class variable shared across instances
+class Counter:
+    count = 0          # class variable — shared!
+    def increment(self): self.count += 1  # creates INSTANCE variable shadowing class var
+
+c1 = Counter(); c2 = Counter()
+c1.increment()
+print(c1.count)  # 1 (instance variable)
+print(c2.count)  # 0 (class variable — unchanged)
+print(Counter.count)  # 0 — class var unchanged (c1.count is a shadow)
+
+# GOTCHA 3: __dunder__ methods and operator overloading
+class Vector:
+    def __init__(self, x, y): self.x, self.y = x, y
+    def __add__(self, other): return Vector(self.x+other.x, self.y+other.y)
+    def __repr__(self): return f"Vector({self.x}, {self.y})"
+    def __eq__(self, other): return self.x == other.x and self.y == other.y
+    # If you define __eq__, Python sets __hash__ = None (unhashable) — define both!</code></pre></div>
+</div></details>
+</section>
+
+<section id="s22" class="topic-section">
+<div class="section-header">
+  <span class="section-num">22</span>
+  <h2 class="section-title">Rapid-Fire Q&amp;A, Puzzles &amp; LLD Prompts</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s22',this.checked)"> Mark as revised</label>
+</div>
+
+<details class="accordion">
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Rapid-fire: Core OOP Definitions (10 questions)</span></summary>
+<div class="accordion-body">
+<ol>
+<li><strong>What is the difference between an abstract class and an interface?</strong> — Abstract class can have state and constructors; interface cannot (except default/static methods). A class can implement many interfaces but extend only one class.</li>
+<li><strong>Can abstract classes have constructors?</strong> — Yes. Called via <code>super()</code> from subclass constructors. They cannot be instantiated directly.</li>
+<li><strong>Can an interface extend multiple interfaces?</strong> — Yes. <code>interface C extends A, B</code> is legal in Java.</li>
+<li><strong>What is the difference between method hiding and method overriding?</strong> — Overriding: instance methods, resolved by runtime type (dynamic dispatch). Hiding: static methods, resolved by reference type (static binding).</li>
+<li><strong>Can you override a private method?</strong> — No. Private methods are not visible to subclasses; any same-named method in a subclass is a new method, not an override.</li>
+<li><strong>What happens if you don't define hashCode() when you override equals()?</strong> — HashMap/HashSet will fail: equal objects may fall in different buckets, making lookups return null for objects that were inserted.</li>
+<li><strong>Is String immutable in Java? Why?</strong> — Yes. final class, private final char array, no setters. Enables String pool, thread-safety, safe use as HashMap key.</li>
+<li><strong>What is the difference between Comparable and Comparator?</strong> — Comparable: natural order, implemented by the class itself (<code>compareTo</code>). Comparator: external, custom ordering (<code>compare</code>), can have many.</li>
+<li><strong>Can constructors be synchronized?</strong> — No. An object under construction is not visible to other threads unless you publish the reference (which you shouldn't do from a constructor). The JVM ensures only one thread constructs an object.</li>
+<li><strong>What is the default value of a boolean field in Java?</strong> — <code>false</code>. Default values: int=0, double=0.0, char=' ', Object=null.</li>
+</ol>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Rapid-fire: Polymorphism &amp; Inheritance (10 questions)</span></summary>
+<div class="accordion-body">
+<ol>
+<li><strong>What is covariant return type?</strong> — An overriding method can return a subtype of the superclass method's return type. E.g., parent returns <code>Animal</code>, child can return <code>Dog</code>.</li>
+<li><strong>Can you have a static abstract method?</strong> — No. Abstract implies the method must be overridden by subclasses; static methods cannot be overridden.</li>
+<li><strong>What is the output of new Child() if Child extends Parent and both have System.out.println in constructors?</strong> — Parent's constructor runs first (via implicit super()), then Child's.</li>
+<li><strong>What is the diamond problem?</strong> — Ambiguity when a class inherits from two classes that share a common ancestor. Java avoids this for classes (single inheritance) but handles it for interfaces via explicit disambiguation.</li>
+<li><strong>Can you instantiate an anonymous class?</strong> — Yes — that is precisely what the anonymous class syntax does. <code>new Runnable() { ... }</code> creates one instance of the anonymous class.</li>
+<li><strong>What is an upcast vs a downcast?</strong> — Upcast: subtype to supertype (always safe, implicit). Downcast: supertype to subtype (risky, explicit, throws ClassCastException if wrong). Use <code>instanceof</code> before downcasting.</li>
+<li><strong>Does Java support multiple inheritance of state?</strong> — No. You cannot have multiple parent classes (and thus multiple sets of state). Interface default methods share behaviour but not state (no instance fields).</li>
+<li><strong>What is the difference between compile-time and runtime exceptions?</strong> — Compile-time: compiler requires you handle/declare checked exceptions. Runtime (unchecked): RuntimeException subclasses, no compiler enforcement.</li>
+<li><strong>What happens when you call a virtual method on a null reference in C++?</strong> — Undefined behaviour. The vtable lookup itself requires following the vptr in the object's memory, which is not there for null. In Java: NullPointerException at the call site.</li>
+<li><strong>Can you override equals() to return true for objects of different types?</strong> — You can, but it violates the symmetry requirement: if <code>a.equals(b)</code> is true, <code>b.equals(a)</code> must also be true. Different classes rarely satisfy this.</li>
+</ol>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Rapid-fire: Design &amp; Architecture (10 questions)</span></summary>
+<div class="accordion-body">
+<ol>
+<li><strong>What is the difference between Factory Method and Abstract Factory?</strong> — Factory Method: one product, subclasses decide implementation. Abstract Factory: family of related products, ensures consistency across the family.</li>
+<li><strong>Why is the Singleton pattern considered an anti-pattern?</strong> — Global state, hidden dependencies, prevents unit testing (can't mock), threading issues, violates SRP (manages its own lifecycle).</li>
+<li><strong>What is the Dependency Injection pattern?</strong> — Providing dependencies from outside rather than creating them inside. Enables testing (mock injection), flexibility (swap implementations), and adheres to DIP.</li>
+<li><strong>Explain the Open/Closed Principle in one sentence.</strong> — Open for extension (add new behaviour via new classes), closed for modification (don't change existing working code).</li>
+<li><strong>What does "program to an interface, not an implementation" mean?</strong> — Declare variables/parameters using the interface/abstract type rather than concrete class. Allows swapping implementations without changing dependent code.</li>
+<li><strong>What is the difference between cohesion and coupling?</strong> — Cohesion: how related the responsibilities of a class are (high = good). Coupling: how much one class depends on another's internals (low = good).</li>
+<li><strong>What is the purpose of the Repository pattern?</strong> — Abstracts data access behind a collection-like interface. Business logic uses the interface; the implementation may be in-memory, SQL, or NoSQL.</li>
+<li><strong>What is an aggregate root in DDD?</strong> — The single entry point for a cluster of domain objects (aggregate). All external references point to the root; internal objects are not accessible directly.</li>
+<li><strong>What is the difference between Strategy and Template Method?</strong> — Template Method: variation through inheritance (hooks defined in subclass). Strategy: variation through composition (algorithm swapped by injecting different Strategy object).</li>
+<li><strong>What is the Facade pattern and when would you use it?</strong> — Provides a simple interface to a complex subsystem. Use it to reduce the complexity visible to clients of a library or module.</li>
+</ol>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge mid">Mid</span><span class="q-text">Rapid-fire: SOLID Quick Round (10 questions)</span></summary>
+<div class="accordion-body">
+<ol>
+<li><strong>Which SOLID principle does having one method per class satisfy?</strong> — SRP, loosely — but SRP is about one reason to change, not number of methods.</li>
+<li><strong>Name a violation of LSP in Java's own standard library.</strong> — <code>java.util.Stack extends Vector</code>. Stack supports LIFO operations, but Vector adds index-based access that violates the Stack contract.</li>
+<li><strong>How do default methods in interfaces relate to OCP?</strong> — They allow adding new behaviour to an interface without breaking existing implementors — extending the contract while being closed for modification of implementors.</li>
+<li><strong>What is the "interface segregation" problem?</strong> — Clients are forced to depend on interfaces with methods they don't use. Causes: fat interfaces, dummy implementations that throw UnsupportedOperationException.</li>
+<li><strong>High-level module vs low-level module in DIP?</strong> — High-level: business logic (what to do). Low-level: infrastructure (how to do it, e.g., database, email). Both should depend on an abstraction (interface).</li>
+<li><strong>How does Spring enforce DIP?</strong> — Via dependency injection (constructor/setter/field injection). The container wires implementations to interfaces; high-level beans declare interfaces, not implementations.</li>
+<li><strong>What is "fragile base class" in context of OCP?</strong> — A base class that breaks subclasses when changed — the base class is not truly closed for modification from the subclass's perspective.</li>
+<li><strong>Does DRY mean no code duplication at all?</strong> — No. DRY is about knowledge duplication, not syntactic duplication. Sometimes two similar code snippets encode different domain rules and should remain separate.</li>
+<li><strong>What is a "leaky abstraction"?</strong> — An abstraction that exposes details of its implementation to callers. E.g., a SQL query library that throws SQLException to callers who don't know about SQL.</li>
+<li><strong>Name a real-world example of the Dependency Inversion Principle.</strong> — JDBC: application code uses the <code>java.sql.Connection</code> interface; the MySQL JDBC driver provides the implementation. Swapping drivers requires zero application code changes.</li>
+</ol>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Predict the Output — 10 Java puzzles</span></summary>
+<div class="accordion-body">
+
+<p><strong>Puzzle 1:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class A { int val = 1; int get() { return val; } }
+class B extends A { int val = 2; @Override int get() { return val; } }
+A obj = new B();
+System.out.println(obj.val);     // ?
+System.out.println(obj.get());   // ?</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>1</strong> then <strong>2</strong><br>
+Fields are NOT polymorphic — <code>obj.val</code> uses the reference type (A), so val=1.<br>
+Methods ARE polymorphic — <code>obj.get()</code> dispatches to B.get() at runtime, returning B's val=2.</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 2:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>String a = "hello";
+String b = "hello";
+String c = new String("hello");
+System.out.println(a == b);      // ?
+System.out.println(a == c);      // ?
+System.out.println(a.equals(c)); // ?</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer"><strong>true, false, true</strong><br>
+a and b are string literals — interned in the pool, same reference.<br>
+c is created with new — always a new object on the heap.<br>
+equals() compares content — same characters, so true.</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 3:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Parent {
+    Parent() { show(); }                    // called during construction
+    void show() { System.out.println("Parent.show"); }
+}
+class Child extends Parent {
+    private int x = 42;
+    @Override void show() { System.out.println("Child.show x=" + x); }
+}
+new Child();</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>Child.show x=0</strong><br>
+When Parent() runs, Child's vtable is already set (pointing to Child.show), so Child.show() is called.<br>
+But Child's field initialiser (<code>x = 42</code>) hasn't run yet — fields default to 0 during super-construction.<br>
+This is the "calling overridden method from constructor" trap.</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 4:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Test {
+    static int count = 0;
+    static { count = 10; }
+    { count += 5; }            // instance initialiser
+    Test() { count += 1; }
+}
+Test t1 = new Test();
+Test t2 = new Test();
+System.out.println(Test.count);</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>22</strong><br>
+Static block runs once when class loads: count=10.<br>
+t1 creation: instance block count+=5 (=15), constructor count+=1 (=16).<br>
+t2 creation: instance block count+=5 (=21), constructor count+=1 (=22).</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 5:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>interface I { default String greet() { return "I"; } }
+interface J { default String greet() { return "J"; } }
+class K implements I, J {
+    @Override public String greet() { return I.super.greet() + J.super.greet(); }
+}
+System.out.println(new K().greet());</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>IJ</strong><br>
+K must override greet() because both I and J define conflicting defaults.<br>
+I.super.greet() = "I", J.super.greet() = "J", concatenated = "IJ".</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 6:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Animal { static String type = "animal"; }
+class Dog    extends Animal { static String type = "dog"; }
+Animal a = new Dog();
+System.out.println(a.type);</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>animal</strong><br>
+Static fields are resolved by the reference type (Animal), not the runtime type.<br>
+Static members do not participate in polymorphism.</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 7:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>try {
+    System.out.println("try");
+    System.exit(0);
+} finally {
+    System.out.println("finally");
+}</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>try</strong> (no "finally")<br>
+System.exit() terminates the JVM immediately. The finally block does NOT run.<br>
+(The same is true for Runtime.halt() and abnormal JVM crashes.)</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 8:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;(Arrays.asList(1, 2, 3));
+for (Integer n : numbers) {
+    if (n == 2) numbers.remove(n);
+}</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>ConcurrentModificationException</strong><br>
+Modifying a collection while iterating over it with a for-each loop (which uses an Iterator) throws ConcurrentModificationException.<br>
+Fix: use Iterator.remove() or removeIf().</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 9:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>Integer x = 1000;
+Integer y = 1000;
+System.out.println(x == y);
+Integer a = 100;
+Integer b = 100;
+System.out.println(a == b);</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer"><strong>false</strong> then <strong>true</strong><br>
+Integer caches values from -128 to 127. For values in that range, == returns true because the same cached object is returned.<br>
+1000 is outside the cache, so two distinct Integer objects are created.</div>
+
+<p style="margin-top:1rem"><strong>Puzzle 10:</strong></p>
+<div class="code-wrap"><span class="code-lang">Java</span><button class="copy-btn">Copy</button>
+<pre class="code-block" data-lang="java"><code>class Test {
+    void foo(Object o) { System.out.println("Object"); }
+    void foo(String s) { System.out.println("String"); }
+}
+Test t = new Test();
+t.foo(null);</code></pre></div>
+<button class="reveal-btn" onclick="revealAnswer(this)">Reveal Answer</button>
+<div class="puzzle-answer">Output: <strong>String</strong><br>
+Overload resolution picks the most specific method. String is more specific than Object (String extends Object).<br>
+If there were two equally specific overloads for null (e.g., foo(String) and foo(Integer)), it would be a compile error — ambiguous.</div>
+</div></details>
+
+<details class="accordion">
+<summary><span class="badge senior">Senior</span><span class="q-text">Low-Level Design (LLD) Prompts — Practice these in interviews</span></summary>
+<div class="accordion-body">
+<p>For each prompt below, identify: entities (classes/interfaces), attributes, relationships, and key design decisions before coding.</p>
+<ol>
+<li>
+<strong>Design a Parking Lot System.</strong>
+<div class="callout success"><strong>Hint:</strong> ParkingLot has multiple ParkingFloors, each has ParkingSpots. Spot types: Compact, Large, Handicapped. Vehicle hierarchy: Car, Truck, Motorcycle. ParkingTicket issued on entry, payment on exit. Use Strategy for pricing (hourly, flat-rate). Singleton for ParkingLot if single-building.</div>
+</li>
+<li>
+<strong>Design a Library Management System.</strong>
+<div class="callout success"><strong>Hint:</strong> Book vs BookItem (a book can have multiple physical copies). Member has an account with checkout history. Librarian manages catalogue. Search by title/author/ISBN. Fine calculation for late returns. Observer pattern: notify members when reserved book becomes available.</div>
+</li>
+<li>
+<strong>Design an Elevator System.</strong>
+<div class="callout success"><strong>Hint:</strong> ElevatorSystem manages multiple Elevator cars. Direction enum: UP/DOWN/IDLE. ElevatorController implements scheduling (SCAN/LOOK algorithm). Request from Floor panel (external) or inside Car panel (internal). State machine: IDLE → MOVING → STOPPED.</div>
+</li>
+<li>
+<strong>Design a Chess Game.</strong>
+<div class="callout success"><strong>Hint:</strong> Board (8x8 grid of Cells). Piece hierarchy: King, Queen, Rook, Bishop, Knight, Pawn — each knows valid moves. Player (Human/AI). Game manages turns, checks for check/checkmate. Move object for Command pattern (supports undo). Board can be cloned for AI lookahead.</div>
+</li>
+<li>
+<strong>Design an ATM Machine.</strong>
+<div class="callout success"><strong>Hint:</strong> ATM has CardReader, CashDispenser, Receipt Printer, Keypad, Screen. State machine: Idle → HasCard → Authenticated → SelectingTransaction → Dispensing. Transaction hierarchy: Withdrawal, Balance Inquiry, Transfer. Bank API interface (abstracts actual bank communication). Cash denominations tracked in CashDispenser.</div>
+</li>
+</ol>
+</div></details>
+</section>
+
+<section id="s23" class="topic-section">
+<div class="section-header">
+  <span class="section-num">23</span>
+  <h2 class="section-title">Cheat Sheet — All Comparison Tables</h2>
+  <label class="revised-check"><input type="checkbox" onchange="markRevised('s23',this.checked)"> Mark as revised</label>
+</div>
+<div class="section-intro">Quick-reference for every important comparison in this guide. Use this for last-minute review.</div>
+
+<details class="accordion" open>
+<summary><span class="badge fresher">Fresher</span><span class="q-text">Class vs Object / State vs Behaviour</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th></th><th>Class</th><th>Object</th></tr>
+<tr><td>Exists</td><td>Compile time</td><td>Runtime</td></tr>
+<tr><td>Memory</td><td>Method area (class data)</td><td>Heap</td></tr>
+<tr><td>Created by</td><td>Developer (source code)</td><td><code>new</code> keyword</td></tr>
+<tr><td>Count</td><td>One definition</td><td>Many instances possible</td></tr>
+</table></div>
+<div class="table-wrap" style="margin-top:.75rem"><table>
+<tr><th>OOP Paradigm</th><th>Procedural</th><th>Functional</th></tr>
+<tr><td>Unit</td><td>Object</td><td>Procedure</td><td>Pure function</td></tr>
+<tr><td>State</td><td>Encapsulated</td><td>Shared mutable</td><td>Immutable</td></tr>
+<tr><td>Reuse</td><td>Inheritance/composition</td><td>Libraries</td><td>Function composition</td></tr>
+</table></div>
+</div></details>
+
+<details class="accordion" open>
+<summary><span class="badge mid">Mid</span><span class="q-text">Abstraction vs Encapsulation / Access Modifiers / Constructors</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th></th><th>Abstraction</th><th>Encapsulation</th></tr>
+<tr><td>Focus</td><td>WHAT the object does</td><td>HOW access is restricted</td></tr>
+<tr><td>Mechanism</td><td>Interfaces, abstract classes</td><td>Access modifiers (private, protected)</td></tr>
+<tr><td>Goal</td><td>Reduce cognitive complexity</td><td>Protect invariants</td></tr>
+</table></div>
+<div class="table-wrap" style="margin-top:.75rem"><table>
+<tr><th>Modifier</th><th>Class</th><th>Package</th><th>Subclass</th><th>World</th></tr>
+<tr><td>public</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>protected</td><td>✓</td><td>✓</td><td>✓</td><td>✗</td></tr>
+<tr><td>default</td><td>✓</td><td>✓</td><td>✗</td><td>✗</td></tr>
+<tr><td>private</td><td>✓</td><td>✗</td><td>✗</td><td>✗</td></tr>
+</table></div>
+</div></details>
+
+<details class="accordion" open>
+<summary><span class="badge mid">Mid</span><span class="q-text">Overloading vs Overriding / Abstract Class vs Interface</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Property</th><th>Overloading</th><th>Overriding</th></tr>
+<tr><td>Binding</td><td>Compile-time</td><td>Runtime</td></tr>
+<tr><td>Scope</td><td>Same class</td><td>Subclass</td></tr>
+<tr><td>Signature</td><td>Different parameters</td><td>Same signature</td></tr>
+<tr><td>Return type</td><td>Can differ freely</td><td>Same or covariant</td></tr>
+<tr><td>static/final?</td><td>Allowed</td><td>Cannot override these</td></tr>
+</table></div>
+<div class="table-wrap" style="margin-top:.75rem"><table>
+<tr><th>Property</th><th>Abstract Class</th><th>Interface</th></tr>
+<tr><td>Multiple inheritance</td><td>No</td><td>Yes</td></tr>
+<tr><td>State</td><td>Yes (instance fields)</td><td>No (only constants)</td></tr>
+<tr><td>Constructor</td><td>Yes</td><td>No</td></tr>
+<tr><td>Methods</td><td>Concrete + abstract</td><td>Abstract + default + static</td></tr>
+</table></div>
+</div></details>
+
+<details class="accordion" open>
+<summary><span class="badge mid">Mid</span><span class="q-text">Object Relationships / Comparable vs Comparator / Stack vs Heap</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Relationship</th><th>Strength</th><th>Lifecycle</th><th>Keyword</th></tr>
+<tr><td>Dependency</td><td>Weakest</td><td>Independent</td><td>uses</td></tr>
+<tr><td>Association</td><td>Weak</td><td>Independent</td><td>knows</td></tr>
+<tr><td>Aggregation</td><td>Medium</td><td>Child survives parent</td><td>HAS-A (shared)</td></tr>
+<tr><td>Composition</td><td>Strong</td><td>Child dies with parent</td><td>HAS-A (owned)</td></tr>
+</table></div>
+<div class="table-wrap" style="margin-top:.75rem"><table>
+<tr><th>Property</th><th>Stack</th><th>Heap</th></tr>
+<tr><td>Contents</td><td>Frames, locals, references</td><td>Objects, arrays</td></tr>
+<tr><td>Size</td><td>Small, fixed</td><td>Large, dynamic</td></tr>
+<tr><td>Thread</td><td>Per thread</td><td>Shared</td></tr>
+<tr><td>Error</td><td>StackOverflowError</td><td>OutOfMemoryError</td></tr>
+</table></div>
+</div></details>
+
+<details class="accordion" open>
+<summary><span class="badge senior">Senior</span><span class="q-text">SOLID Quick Reference / Creational Patterns / Behavioural Patterns</span></summary>
+<div class="accordion-body">
+<div class="table-wrap"><table>
+<tr><th>Principle</th><th>One-liner</th><th>Violation sign</th></tr>
+<tr><td>SRP</td><td>One reason to change</td><td>Class has unrelated methods</td></tr>
+<tr><td>OCP</td><td>Extend without modifying</td><td>if/else or switch on type</td></tr>
+<tr><td>LSP</td><td>Subtype substitutable for supertype</td><td>Subclass throws UnsupportedOperationException</td></tr>
+<tr><td>ISP</td><td>Don't force unused methods</td><td>Fat interfaces, empty implementations</td></tr>
+<tr><td>DIP</td><td>Depend on abstractions</td><td>new ConcreteClass() inside high-level module</td></tr>
+</table></div>
+<div class="table-wrap" style="margin-top:.75rem"><table>
+<tr><th>Pattern</th><th>Category</th><th>Intent</th></tr>
+<tr><td>Singleton</td><td>Creational</td><td>One instance globally</td></tr>
+<tr><td>Factory Method</td><td>Creational</td><td>Subclass decides instantiation</td></tr>
+<tr><td>Abstract Factory</td><td>Creational</td><td>Family of related products</td></tr>
+<tr><td>Builder</td><td>Creational</td><td>Complex object step-by-step</td></tr>
+<tr><td>Adapter</td><td>Structural</td><td>Convert incompatible interface</td></tr>
+<tr><td>Decorator</td><td>Structural</td><td>Add behaviour without subclassing</td></tr>
+<tr><td>Proxy</td><td>Structural</td><td>Control access to an object</td></tr>
+<tr><td>Facade</td><td>Structural</td><td>Simplify complex subsystem</td></tr>
+<tr><td>Observer</td><td>Behavioural</td><td>Notify dependents of state change</td></tr>
+<tr><td>Strategy</td><td>Behavioural</td><td>Interchangeable algorithms</td></tr>
+<tr><td>Command</td><td>Behavioural</td><td>Encapsulate request; supports undo</td></tr>
+<tr><td>Template Method</td><td>Behavioural</td><td>Algorithm skeleton; steps overridable</td></tr>
+<tr><td>Chain of Responsibility</td><td>Behavioural</td><td>Pass request along handler chain</td></tr>
+<tr><td>State</td><td>Behavioural</td><td>Change behaviour when state changes</td></tr>
+</table></div>
+</div></details>
+</section>
+</main>
+</div>
+<script>
+
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isDark ? 'Dark' : 'Light';
+}
+
+// Sidebar toggle (mobile)
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Progress tracking
+const revised = {};
+let totalSections = 23;
+
+function markRevised(id, checked) {
+  revised[id] = checked;
+  const count = Object.values(revised).filter(Boolean).length;
+  const pct = Math.round(count / totalSections * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = count + '/23 revised';
+}
+
+// Reveal puzzle answer
+function revealAnswer(btn) {
+  const ans = btn.nextElementSibling;
+  const showing = ans.style.display === 'block';
+  ans.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? 'Reveal Answer' : 'Hide Answer';
+}
+
+// Syntax highlighting
+function hl(rawCode, lang) {
+  // 1. Escape HTML entities
+  let s = rawCode.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const kw = {
+    java: ['class','interface','enum','extends','implements','public','private',
+           'protected','static','final','abstract','new','return','void','int',
+           'long','double','float','boolean','char','byte','short','null','this',
+           'super','if','else','for','while','do','try','catch','finally','throw',
+           'throws','import','package','instanceof','synchronized','volatile',
+           'transient','native','assert','break','continue','default','switch',
+           'case','var','record','sealed','permits','yield'],
+    cpp:  ['class','struct','public','private','protected','virtual','override',
+           'final','const','static','new','delete','nullptr','int','long','double',
+           'float','bool','void','char','return','if','else','for','while','do',
+           'try','catch','throw','namespace','using','template','typename','friend',
+           'explicit','inline','operator','this','auto','mutable','constexpr',
+           'noexcept','sizeof','static_cast','dynamic_cast','const_cast'],
+    python:['class','def','self','super','return','if','else','elif','for','while',
+            'try','except','finally','raise','with','import','from','pass','None',
+            'True','False','is','not','and','or','in','lambda','yield','async',
+            'await','property','staticmethod','classmethod']
+  };
+  const types = {
+    java: ['String','Integer','Boolean','Double','Long','Float','Object','List',
+           'ArrayList','Map','HashMap','Set','HashSet','Optional','Comparable',
+           'Comparator','Runnable','Callable','Exception','RuntimeException',
+           'Number','Throwable','Thread','Deque','ArrayDeque','Arrays',
+           'Collections','AutoCloseable'],
+    cpp:  ['string','vector','map','set','list','pair','tuple','shared_ptr',
+           'unique_ptr','weak_ptr','iostream','std','FILE'],
+    python:['int','str','float','bool','list','dict','set','tuple','type','object',
+            'Exception','ValueError','TypeError','ABC']
+  };
+
+  // Process line by line to handle single-line comments
+  const lines = s.split('\n');
+  const out = lines.map(line => {
+    // Extract comment
+    let code_part = line, cmt_part = '';
+    if (lang === 'python') {
+      const hi = line.indexOf('#');
+      if (hi >= 0) { code_part = line.slice(0, hi); cmt_part = line.slice(hi); }
+    } else if (lang === 'java' || lang === 'cpp') {
+      const si = line.indexOf('//');
+      if (si >= 0) { code_part = line.slice(0, si); cmt_part = line.slice(si); }
+    }
+
+    // Strings (double-quoted)
+    code_part = code_part.replace(/"[^"\\]*(?:\\.[^"\\]*)*"/g,
+      m => `<span class="tok-str">${m}</span>`);
+    // Strings (single-quoted, not inside already-wrapped span)
+    code_part = code_part.replace(/'[^'\\]*(?:\\.[^'\\]*)*'/g,
+      m => `<span class="tok-str">${m}</span>`);
+
+    // Annotations / decorators
+    code_part = code_part.replace(/@[A-Za-z_]\w*/g,
+      m => `<span class="tok-ann">${m}</span>`);
+
+    // Numbers
+    code_part = code_part.replace(/\b\d+(?:\.\d+)?(?:[lLfFdD_])?\b/g,
+      m => `<span class="tok-num">${m}</span>`);
+
+    // Types
+    if (types[lang]) {
+      const tpat = new RegExp('\\b(' + types[lang].join('|') + ')\\b','g');
+      code_part = code_part.replace(tpat, m => `<span class="tok-ty">${m}</span>`);
+    }
+
+    // Keywords
+    if (kw[lang]) {
+      const kpat = new RegExp('\\b(' + kw[lang].join('|') + ')\\b','g');
+      code_part = code_part.replace(kpat, m => `<span class="tok-kw">${m}</span>`);
+    }
+
+    if (cmt_part) cmt_part = `<span class="tok-cmt">${cmt_part}</span>`;
+    return code_part + cmt_part;
+  });
+
+  return out.join('\n');
+}
+
+function initSyntaxHighlight() {
+  document.querySelectorAll('pre.code-block').forEach(pre => {
+    const lang = pre.dataset.lang || 'java';
+    const code = pre.querySelector('code');
+    if (code) code.innerHTML = hl(code.textContent, lang);
+  });
+}
+
+// Copy buttons
+function initCopyButtons() {
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const code = this.closest('.code-wrap').querySelector('pre code');
+      if (!code) return;
+      const text = code.textContent;
+      const tryExec = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+      };
+      (navigator.clipboard
+        ? navigator.clipboard.writeText(text).catch(tryExec)
+        : Promise.resolve(tryExec())
+      ).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+  });
+}
+
+// Search
+function initSearch() {
+  const input = document.getElementById('search-input');
+  const noResults = document.getElementById('no-results');
+  input.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    let visible = 0;
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      if (!q) { sec.style.display = ''; visible++; return; }
+      let match = sec.querySelector('.section-title').textContent.toLowerCase().includes(q);
+      let accordionMatches = 0;
+      sec.querySelectorAll('details.accordion').forEach(acc => {
+        const txt = acc.textContent.toLowerCase();
+        if (txt.includes(q)) {
+          acc.style.display = ''; acc.open = true; accordionMatches++;
+        } else if (!match) {
+          acc.style.display = 'none';
+        }
+      });
+      if (match) sec.querySelectorAll('details.accordion').forEach(a => a.style.display = '');
+      const show = match || accordionMatches > 0;
+      sec.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    noResults.style.display = (!q || visible > 0) ? 'none' : 'block';
+  });
+}
+
+// Scroll spy
+function initScrollSpy() {
+  if (!window.IntersectionObserver) return;
+  const items = {};
+  document.querySelectorAll('.nav-item[data-section]').forEach(el => {
+    items[el.dataset.section] = el;
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        Object.values(items).forEach(i => i.classList.remove('active'));
+        if (items[e.target.id]) items[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  document.querySelectorAll('.topic-section[id]').forEach(s => obs.observe(s));
+}
+
+// Close sidebar on mobile nav click
+function initMobileNav() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (window.innerWidth <= 900)
+        document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSyntaxHighlight();
+  initCopyButtons();
+  initSearch();
+  initScrollSpy();
+  initMobileNav();
+});
+
+</script>
+</body>
+</html>
